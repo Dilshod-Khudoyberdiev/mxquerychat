@@ -19,7 +19,7 @@ This README is a short presentation of the workflow and technical design of the 
 6. Vanna builds a prompt, uses retrieval from Chroma, and calls Ollama to generate SQL.
 7. SQL runs against DuckDB and results are returned in the UI.
 
-## Technical Details (What Runs Today)
+## Technical Details
 - Entry point: `vanna_flask_demo.py`.
 - Agent: `VannaAgent` combines `ChromaDB_VectorStore` + `Ollama`.
 - Guardrails:
@@ -29,6 +29,24 @@ This README is a short presentation of the workflow and technical design of the 
 - Storage:
   - Vector store: `vanna_chroma_store_demo`.
   - DuckDB file: `mxquerychat.duckdb`.
+ 
+## Simple Database Summary
+This project uses a fake (synthetic) DuckDB database. It is made only for demos.
+It has ticket sales, planned revenue, and location data (postal codes and states).
+No real people or private data exist.
+
+# What’s inside
+
+Lists (reference data): states, postal codes, ticket types, tariff associations, reporting offices.
+Sales data: ticket sales per month (main table).
+Plan data: planned revenue per month.
+“Distribution” tables: rules to split values across states.
+Demo users & permissions: just for showing how access could work.
+How the tables connect
+
+Sales → State: sales table → postal codes → states.
+Sales → Ticket type: sales table → ticket products.
+Sales/Plan → Tariff association: sales/plan tables → tariff associations.
 
 ## Run the Flask Demo
 ```bash
