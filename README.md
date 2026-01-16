@@ -7,7 +7,7 @@ This README is a short presentation of the workflow and technical design of the 
 ## Project Snapshot
 - Goal: ask business questions in plain language and get SQL + results.
 - UI: Flask web app via `VannaFlaskApp`.
-- Model stack: Vanna + Ollama (`phi3:latest`) with a local Chroma vector store.
+- Model stack: Vanna + Ollama (`mistral`) with a local Chroma vector store.
 - Data: local DuckDB file `mxquerychat.duckdb` (used as a read-only dataset).
 
 ## End-to-End Workflow (Flask App)
@@ -50,7 +50,7 @@ No real people or private data exist.
 ## Run the Flask Demo
 ```bash
 # Ensure Ollama is running and the model is available
-ollama pull phi3:latest
+ollama pull mistral
 
 # Start the Flask demo
 python vanna_flask_demo.py

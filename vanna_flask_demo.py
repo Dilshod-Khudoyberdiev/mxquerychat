@@ -22,7 +22,7 @@ logging.basicConfig(
 
 DUCKDB_PATH = "mxquerychat.duckdb"            # local DB file
 CHROMA_PATH = "vanna_chroma_store_demo"       # local vector store folder
-OLLAMA_MODEL = "phi3:latest"
+OLLAMA_MODEL = "mistral"
 DDL_OUTPUT_PATH = Path("docs/schema_ddl.sql") # save DDL here
 TRAINING_EXAMPLES_CSV = Path("training_data/training_examples.csv") 
 DEMO_QUESTIONS_PATH = Path("docs/demo_questions.md")
@@ -92,7 +92,7 @@ class VannaAgent(ChromaDB_VectorStore, Ollama):
     """
     Vanna agent = (Vector Store) + (LLM)
     - ChromaDB stores training embeddings locally
-    - Ollama runs the LLM locally (phi3)
+    - Ollama runs the LLM locally (mistral)
     """
     def __init__(self, config=None):
         Ollama.__init__(self, config=config)
@@ -313,7 +313,7 @@ def train_from_question_docs(vn: VannaAgent) -> None:
 
 
 def main():
-    # 1) Create agent (phi3 + chroma local store)
+    # 1) Create agent (mistral + chroma local store)
     vn = VannaAgent(
         config={
             "model": OLLAMA_MODEL,

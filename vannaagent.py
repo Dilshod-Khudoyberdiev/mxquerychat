@@ -40,7 +40,7 @@ def get_vanna() -> MXQueryVanna:
     """
     vn = MXQueryVanna(
         config={
-            "model": os.getenv("OLLAMA_MODEL", "phi3"),
+            "model": os.getenv("OLLAMA_MODEL", "mistral"),
             "path": CHROMA_PATH,
         }
     )
