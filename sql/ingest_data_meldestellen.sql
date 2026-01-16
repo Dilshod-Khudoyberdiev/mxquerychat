@@ -1,0 +1,4 @@
+-- Ingest data for meldestellen
+CREATE OR REPLACE TABLE meldestellen AS
+SELECT *
+FROM read_csv_auto('training_data/mock_csv_v3/meldestellen.csv', HEADER=true);

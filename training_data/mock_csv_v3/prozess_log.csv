@@ -1,0 +1,1201 @@
+﻿log_id,dateiname,schritt,level,nachricht,fehler_details,erstellt_von_user_id,erstellt_am,geaendert_von_user_id,geaendert_am
+1,SONSTIGE_ANGEBOTE_TV1_2024_12_v1.csv,validate,success,Verarbeitung erfolgreich,,2,2025-07-17 10:09:17,57,2024-07-25 07:50:58
+2,PLAN_UMSATZ_TV18_2024_08_korrigiert.csv,validate,success,Verarbeitung erfolgreich,,29,2024-09-22 04:27:22,,
+3,SONSTIGE_ANGEBOTE_TV14_2025_08.csv,export,info,Verarbeitung gestartet,,67,2025-09-26 10:07:16,64,
+4,SONSTIGE_ANGEBOTE_TV16_2024_04.csv,export,info,Verarbeitung gestartet,,7,2024-03-18 19:01:00,51,
+5,SONSTIGE_ANGEBOTE_TV5_2025_07.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,20,2025-08-11 03:52:31,73,
+6,SONSTIGE_ANGEBOTE_TV16_2025_10.csv,export,info,Verarbeitung gestartet,,,2025-06-02 02:51:42,36,
+7,TICKET_VERKAEUFE_TV19_2024_12.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,,2024-04-19 00:18:23,,
+8,PLAN_UMSATZ_TV2_2024_06_final.csv,ingest,success,Verarbeitung erfolgreich,,16,2025-03-18 10:39:21,,2024-03-20 13:53:38
+9,TICKET_VERKAEUFE_TV19_2024_10.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,51,2024-02-26 14:25:52,,2024-12-21 22:52:06
+10,TICKET_VERKAEUFE_TV3_2024_08.csv,validate,info,Verarbeitung gestartet,,66,2025-09-12 23:39:43,,2025-11-28 10:24:54
+11,PLAN_UMSATZ_TV6_2025_01.csv,export,info,Verarbeitung gestartet,,2,2024-04-30 04:17:45,,2025-08-21 19:57:24
+12,TICKET_VERKAEUFE_TV16_2024_05_v1.csv,ingest,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,63,2024-05-31 12:25:40,,
+13,SONSTIGE_ANGEBOTE_TV4_2025_06.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,80,2025-12-27 00:28:38,25,2024-10-08 08:12:10
+14,SONSTIGE_ANGEBOTE_TV3_2025_08_final.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,14,2024-01-13 13:30:29,,
+15,PLAN_UMSATZ_TV5_2024_06.csv,export,info,Verarbeitung gestartet,,24,2025-07-14 15:05:06,,
+16,SONSTIGE_ANGEBOTE_TV9_2024_08_v1.csv,export,warning,Verarbeitung mit Warnungen,,,2024-02-15 18:33:49,,
+17,TICKET_VERKAEUFE_TV10_2024_11_v1.csv,validate,info,Verarbeitung gestartet,,54,2025-10-02 12:58:23,,
+18,TICKET_VERKAEUFE_TV13_2024_12_final.csv,ingest,info,Verarbeitung gestartet,,1,2025-08-06 19:06:34,,
+19,PLAN_UMSATZ_TV10_2025_10_testlauf.csv,validate,info,Verarbeitung gestartet,,,2024-06-09 15:46:42,72,
+20,TICKET_VERKAEUFE_TV6_2025_06_korrigiert.csv,validate,info,Verarbeitung gestartet,,61,2025-11-17 14:29:30,,
+21,TICKET_VERKAEUFE_TV8_2024_04.csv,ingest,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,35,2024-01-28 09:33:13,13,2024-12-04 13:22:33
+22,TICKET_VERKAEUFE_TV11_2024_05_testlauf.csv,validate,info,Verarbeitung gestartet,,,2025-07-04 17:34:53,,
+23,SONSTIGE_ANGEBOTE_TV19_2025_12_final.csv,validate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,71,2025-11-29 17:22:48,4,
+24,PLAN_UMSATZ_TV18_2025_06.csv,ingest,info,Verarbeitung gestartet,,,2024-06-20 22:24:20,,
+25,PLAN_UMSATZ_TV20_2024_12_final.csv,export,info,Verarbeitung gestartet,,58,2025-02-27 05:32:36,17,
+26,SONSTIGE_ANGEBOTE_TV17_2024_06.csv,ingest,info,Verarbeitung gestartet,,54,2024-09-27 07:10:45,,2024-11-06 18:50:03
+27,TICKET_VERKAEUFE_TV12_2024_04.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,77,2024-08-29 09:45:45,,2024-05-30 14:57:16
+28,SONSTIGE_ANGEBOTE_TV12_2024_10_v1.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,40,2024-11-09 20:24:11,,
+29,SONSTIGE_ANGEBOTE_TV18_2025_07_final.csv,export,info,Verarbeitung gestartet,,70,2025-04-20 14:29:48,,
+30,PLAN_UMSATZ_TV19_2024_02_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,27,2025-12-02 03:12:38,16,2025-11-10 15:26:40
+31,TICKET_VERKAEUFE_TV20_2025_11_testlauf.csv,aggregate,warning,Verarbeitung mit Warnungen,,17,2025-07-22 15:14:11,57,2024-02-08 12:39:12
+32,SONSTIGE_ANGEBOTE_TV14_2025_11.csv,export,info,Verarbeitung gestartet,,39,2024-03-14 17:03:19,,
+33,PLAN_UMSATZ_TV4_2024_07.csv,aggregate,success,Verarbeitung erfolgreich,,,2025-04-09 07:33:09,36,
+34,TICKET_VERKAEUFE_TV8_2025_09.csv,export,info,Verarbeitung gestartet,,,2025-06-11 07:44:18,,
+35,PLAN_UMSATZ_TV18_2025_05.csv,aggregate,info,Verarbeitung gestartet,,,2025-07-28 10:13:54,,2024-09-12 16:01:47
+36,SONSTIGE_ANGEBOTE_TV9_2024_08_v1.csv,export,success,Verarbeitung erfolgreich,,65,2024-11-26 01:08:52,41,2025-04-07 19:53:35
+37,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,ingest,info,Verarbeitung gestartet,,26,2024-11-29 11:00:29,,
+38,TICKET_VERKAEUFE_TV1_2025_05_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,22,2025-05-25 17:34:24,,2025-06-04 18:47:35
+39,SONSTIGE_ANGEBOTE_TV7_2025_06_final.csv,ingest,info,Verarbeitung gestartet,,40,2024-07-16 23:42:59,,2024-10-02 07:28:36
+40,TICKET_VERKAEUFE_TV2_2024_06_final.csv,validate,warning,Verarbeitung mit Warnungen,,,2024-09-07 19:38:16,,
+41,SONSTIGE_ANGEBOTE_TV9_2024_06.csv,export,info,Verarbeitung gestartet,,52,2024-10-08 23:19:21,52,
+42,SONSTIGE_ANGEBOTE_TV19_2025_10_testlauf.csv,aggregate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,29,2025-12-30 09:21:49,,2024-10-04 20:59:52
+43,PLAN_UMSATZ_TV9_2024_01.csv,validate,info,Verarbeitung gestartet,,,2024-05-14 10:24:46,20,
+44,PLAN_UMSATZ_TV18_2024_08_korrigiert.csv,ingest,info,Verarbeitung gestartet,,52,2025-06-20 11:28:26,17,
+45,PLAN_UMSATZ_TV18_2025_06.csv,validate,info,Verarbeitung gestartet,,47,2025-12-21 02:16:35,,2025-05-09 11:43:36
+46,TICKET_VERKAEUFE_TV1_2024_12_testlauf.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-08-12 15:49:12,,
+47,PLAN_UMSATZ_TV10_2025_03_v1.csv,export,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,70,2024-01-22 11:38:45,,
+48,SONSTIGE_ANGEBOTE_TV11_2024_08_korrigiert.csv,ingest,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,70,2024-05-27 07:36:43,,2024-03-24 12:30:33
+49,TICKET_VERKAEUFE_TV9_2024_01.csv,ingest,info,Verarbeitung gestartet,,6,2025-10-05 23:35:57,,2024-11-19 12:56:49
+50,SONSTIGE_ANGEBOTE_TV5_2025_06.csv,ingest,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,78,2024-03-18 11:49:16,52,
+51,SONSTIGE_ANGEBOTE_TV8_2025_02.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,17,2024-04-03 02:04:00,,
+52,TICKET_VERKAEUFE_TV7_2025_11.csv,export,info,Verarbeitung gestartet,,77,2025-08-11 11:05:45,,
+53,SONSTIGE_ANGEBOTE_TV5_2025_02.csv,export,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,48,2024-03-12 11:42:28,5,2024-05-19 11:47:59
+54,SONSTIGE_ANGEBOTE_TV9_2024_01_final.csv,validate,info,Verarbeitung gestartet,,,2024-12-19 06:44:41,,2025-01-06 15:15:47
+55,PLAN_UMSATZ_TV15_2024_02_final.csv,export,info,Verarbeitung gestartet,,77,2025-04-14 20:27:05,61,
+56,PLAN_UMSATZ_TV9_2024_04_testlauf.csv,ingest,success,Verarbeitung erfolgreich,,61,2025-04-27 06:04:16,,
+57,TICKET_VERKAEUFE_TV20_2025_06_korrigiert.csv,validate,success,Verarbeitung erfolgreich,,22,2025-06-08 12:43:53,30,2024-05-26 11:57:19
+58,PLAN_UMSATZ_TV15_2024_08.csv,validate,info,Verarbeitung gestartet,,39,2025-08-17 10:11:16,32,2024-01-03 11:43:16
+59,PLAN_UMSATZ_TV10_2025_10_testlauf.csv,validate,info,Verarbeitung gestartet,,10,2024-10-26 18:02:23,,
+60,PLAN_UMSATZ_TV17_2024_09.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-02-03 07:36:56,,2024-06-17 07:24:39
+61,PLAN_UMSATZ_TV2_2025_03_v1.csv,ingest,info,Verarbeitung gestartet,,22,2024-06-08 12:12:25,,
+62,PLAN_UMSATZ_TV20_2025_02.csv,export,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,32,2024-10-06 21:36:44,29,
+63,PLAN_UMSATZ_TV3_2024_01_testlauf.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-05-18 10:33:02,,
+64,SONSTIGE_ANGEBOTE_TV15_2025_03_v1.csv,aggregate,success,Verarbeitung erfolgreich,,78,2024-08-20 05:13:03,,2025-07-26 20:54:30
+65,SONSTIGE_ANGEBOTE_TV5_2024_09_korrigiert.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-06-26 12:17:34,47,
+66,TICKET_VERKAEUFE_TV4_2025_09.csv,validate,info,Verarbeitung gestartet,,76,2025-12-20 21:19:36,4,
+67,TICKET_VERKAEUFE_TV13_2024_04_v1.csv,aggregate,info,Verarbeitung gestartet,,,2024-08-13 18:03:07,,2025-03-16 08:21:32
+68,PLAN_UMSATZ_TV9_2024_07.csv,export,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,,2025-06-03 20:36:27,,
+69,PLAN_UMSATZ_TV17_2024_07.csv,validate,warning,Verarbeitung mit Warnungen,,40,2025-09-01 12:58:19,,2024-02-05 12:18:05
+70,SONSTIGE_ANGEBOTE_TV4_2025_08_korrigiert.csv,export,info,Verarbeitung gestartet,,27,2024-08-24 00:30:49,27,2025-09-29 00:32:39
+71,SONSTIGE_ANGEBOTE_TV20_2024_01_final.csv,validate,info,Verarbeitung gestartet,,,2025-11-22 05:08:19,35,
+72,TICKET_VERKAEUFE_TV10_2025_06_korrigiert.csv,validate,info,Verarbeitung gestartet,,37,2024-06-04 09:52:46,,
+73,SONSTIGE_ANGEBOTE_TV19_2025_10_testlauf.csv,export,info,Verarbeitung gestartet,,50,2025-01-21 20:08:08,,
+74,PLAN_UMSATZ_TV5_2025_12_v1.csv,export,info,Verarbeitung gestartet,,,2025-03-05 12:57:27,37,2025-02-26 22:46:42
+75,SONSTIGE_ANGEBOTE_TV3_2024_01_v1.csv,validate,info,Verarbeitung gestartet,,,2024-03-19 16:53:17,27,
+76,SONSTIGE_ANGEBOTE_TV17_2024_06.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,77,2025-07-23 16:34:11,,
+77,SONSTIGE_ANGEBOTE_TV13_2025_01.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,62,2024-12-01 06:18:00,,
+78,TICKET_VERKAEUFE_TV18_2024_05_testlauf.csv,aggregate,info,Verarbeitung gestartet,,58,2025-11-21 23:22:37,12,
+79,TICKET_VERKAEUFE_TV3_2025_04.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,41,2024-05-08 03:30:29,,2025-10-25 23:28:44
+80,TICKET_VERKAEUFE_TV7_2025_11.csv,aggregate,info,Verarbeitung gestartet,,10,2024-11-04 18:36:41,40,2024-09-27 22:36:02
+81,TICKET_VERKAEUFE_TV6_2025_03.csv,ingest,info,Verarbeitung gestartet,,,2024-02-29 10:26:14,56,2024-09-17 10:17:02
+82,SONSTIGE_ANGEBOTE_TV12_2025_03_korrigiert.csv,validate,info,Verarbeitung gestartet,,63,2024-04-24 02:39:08,75,2025-06-02 16:22:06
+83,SONSTIGE_ANGEBOTE_TV4_2025_10.csv,validate,success,Verarbeitung erfolgreich,,41,2025-10-23 11:56:58,,2025-03-09 01:23:07
+84,TICKET_VERKAEUFE_TV18_2024_05_testlauf.csv,validate,info,Verarbeitung gestartet,,,2024-12-21 04:14:11,31,
+85,SONSTIGE_ANGEBOTE_TV12_2024_10_v1.csv,ingest,warning,Verarbeitung mit Warnungen,,69,2024-02-18 02:00:15,,2025-05-11 07:50:44
+86,TICKET_VERKAEUFE_TV1_2024_01.csv,export,info,Verarbeitung gestartet,,,2025-08-06 15:01:04,,
+87,TICKET_VERKAEUFE_TV4_2025_04_v1.csv,export,info,Verarbeitung gestartet,,80,2024-08-11 15:34:21,,2024-01-15 18:49:32
+88,TICKET_VERKAEUFE_TV13_2025_07_testlauf.csv,validate,info,Verarbeitung gestartet,,72,2025-11-15 04:56:51,,
+89,PLAN_UMSATZ_TV17_2024_06.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-02-14 02:19:01,56,
+90,SONSTIGE_ANGEBOTE_TV20_2024_02_v1.csv,validate,success,Verarbeitung erfolgreich,,29,2025-12-24 01:33:20,,
+91,PLAN_UMSATZ_TV3_2024_12_v1.csv,export,info,Verarbeitung gestartet,,1,2024-08-09 13:11:11,,2025-10-08 20:08:24
+92,TICKET_VERKAEUFE_TV20_2025_06_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,1,2025-10-06 13:27:31,,
+93,SONSTIGE_ANGEBOTE_TV6_2024_03_korrigiert.csv,ingest,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,1,2025-09-26 04:11:45,53,
+94,PLAN_UMSATZ_TV20_2025_08_korrigiert.csv,ingest,warning,Verarbeitung mit Warnungen,,,2024-04-29 17:24:27,,2024-07-05 08:30:20
+95,PLAN_UMSATZ_TV10_2025_03_v1.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,51,2025-09-23 16:31:32,66,
+96,PLAN_UMSATZ_TV10_2024_05.csv,validate,success,Verarbeitung erfolgreich,,54,2025-07-24 01:02:48,23,
+97,PLAN_UMSATZ_TV1_2024_04.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,14,2024-04-28 11:12:59,50,
+98,PLAN_UMSATZ_TV6_2024_11_korrigiert.csv,ingest,info,Verarbeitung gestartet,,63,2024-08-04 02:36:30,,2024-06-18 11:09:53
+99,SONSTIGE_ANGEBOTE_TV11_2024_11_testlauf.csv,validate,info,Verarbeitung gestartet,,,2024-06-17 01:36:24,,
+100,SONSTIGE_ANGEBOTE_TV17_2024_02_final.csv,aggregate,info,Verarbeitung gestartet,,,2024-02-24 17:16:33,,
+101,TICKET_VERKAEUFE_TV10_2025_08_korrigiert.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-12-06 02:09:43,,
+102,TICKET_VERKAEUFE_TV17_2025_12_testlauf.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,24,2024-08-23 05:39:12,,2024-11-26 18:19:30
+103,TICKET_VERKAEUFE_TV5_2024_06.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,50,2024-09-19 01:20:19,,2025-08-14 09:25:54
+104,TICKET_VERKAEUFE_TV2_2025_03.csv,validate,info,Verarbeitung gestartet,,78,2024-10-04 15:40:38,,2025-05-20 23:22:41
+105,PLAN_UMSATZ_TV6_2025_07_final.csv,validate,info,Verarbeitung gestartet,,,2024-07-29 10:13:37,52,
+106,PLAN_UMSATZ_TV12_2024_02.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,37,2024-06-05 13:39:55,,
+107,SONSTIGE_ANGEBOTE_TV12_2024_03_korrigiert.csv,validate,info,Verarbeitung gestartet,,73,2024-01-08 23:20:04,,
+108,SONSTIGE_ANGEBOTE_TV9_2024_01_final.csv,export,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,52,2025-05-23 02:57:48,,
+109,PLAN_UMSATZ_TV2_2024_06_final.csv,ingest,info,Verarbeitung gestartet,,,2025-09-30 08:38:54,39,
+110,PLAN_UMSATZ_TV8_2025_05_final.csv,ingest,info,Verarbeitung gestartet,,38,2024-12-15 17:20:27,4,2025-01-16 23:55:54
+111,SONSTIGE_ANGEBOTE_TV8_2025_04.csv,export,info,Verarbeitung gestartet,,27,2025-01-04 08:37:22,38,2024-01-29 22:18:52
+112,PLAN_UMSATZ_TV18_2025_06.csv,ingest,info,Verarbeitung gestartet,,29,2025-04-25 21:17:49,29,
+113,SONSTIGE_ANGEBOTE_TV11_2025_04_final.csv,export,info,Verarbeitung gestartet,,72,2024-11-13 16:53:32,17,
+114,SONSTIGE_ANGEBOTE_TV14_2025_02.csv,export,success,Verarbeitung erfolgreich,,61,2025-10-23 00:32:41,59,2025-11-28 00:21:21
+115,SONSTIGE_ANGEBOTE_TV16_2024_04.csv,validate,info,Verarbeitung gestartet,,20,2024-06-17 03:42:14,,
+116,PLAN_UMSATZ_TV17_2025_08_testlauf.csv,ingest,info,Verarbeitung gestartet,,3,2024-12-11 03:40:11,,
+117,TICKET_VERKAEUFE_TV9_2024_08_v1.csv,ingest,success,Verarbeitung erfolgreich,,67,2025-10-15 06:40:06,,
+118,PLAN_UMSATZ_TV4_2024_11.csv,export,error,Verarbeitung fehlgeschlagen,PLZ ungültig,23,2025-02-20 22:10:00,,
+119,SONSTIGE_ANGEBOTE_TV4_2025_10.csv,ingest,info,Verarbeitung gestartet,,31,2025-07-19 02:09:50,,
+120,SONSTIGE_ANGEBOTE_TV17_2024_06.csv,export,info,Verarbeitung gestartet,,,2025-05-08 01:26:50,,2025-09-30 10:49:26
+121,PLAN_UMSATZ_TV7_2025_09_korrigiert.csv,export,success,Verarbeitung erfolgreich,,51,2024-12-23 11:47:32,79,
+122,TICKET_VERKAEUFE_TV12_2025_09.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,53,2025-10-20 22:39:34,17,
+123,PLAN_UMSATZ_TV20_2024_01.csv,aggregate,success,Verarbeitung erfolgreich,,11,2024-10-02 06:49:26,,
+124,SONSTIGE_ANGEBOTE_TV13_2024_02_v1.csv,validate,success,Verarbeitung erfolgreich,,33,2025-03-06 09:32:23,12,
+125,PLAN_UMSATZ_TV7_2025_06.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,73,2024-06-05 05:55:53,22,2024-09-03 20:59:53
+126,TICKET_VERKAEUFE_TV1_2024_10.csv,ingest,success,Verarbeitung erfolgreich,,17,2025-11-03 08:42:20,,2024-11-24 11:39:07
+127,PLAN_UMSATZ_TV6_2025_07_final.csv,validate,info,Verarbeitung gestartet,,7,2024-01-27 22:11:23,,
+128,SONSTIGE_ANGEBOTE_TV4_2025_06.csv,ingest,error,Verarbeitung fehlgeschlagen,PLZ ungültig,6,2025-02-02 08:54:15,,
+129,PLAN_UMSATZ_TV2_2025_03_v1.csv,export,info,Verarbeitung gestartet,,59,2025-07-16 13:34:23,,2024-11-23 02:19:06
+130,TICKET_VERKAEUFE_TV12_2025_09.csv,export,info,Verarbeitung gestartet,,69,2024-08-30 11:45:52,,
+131,TICKET_VERKAEUFE_TV20_2025_06_korrigiert.csv,validate,info,Verarbeitung gestartet,,37,2024-01-09 11:13:18,64,2024-11-04 17:24:07
+132,PLAN_UMSATZ_TV2_2025_03_v1.csv,aggregate,info,Verarbeitung gestartet,,,2024-07-02 23:52:21,31,
+133,PLAN_UMSATZ_TV13_2025_11.csv,validate,info,Verarbeitung gestartet,,78,2024-01-22 03:55:06,,
+134,PLAN_UMSATZ_TV8_2025_05_final.csv,export,success,Verarbeitung erfolgreich,,49,2024-02-19 17:39:20,,
+135,SONSTIGE_ANGEBOTE_TV4_2025_02_v1.csv,export,info,Verarbeitung gestartet,,,2025-08-11 23:10:04,46,
+136,TICKET_VERKAEUFE_TV8_2024_04.csv,validate,info,Verarbeitung gestartet,,66,2025-03-29 20:12:01,,
+137,TICKET_VERKAEUFE_TV19_2024_01.csv,validate,warning,Verarbeitung mit Warnungen,,3,2025-07-06 05:26:38,,
+138,PLAN_UMSATZ_TV9_2024_04_testlauf.csv,aggregate,success,Verarbeitung erfolgreich,,,2024-02-10 15:49:35,14,
+139,PLAN_UMSATZ_TV18_2025_05.csv,aggregate,info,Verarbeitung gestartet,,12,2024-12-23 18:42:50,,
+140,PLAN_UMSATZ_TV6_2025_07_final.csv,ingest,info,Verarbeitung gestartet,,53,2024-02-13 22:43:11,,
+141,SONSTIGE_ANGEBOTE_TV17_2024_06_v1.csv,aggregate,info,Verarbeitung gestartet,,,2025-03-16 02:36:35,,2025-11-15 10:28:46
+142,PLAN_UMSATZ_TV3_2024_01_testlauf.csv,validate,info,Verarbeitung gestartet,,45,2024-08-12 00:15:32,,
+143,SONSTIGE_ANGEBOTE_TV18_2024_12.csv,ingest,success,Verarbeitung erfolgreich,,,2025-02-03 13:52:28,26,2024-06-16 08:01:48
+144,PLAN_UMSATZ_TV20_2025_02.csv,validate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,26,2024-05-16 22:02:17,42,
+145,PLAN_UMSATZ_TV2_2025_03_v1.csv,ingest,info,Verarbeitung gestartet,,10,2024-05-11 04:24:31,76,2024-11-02 06:49:31
+146,TICKET_VERKAEUFE_TV9_2025_10_final.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,14,2025-05-11 14:34:30,,2024-02-25 06:05:33
+147,PLAN_UMSATZ_TV6_2024_01.csv,ingest,info,Verarbeitung gestartet,,59,2024-07-13 11:08:06,46,
+148,TICKET_VERKAEUFE_TV6_2025_03.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,41,2025-05-01 20:52:56,,
+149,TICKET_VERKAEUFE_TV10_2024_03.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,44,2025-11-23 07:29:28,27,
+150,TICKET_VERKAEUFE_TV1_2025_05_korrigiert.csv,ingest,info,Verarbeitung gestartet,,,2025-05-05 13:37:41,66,
+151,SONSTIGE_ANGEBOTE_TV15_2025_03_v1.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-01-10 15:39:22,,
+152,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,validate,success,Verarbeitung erfolgreich,,37,2025-08-11 21:49:11,,2024-08-24 05:33:25
+153,PLAN_UMSATZ_TV4_2024_07.csv,validate,info,Verarbeitung gestartet,,43,2024-04-23 09:51:35,,2025-05-26 23:53:57
+154,PLAN_UMSATZ_TV20_2025_10_v1.csv,validate,success,Verarbeitung erfolgreich,,4,2024-08-27 18:18:07,66,
+155,SONSTIGE_ANGEBOTE_TV8_2025_01.csv,validate,info,Verarbeitung gestartet,,,2024-06-22 00:35:43,,2024-05-13 13:33:52
+156,SONSTIGE_ANGEBOTE_TV4_2024_07.csv,validate,info,Verarbeitung gestartet,,14,2025-04-22 12:20:27,8,
+157,TICKET_VERKAEUFE_TV11_2024_06.csv,ingest,success,Verarbeitung erfolgreich,,49,2025-03-15 02:39:01,,
+158,PLAN_UMSATZ_TV7_2024_09.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,39,2025-12-28 14:30:02,72,
+159,SONSTIGE_ANGEBOTE_TV3_2025_08.csv,export,info,Verarbeitung gestartet,,30,2025-05-05 23:53:55,57,2024-06-05 10:30:22
+160,PLAN_UMSATZ_TV11_2024_04.csv,validate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,7,2025-01-27 15:53:22,,2025-04-28 22:08:26
+161,PLAN_UMSATZ_TV18_2024_08_korrigiert.csv,export,info,Verarbeitung gestartet,,10,2025-08-17 15:23:09,57,2024-12-07 19:27:01
+162,PLAN_UMSATZ_TV12_2025_02_final.csv,ingest,info,Verarbeitung gestartet,,76,2024-08-24 07:46:39,,
+163,TICKET_VERKAEUFE_TV6_2025_07_final.csv,export,info,Verarbeitung gestartet,,48,2024-07-05 10:44:25,,
+164,PLAN_UMSATZ_TV7_2024_12.csv,ingest,info,Verarbeitung gestartet,,32,2025-01-22 16:24:22,,
+165,SONSTIGE_ANGEBOTE_TV9_2025_11_final.csv,ingest,info,Verarbeitung gestartet,,,2025-10-05 06:51:22,,2025-03-22 08:28:09
+166,SONSTIGE_ANGEBOTE_TV2_2025_08_v1.csv,aggregate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,28,2025-10-06 17:50:04,,2025-06-26 01:11:31
+167,PLAN_UMSATZ_TV8_2024_04.csv,aggregate,info,Verarbeitung gestartet,,46,2025-11-28 15:02:14,,
+168,TICKET_VERKAEUFE_TV8_2025_01_testlauf.csv,validate,info,Verarbeitung gestartet,,51,2024-10-02 15:34:38,,
+169,PLAN_UMSATZ_TV18_2025_01_final.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,47,2024-04-19 14:35:11,20,
+170,SONSTIGE_ANGEBOTE_TV3_2024_08_testlauf.csv,export,info,Verarbeitung gestartet,,21,2025-09-17 04:08:40,48,
+171,PLAN_UMSATZ_TV10_2025_10_testlauf.csv,validate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,,2024-03-19 09:37:54,,
+172,TICKET_VERKAEUFE_TV2_2024_06_final.csv,aggregate,info,Verarbeitung gestartet,,70,2025-04-28 03:05:17,69,
+173,PLAN_UMSATZ_TV17_2025_05.csv,export,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,,2024-07-14 11:56:02,,2024-12-26 15:00:46
+174,PLAN_UMSATZ_TV12_2024_02_final.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,72,2024-05-14 00:25:48,,
+175,PLAN_UMSATZ_TV8_2024_02_testlauf.csv,ingest,info,Verarbeitung gestartet,,55,2024-06-10 08:18:55,,
+176,PLAN_UMSATZ_TV15_2024_08.csv,export,info,Verarbeitung gestartet,,45,2025-09-30 20:15:29,23,
+177,SONSTIGE_ANGEBOTE_TV11_2024_11_testlauf.csv,aggregate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,7,2024-06-28 02:35:24,,2025-07-18 09:33:15
+178,SONSTIGE_ANGEBOTE_TV19_2025_10_testlauf.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,44,2025-02-19 13:15:20,,
+179,SONSTIGE_ANGEBOTE_TV10_2024_05_v1.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,44,2024-03-26 14:17:02,,
+180,TICKET_VERKAEUFE_TV12_2024_09_v1.csv,ingest,info,Verarbeitung gestartet,,63,2025-08-18 17:58:44,30,
+181,SONSTIGE_ANGEBOTE_TV10_2024_09.csv,validate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,60,2025-05-04 06:27:53,65,
+182,PLAN_UMSATZ_TV8_2025_05_final.csv,aggregate,info,Verarbeitung gestartet,,24,2024-11-20 16:18:04,24,2025-07-23 20:26:54
+183,PLAN_UMSATZ_TV13_2024_09.csv,aggregate,warning,Verarbeitung mit Warnungen,,3,2024-08-23 10:29:37,,
+184,PLAN_UMSATZ_TV12_2025_02_final.csv,export,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,58,2025-01-13 18:56:43,,2024-03-09 19:27:21
+185,SONSTIGE_ANGEBOTE_TV17_2025_07_korrigiert.csv,export,info,Verarbeitung gestartet,,68,2024-04-02 01:31:06,32,
+186,SONSTIGE_ANGEBOTE_TV3_2025_08_final.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,14,2024-10-15 19:37:20,,2025-10-29 14:19:00
+187,PLAN_UMSATZ_TV7_2024_12.csv,ingest,info,Verarbeitung gestartet,,27,2025-11-27 15:32:31,,2024-04-03 15:56:46
+188,PLAN_UMSATZ_TV9_2024_04_testlauf.csv,validate,success,Verarbeitung erfolgreich,,,2024-02-25 12:23:52,,2025-08-24 15:34:37
+189,TICKET_VERKAEUFE_TV5_2024_06.csv,ingest,info,Verarbeitung gestartet,,,2025-05-19 03:35:47,,2025-11-16 21:40:50
+190,SONSTIGE_ANGEBOTE_TV13_2024_05.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,21,2024-04-14 19:40:38,,
+191,TICKET_VERKAEUFE_TV13_2025_08_v1.csv,aggregate,info,Verarbeitung gestartet,,10,2025-10-14 09:43:29,,
+192,TICKET_VERKAEUFE_TV9_2025_07.csv,export,info,Verarbeitung gestartet,,,2024-05-21 18:33:25,,
+193,SONSTIGE_ANGEBOTE_TV17_2025_07_korrigiert.csv,validate,info,Verarbeitung gestartet,,52,2025-10-24 01:18:22,,2024-12-31 07:46:01
+194,PLAN_UMSATZ_TV16_2024_11.csv,aggregate,info,Verarbeitung gestartet,,28,2024-04-04 17:40:14,,
+195,PLAN_UMSATZ_TV19_2025_08.csv,export,info,Verarbeitung gestartet,,59,2024-04-24 11:33:05,,2025-01-08 03:21:51
+196,TICKET_VERKAEUFE_TV6_2025_06_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,65,2025-03-23 07:33:24,36,
+197,SONSTIGE_ANGEBOTE_TV13_2024_05.csv,validate,success,Verarbeitung erfolgreich,,30,2025-05-30 03:33:34,55,2024-02-06 08:46:04
+198,SONSTIGE_ANGEBOTE_TV10_2025_08.csv,aggregate,success,Verarbeitung erfolgreich,,58,2024-01-27 06:12:19,,2024-05-17 20:22:27
+199,SONSTIGE_ANGEBOTE_TV4_2025_02_v1.csv,ingest,success,Verarbeitung erfolgreich,,,2025-11-03 04:42:33,49,2024-07-30 22:20:41
+200,TICKET_VERKAEUFE_TV3_2024_08.csv,aggregate,success,Verarbeitung erfolgreich,,,2025-01-29 13:39:49,,
+201,PLAN_UMSATZ_TV8_2025_02_final.csv,export,info,Verarbeitung gestartet,,,2025-08-31 18:13:56,,2025-03-02 01:21:59
+202,PLAN_UMSATZ_TV12_2025_02_final.csv,validate,success,Verarbeitung erfolgreich,,25,2024-10-15 16:15:40,,2025-12-21 02:33:44
+203,TICKET_VERKAEUFE_TV17_2025_12_testlauf.csv,validate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,74,2024-11-07 23:41:33,69,2024-09-20 23:58:37
+204,TICKET_VERKAEUFE_TV14_2025_06_v1.csv,ingest,info,Verarbeitung gestartet,,11,2025-09-22 08:32:19,50,2025-07-20 11:22:09
+205,SONSTIGE_ANGEBOTE_TV8_2025_09.csv,export,info,Verarbeitung gestartet,,76,2024-05-04 22:51:05,,
+206,SONSTIGE_ANGEBOTE_TV2_2025_08_v1.csv,aggregate,success,Verarbeitung erfolgreich,,25,2025-01-09 09:35:51,,2025-01-03 14:02:29
+207,SONSTIGE_ANGEBOTE_TV18_2025_07_final.csv,ingest,info,Verarbeitung gestartet,,16,2024-07-09 11:36:24,6,
+208,SONSTIGE_ANGEBOTE_TV19_2025_12_final.csv,validate,info,Verarbeitung gestartet,,31,2024-08-16 19:40:34,58,
+209,SONSTIGE_ANGEBOTE_TV9_2024_07_v1.csv,validate,info,Verarbeitung gestartet,,20,2025-08-19 07:14:08,40,2024-11-15 21:04:39
+210,PLAN_UMSATZ_TV15_2024_02_final.csv,aggregate,warning,Verarbeitung mit Warnungen,,10,2024-04-09 00:44:10,,2024-03-14 23:54:31
+211,SONSTIGE_ANGEBOTE_TV10_2025_08.csv,validate,info,Verarbeitung gestartet,,,2025-06-27 13:07:31,35,2025-01-11 05:08:26
+212,PLAN_UMSATZ_TV17_2025_08_testlauf.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,39,2024-12-28 10:18:31,61,2024-11-23 06:10:58
+213,SONSTIGE_ANGEBOTE_TV8_2024_04.csv,export,info,Verarbeitung gestartet,,48,2025-09-22 21:14:29,,2024-05-07 03:07:46
+214,PLAN_UMSATZ_TV6_2024_01.csv,aggregate,info,Verarbeitung gestartet,,73,2024-12-05 07:39:02,,
+215,TICKET_VERKAEUFE_TV14_2025_06_v1.csv,aggregate,warning,Verarbeitung mit Warnungen,,,2024-09-22 06:04:01,,2024-08-25 21:02:35
+216,TICKET_VERKAEUFE_TV18_2024_05_testlauf.csv,aggregate,info,Verarbeitung gestartet,,5,2025-05-06 17:39:45,,2025-08-31 22:56:48
+217,SONSTIGE_ANGEBOTE_TV8_2025_02.csv,aggregate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,17,2024-03-18 03:43:28,32,
+218,SONSTIGE_ANGEBOTE_TV8_2025_09.csv,aggregate,info,Verarbeitung gestartet,,,2024-06-26 04:18:48,13,2025-03-18 20:16:52
+219,TICKET_VERKAEUFE_TV12_2024_03_testlauf.csv,validate,info,Verarbeitung gestartet,,79,2025-05-09 20:07:27,39,
+220,SONSTIGE_ANGEBOTE_TV3_2024_12.csv,export,warning,Verarbeitung mit Warnungen,,25,2024-05-03 07:44:03,,2025-01-20 14:02:11
+221,PLAN_UMSATZ_TV9_2024_01.csv,export,info,Verarbeitung gestartet,,36,2024-03-31 22:11:14,,2025-07-27 08:40:24
+222,PLAN_UMSATZ_TV5_2025_05_final.csv,aggregate,info,Verarbeitung gestartet,,42,2024-10-20 16:24:44,,
+223,TICKET_VERKAEUFE_TV3_2024_08.csv,validate,info,Verarbeitung gestartet,,2,2024-02-23 08:45:08,,2024-07-08 14:14:30
+224,PLAN_UMSATZ_TV17_2025_02.csv,validate,success,Verarbeitung erfolgreich,,62,2025-08-30 12:14:21,,
+225,PLAN_UMSATZ_TV9_2024_05.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,78,2024-02-12 21:33:21,77,
+226,PLAN_UMSATZ_TV1_2024_05_final.csv,ingest,info,Verarbeitung gestartet,,36,2025-03-29 13:24:32,,
+227,TICKET_VERKAEUFE_TV18_2025_04.csv,validate,info,Verarbeitung gestartet,,49,2025-01-18 14:42:40,,
+228,PLAN_UMSATZ_TV9_2024_07.csv,ingest,info,Verarbeitung gestartet,,,2024-04-24 13:00:06,,
+229,TICKET_VERKAEUFE_TV15_2024_10.csv,aggregate,info,Verarbeitung gestartet,,40,2025-04-29 02:19:48,,
+230,PLAN_UMSATZ_TV4_2024_11.csv,export,info,Verarbeitung gestartet,,,2024-07-15 03:27:20,52,2024-11-29 11:44:45
+231,PLAN_UMSATZ_TV2_2024_02_korrigiert.csv,ingest,warning,Verarbeitung mit Warnungen,,23,2024-08-30 01:44:03,,
+232,PLAN_UMSATZ_TV9_2024_09_testlauf.csv,validate,info,Verarbeitung gestartet,,,2025-08-22 11:10:13,,2025-05-04 00:46:08
+233,TICKET_VERKAEUFE_TV4_2024_08_v1.csv,aggregate,info,Verarbeitung gestartet,,46,2024-05-09 20:28:44,76,
+234,SONSTIGE_ANGEBOTE_TV11_2024_11_testlauf.csv,validate,info,Verarbeitung gestartet,,3,2025-12-26 08:40:43,,
+235,PLAN_UMSATZ_TV18_2025_01_final.csv,aggregate,info,Verarbeitung gestartet,,,2025-10-18 17:48:20,,2024-10-18 01:55:47
+236,SONSTIGE_ANGEBOTE_TV17_2024_06.csv,export,info,Verarbeitung gestartet,,17,2025-07-05 05:49:22,,
+237,PLAN_UMSATZ_TV17_2024_09.csv,ingest,success,Verarbeitung erfolgreich,,76,2024-01-12 20:00:29,60,2024-10-28 00:09:19
+238,TICKET_VERKAEUFE_TV11_2024_06.csv,export,info,Verarbeitung gestartet,,49,2025-02-01 20:51:53,,2024-03-04 23:57:09
+239,SONSTIGE_ANGEBOTE_TV20_2025_09_final.csv,ingest,success,Verarbeitung erfolgreich,,14,2025-12-14 10:17:02,,2025-09-14 19:16:18
+240,TICKET_VERKAEUFE_TV9_2025_10_final.csv,ingest,success,Verarbeitung erfolgreich,,25,2024-06-03 17:53:44,,2025-08-08 03:21:37
+241,PLAN_UMSATZ_TV4_2024_11.csv,export,info,Verarbeitung gestartet,,57,2025-03-12 10:03:07,,
+242,SONSTIGE_ANGEBOTE_TV1_2024_12_v1.csv,ingest,info,Verarbeitung gestartet,,15,2025-12-07 16:40:00,,
+243,PLAN_UMSATZ_TV6_2025_08.csv,export,info,Verarbeitung gestartet,,,2025-03-05 12:09:25,,2024-02-04 17:41:39
+244,PLAN_UMSATZ_TV5_2024_06_testlauf.csv,ingest,info,Verarbeitung gestartet,,44,2025-08-18 07:43:27,,
+245,SONSTIGE_ANGEBOTE_TV14_2025_11.csv,aggregate,success,Verarbeitung erfolgreich,,40,2025-11-05 19:23:34,,
+246,SONSTIGE_ANGEBOTE_TV10_2024_09.csv,ingest,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,1,2025-12-13 12:19:58,46,
+247,SONSTIGE_ANGEBOTE_TV9_2024_10_testlauf.csv,aggregate,success,Verarbeitung erfolgreich,,55,2025-07-10 01:30:34,45,
+248,SONSTIGE_ANGEBOTE_TV12_2024_10_v1.csv,aggregate,info,Verarbeitung gestartet,,46,2025-12-13 13:45:01,31,
+249,SONSTIGE_ANGEBOTE_TV8_2024_04.csv,ingest,error,Verarbeitung fehlgeschlagen,PLZ ungültig,22,2024-05-01 06:15:03,,
+250,TICKET_VERKAEUFE_TV4_2024_10.csv,validate,info,Verarbeitung gestartet,,,2024-08-02 14:23:26,,2025-12-02 10:44:14
+251,PLAN_UMSATZ_TV2_2025_04_testlauf.csv,ingest,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,56,2025-12-01 12:51:05,,2024-10-01 22:59:31
+252,PLAN_UMSATZ_TV4_2025_12.csv,export,info,Verarbeitung gestartet,,,2025-08-29 12:49:04,,
+253,TICKET_VERKAEUFE_TV19_2024_10.csv,ingest,success,Verarbeitung erfolgreich,,,2025-07-03 06:42:34,,2024-07-24 15:31:51
+254,SONSTIGE_ANGEBOTE_TV3_2024_01_v1.csv,validate,info,Verarbeitung gestartet,,53,2025-03-18 22:05:59,79,2025-05-31 22:10:52
+255,PLAN_UMSATZ_TV4_2024_07.csv,validate,info,Verarbeitung gestartet,,64,2025-10-05 14:05:25,,
+256,TICKET_VERKAEUFE_TV18_2025_01.csv,aggregate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,77,2024-04-23 14:02:06,35,
+257,SONSTIGE_ANGEBOTE_TV18_2024_08_v1.csv,ingest,info,Verarbeitung gestartet,,27,2025-12-30 15:16:09,,
+258,TICKET_VERKAEUFE_TV5_2024_08_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,12,2024-11-13 06:37:14,22,
+259,SONSTIGE_ANGEBOTE_TV7_2024_06_v1.csv,validate,success,Verarbeitung erfolgreich,,37,2025-02-01 23:52:47,39,
+260,PLAN_UMSATZ_TV6_2025_07_final.csv,export,info,Verarbeitung gestartet,,55,2024-08-22 10:30:07,12,2025-04-26 03:28:36
+261,SONSTIGE_ANGEBOTE_TV15_2025_03_v1.csv,aggregate,info,Verarbeitung gestartet,,19,2025-01-11 19:57:06,,
+262,TICKET_VERKAEUFE_TV18_2025_04.csv,validate,info,Verarbeitung gestartet,,62,2025-03-11 07:44:43,67,2024-06-29 21:41:13
+263,SONSTIGE_ANGEBOTE_TV19_2025_04.csv,aggregate,success,Verarbeitung erfolgreich,,15,2024-02-09 12:43:35,,
+264,PLAN_UMSATZ_TV6_2025_07_final.csv,validate,info,Verarbeitung gestartet,,56,2024-09-12 05:50:07,,
+265,TICKET_VERKAEUFE_TV8_2025_09.csv,export,info,Verarbeitung gestartet,,33,2025-04-25 15:00:26,,2025-02-18 08:45:51
+266,TICKET_VERKAEUFE_TV1_2025_05_korrigiert.csv,export,info,Verarbeitung gestartet,,50,2024-07-25 12:50:04,60,2025-06-18 23:19:21
+267,SONSTIGE_ANGEBOTE_TV17_2024_02_final.csv,ingest,info,Verarbeitung gestartet,,58,2024-05-31 19:58:38,,
+268,TICKET_VERKAEUFE_TV12_2024_04.csv,aggregate,info,Verarbeitung gestartet,,18,2024-08-29 23:16:23,,
+269,SONSTIGE_ANGEBOTE_TV8_2025_04.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,37,2025-09-22 18:52:25,,
+270,SONSTIGE_ANGEBOTE_TV5_2025_06.csv,ingest,success,Verarbeitung erfolgreich,,,2024-10-02 17:21:56,,2025-09-20 05:47:34
+271,SONSTIGE_ANGEBOTE_TV14_2025_12_korrigiert.csv,validate,success,Verarbeitung erfolgreich,,,2024-08-06 02:31:21,36,
+272,TICKET_VERKAEUFE_TV4_2025_12.csv,export,success,Verarbeitung erfolgreich,,,2024-11-14 12:38:00,32,2025-03-04 22:51:35
+273,SONSTIGE_ANGEBOTE_TV20_2024_03.csv,aggregate,info,Verarbeitung gestartet,,65,2024-06-27 13:46:45,61,
+274,SONSTIGE_ANGEBOTE_TV5_2024_09_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,60,2024-07-30 17:36:14,,
+275,PLAN_UMSATZ_TV6_2024_11_korrigiert.csv,validate,info,Verarbeitung gestartet,,64,2025-10-17 07:20:10,60,
+276,SONSTIGE_ANGEBOTE_TV8_2025_01.csv,validate,success,Verarbeitung erfolgreich,,46,2024-01-04 05:53:12,,2024-08-10 10:03:57
+277,PLAN_UMSATZ_TV8_2025_06.csv,aggregate,warning,Verarbeitung mit Warnungen,,53,2025-11-05 19:21:17,,
+278,SONSTIGE_ANGEBOTE_TV1_2025_08_korrigiert.csv,aggregate,success,Verarbeitung erfolgreich,,17,2025-11-30 01:35:35,29,
+279,SONSTIGE_ANGEBOTE_TV7_2024_06_v1.csv,aggregate,info,Verarbeitung gestartet,,36,2025-03-19 07:24:43,24,2024-08-25 08:59:56
+280,SONSTIGE_ANGEBOTE_TV8_2024_04.csv,ingest,warning,Verarbeitung mit Warnungen,,63,2025-12-01 06:26:00,43,
+281,PLAN_UMSATZ_TV18_2025_06.csv,ingest,info,Verarbeitung gestartet,,31,2025-05-04 17:08:35,13,
+282,TICKET_VERKAEUFE_TV10_2025_08_korrigiert.csv,ingest,info,Verarbeitung gestartet,,25,2025-02-12 08:22:45,,2024-10-17 21:28:39
+283,TICKET_VERKAEUFE_TV1_2025_05_korrigiert.csv,ingest,info,Verarbeitung gestartet,,31,2025-08-11 14:27:40,30,
+284,SONSTIGE_ANGEBOTE_TV7_2024_08_v1.csv,export,info,Verarbeitung gestartet,,22,2024-12-09 18:13:55,,2025-12-25 06:36:33
+285,TICKET_VERKAEUFE_TV13_2025_08_v1.csv,aggregate,info,Verarbeitung gestartet,,54,2025-01-22 14:23:29,,
+286,SONSTIGE_ANGEBOTE_TV7_2025_02_final.csv,aggregate,info,Verarbeitung gestartet,,41,2024-10-10 21:59:59,,2024-08-30 07:24:23
+287,SONSTIGE_ANGEBOTE_TV16_2025_10.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,38,2024-06-15 19:00:31,,2025-09-12 09:52:57
+288,SONSTIGE_ANGEBOTE_TV12_2024_03_korrigiert.csv,export,info,Verarbeitung gestartet,,63,2024-04-24 15:38:09,73,
+289,SONSTIGE_ANGEBOTE_TV7_2024_06_v1.csv,aggregate,info,Verarbeitung gestartet,,12,2024-06-02 18:17:38,60,
+290,SONSTIGE_ANGEBOTE_TV18_2025_07_final.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,15,2025-06-21 02:50:49,,
+291,SONSTIGE_ANGEBOTE_TV20_2024_01_final.csv,export,info,Verarbeitung gestartet,,,2024-11-10 17:01:59,,2024-10-08 19:02:32
+292,TICKET_VERKAEUFE_TV6_2025_10_korrigiert.csv,export,info,Verarbeitung gestartet,,,2025-10-20 21:38:30,63,
+293,SONSTIGE_ANGEBOTE_TV10_2025_08.csv,export,info,Verarbeitung gestartet,,,2025-11-25 07:45:57,,
+294,SONSTIGE_ANGEBOTE_TV18_2024_08_v1.csv,export,info,Verarbeitung gestartet,,38,2025-01-18 13:46:37,,
+295,PLAN_UMSATZ_TV17_2025_08_testlauf.csv,validate,info,Verarbeitung gestartet,,16,2025-09-07 00:10:07,,2025-06-06 05:05:54
+296,SONSTIGE_ANGEBOTE_TV17_2025_07_korrigiert.csv,export,success,Verarbeitung erfolgreich,,28,2025-01-18 16:44:32,72,
+297,TICKET_VERKAEUFE_TV6_2025_06_korrigiert.csv,validate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,75,2024-12-05 00:48:25,,2024-10-16 03:49:13
+298,TICKET_VERKAEUFE_TV4_2025_04_v1.csv,aggregate,info,Verarbeitung gestartet,,32,2025-06-27 22:28:18,70,2025-11-08 11:40:33
+299,TICKET_VERKAEUFE_TV1_2024_12_testlauf.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,28,2024-04-10 23:39:56,,2024-10-09 19:37:33
+300,TICKET_VERKAEUFE_TV13_2024_04_v1.csv,validate,warning,Verarbeitung mit Warnungen,,34,2024-07-07 02:39:21,,2025-08-26 04:59:18
+301,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,ingest,info,Verarbeitung gestartet,,11,2025-04-16 08:27:54,,
+302,SONSTIGE_ANGEBOTE_TV4_2024_10_final.csv,validate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,14,2024-05-08 13:07:25,,
+303,PLAN_UMSATZ_TV20_2025_02.csv,ingest,info,Verarbeitung gestartet,,16,2024-08-14 01:10:08,,
+304,TICKET_VERKAEUFE_TV2_2024_06_final.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,25,2025-08-18 02:00:07,74,
+305,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,ingest,info,Verarbeitung gestartet,,,2025-01-02 00:40:27,,
+306,PLAN_UMSATZ_TV17_2024_09.csv,ingest,info,Verarbeitung gestartet,,11,2025-07-03 20:27:43,,2024-06-19 23:26:46
+307,TICKET_VERKAEUFE_TV20_2025_06_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,58,2025-05-03 20:23:21,,2024-09-14 19:16:02
+308,PLAN_UMSATZ_TV11_2025_01_korrigiert.csv,validate,success,Verarbeitung erfolgreich,,78,2025-07-15 13:34:26,,
+309,PLAN_UMSATZ_TV5_2024_05.csv,aggregate,warning,Verarbeitung mit Warnungen,,28,2025-08-19 23:41:37,,
+310,SONSTIGE_ANGEBOTE_TV5_2025_07.csv,validate,info,Verarbeitung gestartet,,54,2024-03-18 13:06:26,43,
+311,SONSTIGE_ANGEBOTE_TV1_2025_05.csv,validate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,6,2025-07-22 22:41:39,42,
+312,TICKET_VERKAEUFE_TV6_2025_10_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,37,2025-11-18 13:14:28,13,
+313,SONSTIGE_ANGEBOTE_TV17_2024_02_final.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,14,2024-09-21 15:32:29,12,
+314,SONSTIGE_ANGEBOTE_TV13_2025_05_v1.csv,ingest,success,Verarbeitung erfolgreich,,2,2024-05-04 12:46:01,36,2025-08-01 16:17:25
+315,TICKET_VERKAEUFE_TV5_2024_08_korrigiert.csv,export,success,Verarbeitung erfolgreich,,51,2025-07-21 20:03:48,16,
+316,SONSTIGE_ANGEBOTE_TV10_2024_09.csv,export,info,Verarbeitung gestartet,,78,2025-01-27 19:44:40,,
+317,TICKET_VERKAEUFE_TV7_2024_01.csv,export,info,Verarbeitung gestartet,,20,2024-05-06 20:26:13,,
+318,TICKET_VERKAEUFE_TV14_2025_06_v1.csv,validate,info,Verarbeitung gestartet,,3,2024-02-18 07:27:03,43,
+319,TICKET_VERKAEUFE_TV9_2025_10_final.csv,ingest,success,Verarbeitung erfolgreich,,,2024-12-09 06:41:52,,
+320,TICKET_VERKAEUFE_TV8_2025_09.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,74,2024-05-06 16:04:06,,
+321,TICKET_VERKAEUFE_TV17_2025_12_testlauf.csv,ingest,info,Verarbeitung gestartet,,56,2025-01-04 02:30:03,10,
+322,PLAN_UMSATZ_TV18_2024_06.csv,ingest,success,Verarbeitung erfolgreich,,72,2024-08-07 07:47:23,,
+323,PLAN_UMSATZ_TV20_2024_12_final.csv,validate,success,Verarbeitung erfolgreich,,,2024-07-21 14:22:24,46,
+324,SONSTIGE_ANGEBOTE_TV13_2025_05_v1.csv,validate,success,Verarbeitung erfolgreich,,76,2024-02-09 10:12:01,10,
+325,SONSTIGE_ANGEBOTE_TV2_2025_08_v1.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,75,2025-06-17 01:40:11,63,2024-11-11 19:15:18
+326,PLAN_UMSATZ_TV4_2024_07.csv,validate,success,Verarbeitung erfolgreich,,2,2025-06-05 17:48:56,36,
+327,SONSTIGE_ANGEBOTE_TV11_2024_08_korrigiert.csv,validate,success,Verarbeitung erfolgreich,,31,2025-01-23 21:21:50,20,
+328,PLAN_UMSATZ_TV13_2025_11.csv,ingest,info,Verarbeitung gestartet,,68,2024-04-25 03:06:23,5,
+329,TICKET_VERKAEUFE_TV12_2024_03.csv,aggregate,info,Verarbeitung gestartet,,39,2025-05-16 21:05:30,,2024-12-29 10:42:41
+330,SONSTIGE_ANGEBOTE_TV1_2024_12_v1.csv,export,info,Verarbeitung gestartet,,,2025-06-28 18:34:48,,
+331,TICKET_VERKAEUFE_TV7_2025_11.csv,validate,info,Verarbeitung gestartet,,70,2025-07-19 11:46:03,36,2025-01-08 14:06:04
+332,SONSTIGE_ANGEBOTE_TV13_2024_02_v1.csv,ingest,info,Verarbeitung gestartet,,,2024-05-02 13:18:23,,
+333,PLAN_UMSATZ_TV8_2024_02_testlauf.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-11-03 12:17:56,,2024-05-04 19:46:42
+334,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,aggregate,info,Verarbeitung gestartet,,42,2025-03-17 10:11:38,64,
+335,TICKET_VERKAEUFE_TV18_2025_04.csv,export,info,Verarbeitung gestartet,,63,2024-12-14 03:27:49,,
+336,SONSTIGE_ANGEBOTE_TV17_2024_06_v1.csv,aggregate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,18,2024-08-17 15:49:18,,2025-04-20 03:48:07
+337,PLAN_UMSATZ_TV20_2024_12_final.csv,ingest,success,Verarbeitung erfolgreich,,,2025-04-17 06:58:55,9,2024-06-22 18:55:56
+338,PLAN_UMSATZ_TV8_2025_05_final.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-08-17 11:31:40,,
+339,PLAN_UMSATZ_TV16_2025_05.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-07-21 19:55:41,50,
+340,PLAN_UMSATZ_TV7_2025_06_korrigiert.csv,validate,info,Verarbeitung gestartet,,33,2024-09-27 16:52:54,,
+341,PLAN_UMSATZ_TV3_2024_01_testlauf.csv,ingest,info,Verarbeitung gestartet,,52,2024-12-13 07:22:31,,2025-11-26 11:52:38
+342,PLAN_UMSATZ_TV7_2024_09.csv,aggregate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,17,2025-06-29 18:07:32,,
+343,SONSTIGE_ANGEBOTE_TV2_2025_08_v1.csv,ingest,success,Verarbeitung erfolgreich,,2,2024-10-15 23:37:32,72,
+344,PLAN_UMSATZ_TV5_2024_01_korrigiert.csv,ingest,info,Verarbeitung gestartet,,32,2024-08-03 16:47:09,27,
+345,PLAN_UMSATZ_TV16_2024_11.csv,ingest,info,Verarbeitung gestartet,,16,2025-09-16 07:22:41,,2025-02-17 22:23:23
+346,TICKET_VERKAEUFE_TV6_2025_03.csv,export,info,Verarbeitung gestartet,,67,2024-09-14 22:39:42,74,2025-08-10 03:27:49
+347,SONSTIGE_ANGEBOTE_TV9_2025_11_final.csv,export,info,Verarbeitung gestartet,,22,2024-09-18 17:25:40,,
+348,SONSTIGE_ANGEBOTE_TV15_2025_03_v1.csv,ingest,success,Verarbeitung erfolgreich,,,2025-07-28 11:38:41,,2024-03-15 12:16:56
+349,SONSTIGE_ANGEBOTE_TV4_2024_07.csv,export,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,9,2025-03-26 10:13:58,17,2025-08-06 20:54:41
+350,SONSTIGE_ANGEBOTE_TV13_2025_01.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,6,2025-05-13 13:44:17,,
+351,TICKET_VERKAEUFE_TV10_2024_11_v1.csv,export,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,18,2025-12-21 19:26:07,44,2024-01-11 08:48:27
+352,PLAN_UMSATZ_TV8_2025_06.csv,export,success,Verarbeitung erfolgreich,,62,2024-09-27 10:25:04,,2024-03-02 20:27:10
+353,TICKET_VERKAEUFE_TV3_2024_08.csv,aggregate,info,Verarbeitung gestartet,,35,2024-04-13 04:24:30,,2024-09-18 11:47:13
+354,SONSTIGE_ANGEBOTE_TV3_2025_08.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-11-03 13:59:19,22,2024-12-22 00:49:13
+355,SONSTIGE_ANGEBOTE_TV6_2024_03_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,47,2024-06-09 21:51:45,,
+356,PLAN_UMSATZ_TV2_2024_06_final.csv,validate,info,Verarbeitung gestartet,,52,2025-05-23 20:59:06,53,
+357,TICKET_VERKAEUFE_TV16_2024_11_korrigiert.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,5,2024-12-06 02:21:50,8,
+358,SONSTIGE_ANGEBOTE_TV18_2024_08_v1.csv,export,info,Verarbeitung gestartet,,20,2024-11-21 22:37:51,18,
+359,TICKET_VERKAEUFE_TV12_2024_04.csv,export,success,Verarbeitung erfolgreich,,21,2025-10-04 14:46:02,47,2024-03-24 01:30:53
+360,SONSTIGE_ANGEBOTE_TV6_2024_03_korrigiert.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,5,2024-02-12 05:59:17,,2025-02-28 21:44:06
+361,TICKET_VERKAEUFE_TV4_2024_10.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-09-29 20:37:25,,2025-03-23 19:54:08
+362,TICKET_VERKAEUFE_TV9_2025_07.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,39,2025-07-11 04:24:24,51,
+363,SONSTIGE_ANGEBOTE_TV8_2025_01.csv,validate,info,Verarbeitung gestartet,,,2025-05-16 02:30:59,,2025-08-03 01:36:20
+364,PLAN_UMSATZ_TV6_2025_08.csv,export,info,Verarbeitung gestartet,,2,2024-10-09 16:21:00,,
+365,TICKET_VERKAEUFE_TV11_2024_04_v1.csv,validate,info,Verarbeitung gestartet,,,2025-10-21 03:44:17,,2025-01-27 03:25:26
+366,SONSTIGE_ANGEBOTE_TV19_2025_12_final.csv,ingest,info,Verarbeitung gestartet,,,2024-04-20 02:03:23,,
+367,TICKET_VERKAEUFE_TV2_2024_06_final.csv,ingest,warning,Verarbeitung mit Warnungen,,36,2024-01-07 00:15:53,18,
+368,TICKET_VERKAEUFE_TV11_2024_05_testlauf.csv,validate,info,Verarbeitung gestartet,,,2025-05-21 16:21:56,,2024-11-18 08:07:59
+369,TICKET_VERKAEUFE_TV12_2024_03.csv,aggregate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,7,2024-01-02 03:10:04,,2024-11-23 22:17:11
+370,SONSTIGE_ANGEBOTE_TV7_2025_06_final.csv,aggregate,info,Verarbeitung gestartet,,75,2025-10-02 21:52:15,,
+371,PLAN_UMSATZ_TV4_2024_11.csv,aggregate,info,Verarbeitung gestartet,,73,2024-02-09 18:51:33,,
+372,SONSTIGE_ANGEBOTE_TV20_2024_03.csv,ingest,info,Verarbeitung gestartet,,38,2025-02-26 23:02:09,,2025-04-07 01:34:46
+373,SONSTIGE_ANGEBOTE_TV4_2025_10.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,53,2025-01-05 21:33:33,45,2024-02-02 23:46:12
+374,SONSTIGE_ANGEBOTE_TV12_2025_03_korrigiert.csv,ingest,info,Verarbeitung gestartet,,56,2024-11-16 05:44:20,42,2025-01-19 04:25:22
+375,PLAN_UMSATZ_TV12_2024_02_final.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,80,2025-05-07 14:37:56,51,2025-06-23 00:18:43
+376,PLAN_UMSATZ_TV8_2024_02_testlauf.csv,validate,success,Verarbeitung erfolgreich,,32,2024-12-26 16:57:47,,
+377,TICKET_VERKAEUFE_TV13_2025_07_testlauf.csv,export,info,Verarbeitung gestartet,,5,2025-11-17 18:14:35,,
+378,TICKET_VERKAEUFE_TV12_2025_09.csv,aggregate,info,Verarbeitung gestartet,,4,2024-04-25 00:16:45,44,2025-09-19 15:10:16
+379,SONSTIGE_ANGEBOTE_TV9_2025_11_v1.csv,export,info,Verarbeitung gestartet,,69,2024-06-11 19:05:03,56,
+380,PLAN_UMSATZ_TV16_2025_05.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,46,2025-07-23 21:53:52,50,
+381,TICKET_VERKAEUFE_TV14_2024_10.csv,ingest,info,Verarbeitung gestartet,,42,2025-07-23 04:45:45,,
+382,PLAN_UMSATZ_TV20_2025_02.csv,validate,warning,Verarbeitung mit Warnungen,,62,2025-07-05 10:57:44,40,
+383,TICKET_VERKAEUFE_TV14_2025_06_v1.csv,export,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,78,2024-04-13 02:08:29,27,2024-10-23 23:37:48
+384,PLAN_UMSATZ_TV5_2024_06.csv,export,info,Verarbeitung gestartet,,12,2025-01-11 10:01:40,48,
+385,PLAN_UMSATZ_TV6_2025_01.csv,ingest,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,63,2024-07-27 17:07:43,,2025-10-18 15:23:03
+386,SONSTIGE_ANGEBOTE_TV18_2024_08_v1.csv,export,warning,Verarbeitung mit Warnungen,,73,2024-06-22 16:47:53,,
+387,PLAN_UMSATZ_TV6_2024_01.csv,validate,info,Verarbeitung gestartet,,,2024-12-09 07:56:54,,
+388,SONSTIGE_ANGEBOTE_TV20_2024_02_v1.csv,aggregate,info,Verarbeitung gestartet,,,2025-03-14 22:04:59,46,
+389,TICKET_VERKAEUFE_TV20_2025_06_korrigiert.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,38,2025-07-06 17:23:37,,2024-12-25 09:07:52
+390,PLAN_UMSATZ_TV6_2025_07.csv,export,info,Verarbeitung gestartet,,21,2024-03-19 05:28:47,4,
+391,TICKET_VERKAEUFE_TV20_2025_06_korrigiert.csv,export,success,Verarbeitung erfolgreich,,65,2024-12-04 07:32:20,,2024-07-01 09:59:03
+392,TICKET_VERKAEUFE_TV1_2025_05_korrigiert.csv,ingest,info,Verarbeitung gestartet,,71,2025-07-31 05:55:37,36,
+393,PLAN_UMSATZ_TV6_2025_01.csv,ingest,info,Verarbeitung gestartet,,62,2024-11-22 03:50:15,,2025-02-18 10:06:12
+394,TICKET_VERKAEUFE_TV16_2024_11_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,34,2025-05-14 05:21:56,,2024-07-18 21:16:50
+395,TICKET_VERKAEUFE_TV4_2024_10.csv,export,success,Verarbeitung erfolgreich,,28,2024-03-22 04:23:35,39,2024-10-17 00:00:33
+396,PLAN_UMSATZ_TV18_2024_10.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-06-19 07:57:30,,
+397,PLAN_UMSATZ_TV10_2025_03_v1.csv,export,success,Verarbeitung erfolgreich,,,2024-11-18 11:37:10,17,2024-01-22 07:35:36
+398,TICKET_VERKAEUFE_TV20_2024_10_testlauf.csv,export,success,Verarbeitung erfolgreich,,76,2025-10-16 23:20:24,35,
+399,TICKET_VERKAEUFE_TV1_2025_05_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,,2024-12-16 05:58:35,,2025-12-23 07:32:35
+400,PLAN_UMSATZ_TV10_2024_05.csv,validate,info,Verarbeitung gestartet,,41,2024-07-04 11:45:38,43,2025-06-16 21:01:23
+401,SONSTIGE_ANGEBOTE_TV5_2024_09_korrigiert.csv,ingest,info,Verarbeitung gestartet,,,2024-08-01 16:54:07,,2025-09-17 22:20:09
+402,SONSTIGE_ANGEBOTE_TV20_2025_09_final.csv,ingest,info,Verarbeitung gestartet,,42,2025-12-27 00:50:21,,2024-03-28 06:40:16
+403,TICKET_VERKAEUFE_TV16_2024_05_v1.csv,ingest,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,4,2024-03-25 00:35:05,,2024-10-11 21:51:03
+404,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,aggregate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,,2025-12-30 13:33:51,,2024-09-16 19:29:33
+405,TICKET_VERKAEUFE_TV12_2024_03_testlauf.csv,ingest,info,Verarbeitung gestartet,,16,2024-02-11 03:01:54,,
+406,TICKET_VERKAEUFE_TV19_2024_12.csv,validate,warning,Verarbeitung mit Warnungen,,47,2024-07-21 11:24:26,,
+407,PLAN_UMSATZ_TV8_2024_04.csv,validate,info,Verarbeitung gestartet,,44,2025-03-05 08:28:42,,
+408,TICKET_VERKAEUFE_TV2_2024_07_korrigiert.csv,ingest,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,40,2024-11-16 10:12:42,,
+409,SONSTIGE_ANGEBOTE_TV3_2025_08_final.csv,export,info,Verarbeitung gestartet,,,2025-06-05 19:08:04,,2024-05-16 13:21:46
+410,PLAN_UMSATZ_TV8_2024_04.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-08-28 03:16:37,,2025-12-19 12:31:30
+411,SONSTIGE_ANGEBOTE_TV8_2024_04.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,55,2024-06-25 14:10:00,,
+412,SONSTIGE_ANGEBOTE_TV19_2025_10_testlauf.csv,aggregate,success,Verarbeitung erfolgreich,,,2025-02-24 03:44:29,6,2024-12-02 19:47:58
+413,TICKET_VERKAEUFE_TV8_2025_01_testlauf.csv,ingest,info,Verarbeitung gestartet,,,2025-09-22 09:05:06,21,2024-05-08 06:58:43
+414,TICKET_VERKAEUFE_TV18_2025_01.csv,ingest,error,Verarbeitung fehlgeschlagen,PLZ ungültig,22,2024-12-22 01:16:07,40,
+415,SONSTIGE_ANGEBOTE_TV14_2025_02.csv,validate,info,Verarbeitung gestartet,,70,2025-03-23 02:09:13,66,
+416,TICKET_VERKAEUFE_TV7_2025_11.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,16,2024-07-09 23:39:41,,2025-02-23 07:25:34
+417,TICKET_VERKAEUFE_TV4_2025_12.csv,export,info,Verarbeitung gestartet,,,2025-11-25 03:02:05,,
+418,SONSTIGE_ANGEBOTE_TV18_2024_08_v1.csv,ingest,info,Verarbeitung gestartet,,60,2025-01-08 14:53:44,23,2025-07-16 01:07:48
+419,TICKET_VERKAEUFE_TV17_2025_12_testlauf.csv,validate,info,Verarbeitung gestartet,,40,2025-05-04 19:22:55,65,2025-11-20 04:27:04
+420,PLAN_UMSATZ_TV17_2025_05.csv,export,info,Verarbeitung gestartet,,33,2024-02-24 13:22:38,25,2025-10-06 15:41:42
+421,TICKET_VERKAEUFE_TV8_2025_01_testlauf.csv,aggregate,info,Verarbeitung gestartet,,58,2025-12-10 23:05:21,,2025-08-20 08:11:19
+422,SONSTIGE_ANGEBOTE_TV4_2024_03_korrigiert.csv,ingest,info,Verarbeitung gestartet,,38,2024-04-08 03:54:00,,2025-10-17 21:27:26
+423,PLAN_UMSATZ_TV15_2024_02_final.csv,export,info,Verarbeitung gestartet,,,2025-05-02 19:30:57,10,
+424,PLAN_UMSATZ_TV11_2024_04.csv,ingest,info,Verarbeitung gestartet,,31,2025-02-27 11:35:11,68,
+425,TICKET_VERKAEUFE_TV16_2024_02_v1.csv,ingest,info,Verarbeitung gestartet,,,2025-01-18 11:52:50,62,2025-02-23 15:26:38
+426,SONSTIGE_ANGEBOTE_TV17_2024_02_final.csv,ingest,info,Verarbeitung gestartet,,73,2024-11-30 16:15:03,,
+427,TICKET_VERKAEUFE_TV4_2025_12.csv,aggregate,info,Verarbeitung gestartet,,1,2024-03-24 07:14:50,,
+428,PLAN_UMSATZ_TV6_2025_01.csv,validate,info,Verarbeitung gestartet,,,2025-11-30 05:18:03,50,
+429,PLAN_UMSATZ_TV19_2025_08.csv,validate,info,Verarbeitung gestartet,,28,2025-01-29 00:19:52,,
+430,TICKET_VERKAEUFE_TV5_2024_06.csv,validate,info,Verarbeitung gestartet,,72,2024-11-04 16:51:21,11,
+431,PLAN_UMSATZ_TV4_2024_07.csv,export,info,Verarbeitung gestartet,,43,2025-09-27 15:46:06,,
+432,PLAN_UMSATZ_TV20_2025_02.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,33,2024-08-27 14:08:46,,
+433,SONSTIGE_ANGEBOTE_TV3_2024_12.csv,ingest,info,Verarbeitung gestartet,,22,2024-12-02 23:37:49,,
+434,SONSTIGE_ANGEBOTE_TV8_2024_04.csv,aggregate,info,Verarbeitung gestartet,,,2024-12-11 02:53:53,17,2024-09-08 02:04:30
+435,PLAN_UMSATZ_TV13_2025_11.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,23,2025-05-07 06:22:56,14,
+436,SONSTIGE_ANGEBOTE_TV9_2025_11_v1.csv,validate,info,Verarbeitung gestartet,,24,2024-10-25 00:32:00,,2025-12-26 17:03:34
+437,SONSTIGE_ANGEBOTE_TV18_2025_07_final.csv,export,info,Verarbeitung gestartet,,22,2024-08-31 12:54:05,,2024-02-26 00:37:22
+438,PLAN_UMSATZ_TV12_2024_02.csv,aggregate,info,Verarbeitung gestartet,,12,2025-08-14 16:02:10,,
+439,TICKET_VERKAEUFE_TV4_2024_10.csv,aggregate,warning,Verarbeitung mit Warnungen,,42,2024-05-19 12:10:25,,2025-05-12 21:32:08
+440,SONSTIGE_ANGEBOTE_TV14_2025_12_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,59,2025-04-20 05:18:12,73,
+441,PLAN_UMSATZ_TV2_2025_03_v1.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,31,2025-01-10 10:07:38,,
+442,SONSTIGE_ANGEBOTE_TV11_2025_04_final.csv,ingest,info,Verarbeitung gestartet,,51,2024-07-21 16:46:53,28,
+443,SONSTIGE_ANGEBOTE_TV11_2025_04_final.csv,export,info,Verarbeitung gestartet,,,2024-07-05 19:01:03,,2024-09-17 17:14:31
+444,PLAN_UMSATZ_TV10_2025_10_v1.csv,validate,info,Verarbeitung gestartet,,15,2025-03-19 15:01:11,80,
+445,PLAN_UMSATZ_TV12_2024_02.csv,export,info,Verarbeitung gestartet,,,2024-12-09 00:14:20,,
+446,PLAN_UMSATZ_TV10_2025_10_testlauf.csv,validate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,,2024-01-02 18:15:25,67,
+447,SONSTIGE_ANGEBOTE_TV4_2024_07.csv,aggregate,info,Verarbeitung gestartet,,8,2025-09-13 04:34:42,68,
+448,PLAN_UMSATZ_TV13_2024_09.csv,ingest,info,Verarbeitung gestartet,,4,2024-10-14 00:39:24,,2025-02-18 11:43:19
+449,SONSTIGE_ANGEBOTE_TV8_2024_04.csv,validate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,70,2025-12-17 14:02:50,,2024-06-11 15:44:56
+450,TICKET_VERKAEUFE_TV13_2025_08_v1.csv,export,info,Verarbeitung gestartet,,75,2024-08-01 16:25:17,35,2024-07-27 22:31:04
+451,TICKET_VERKAEUFE_TV6_2025_06_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,,44,2025-08-02 15:12:10,,
+452,SONSTIGE_ANGEBOTE_TV4_2025_08_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,50,2025-01-22 14:42:53,,2025-04-09 04:32:57
+453,SONSTIGE_ANGEBOTE_TV18_2025_07_final.csv,export,info,Verarbeitung gestartet,,41,2025-01-19 00:40:16,9,2025-12-23 19:09:30
+454,TICKET_VERKAEUFE_TV12_2024_04.csv,export,info,Verarbeitung gestartet,,,2024-02-12 12:02:04,,
+455,TICKET_VERKAEUFE_TV12_2024_04.csv,export,success,Verarbeitung erfolgreich,,42,2025-01-31 07:07:39,36,
+456,PLAN_UMSATZ_TV10_2025_10_v1.csv,ingest,info,Verarbeitung gestartet,,15,2024-05-27 20:59:52,65,2025-11-22 13:47:22
+457,TICKET_VERKAEUFE_TV9_2025_10_final.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,26,2025-06-23 22:20:34,,
+458,TICKET_VERKAEUFE_TV14_2024_03.csv,ingest,info,Verarbeitung gestartet,,17,2024-01-05 11:01:32,,
+459,PLAN_UMSATZ_TV5_2025_09_final.csv,aggregate,info,Verarbeitung gestartet,,2,2024-12-31 12:20:07,,
+460,PLAN_UMSATZ_TV2_2025_04_testlauf.csv,export,info,Verarbeitung gestartet,,43,2024-12-20 05:11:21,,
+461,SONSTIGE_ANGEBOTE_TV9_2024_07_v1.csv,aggregate,info,Verarbeitung gestartet,,60,2025-08-08 23:59:47,12,
+462,SONSTIGE_ANGEBOTE_TV8_2025_04.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,50,2024-04-29 14:57:46,61,2025-04-10 00:55:15
+463,PLAN_UMSATZ_TV1_2024_04.csv,validate,info,Verarbeitung gestartet,,54,2024-06-16 00:36:47,23,
+464,TICKET_VERKAEUFE_TV19_2024_12.csv,export,success,Verarbeitung erfolgreich,,16,2024-08-05 21:42:53,28,2025-07-02 17:03:28
+465,PLAN_UMSATZ_TV2_2025_04_testlauf.csv,validate,success,Verarbeitung erfolgreich,,77,2025-06-19 22:44:05,,
+466,TICKET_VERKAEUFE_TV12_2024_05_final.csv,validate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,46,2024-09-09 18:50:28,,
+467,TICKET_VERKAEUFE_TV13_2025_08_v1.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,60,2025-11-18 06:39:53,72,
+468,SONSTIGE_ANGEBOTE_TV12_2024_10_v1.csv,aggregate,info,Verarbeitung gestartet,,1,2025-06-02 03:19:53,,
+469,PLAN_UMSATZ_TV17_2024_06.csv,ingest,info,Verarbeitung gestartet,,50,2024-01-14 03:17:47,,
+470,TICKET_VERKAEUFE_TV6_2025_06_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,33,2025-10-03 16:14:53,32,2024-08-26 18:59:23
+471,TICKET_VERKAEUFE_TV14_2025_06_v1.csv,aggregate,info,Verarbeitung gestartet,,34,2025-12-08 04:21:11,69,2024-02-27 08:33:27
+472,PLAN_UMSATZ_TV9_2024_09_testlauf.csv,export,info,Verarbeitung gestartet,,70,2024-05-09 03:33:15,46,
+473,SONSTIGE_ANGEBOTE_TV7_2024_08_v1.csv,ingest,info,Verarbeitung gestartet,,56,2024-02-05 01:52:12,10,2025-06-13 14:22:29
+474,TICKET_VERKAEUFE_TV2_2024_07_korrigiert.csv,export,info,Verarbeitung gestartet,,29,2025-12-05 10:41:15,27,
+475,PLAN_UMSATZ_TV6_2025_07_final.csv,export,success,Verarbeitung erfolgreich,,39,2025-12-16 21:01:41,,
+476,SONSTIGE_ANGEBOTE_TV9_2025_11_final.csv,validate,info,Verarbeitung gestartet,,,2025-10-02 12:39:53,,
+477,SONSTIGE_ANGEBOTE_TV10_2024_05_v1.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,20,2025-11-29 18:49:27,63,
+478,PLAN_UMSATZ_TV2_2025_03_v1.csv,aggregate,info,Verarbeitung gestartet,,47,2024-11-05 16:50:40,,
+479,SONSTIGE_ANGEBOTE_TV20_2025_09_final.csv,export,info,Verarbeitung gestartet,,,2025-11-14 10:38:01,,
+480,TICKET_VERKAEUFE_TV13_2025_07_testlauf.csv,aggregate,info,Verarbeitung gestartet,,,2024-08-05 12:29:16,,2024-10-19 17:50:49
+481,TICKET_VERKAEUFE_TV13_2025_07_testlauf.csv,ingest,warning,Verarbeitung mit Warnungen,,32,2025-04-20 15:06:19,,
+482,PLAN_UMSATZ_TV4_2025_12.csv,validate,info,Verarbeitung gestartet,,30,2024-06-27 21:34:57,25,
+483,PLAN_UMSATZ_TV9_2024_07.csv,ingest,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,6,2024-05-24 02:36:54,,
+484,SONSTIGE_ANGEBOTE_TV14_2025_12_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,,46,2025-01-31 12:47:05,26,
+485,SONSTIGE_ANGEBOTE_TV17_2024_06_v1.csv,aggregate,info,Verarbeitung gestartet,,33,2025-07-12 00:31:53,1,
+486,PLAN_UMSATZ_TV17_2024_07.csv,ingest,info,Verarbeitung gestartet,,20,2025-11-17 01:32:55,,
+487,SONSTIGE_ANGEBOTE_TV1_2025_08_korrigiert.csv,export,warning,Verarbeitung mit Warnungen,,57,2024-04-17 08:00:29,,
+488,PLAN_UMSATZ_TV12_2024_02.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,70,2025-01-04 09:19:04,61,
+489,PLAN_UMSATZ_TV4_2025_04.csv,validate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,48,2025-12-19 17:54:34,,
+490,TICKET_VERKAEUFE_TV4_2024_06_testlauf.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,73,2025-05-17 10:33:23,,2025-03-31 22:58:52
+491,SONSTIGE_ANGEBOTE_TV10_2024_05_v1.csv,export,info,Verarbeitung gestartet,,10,2024-11-08 10:15:27,77,
+492,SONSTIGE_ANGEBOTE_TV12_2025_03_korrigiert.csv,export,info,Verarbeitung gestartet,,,2025-05-30 05:42:49,39,
+493,PLAN_UMSATZ_TV9_2024_09_testlauf.csv,export,info,Verarbeitung gestartet,,53,2025-11-30 18:15:06,,
+494,SONSTIGE_ANGEBOTE_TV8_2025_09.csv,validate,info,Verarbeitung gestartet,,3,2025-12-12 10:47:38,,
+495,SONSTIGE_ANGEBOTE_TV1_2025_08_korrigiert.csv,ingest,info,Verarbeitung gestartet,,8,2025-10-25 22:09:20,,2024-08-24 20:17:05
+496,PLAN_UMSATZ_TV20_2025_08_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,,2025-09-24 07:49:12,,2025-04-13 18:34:09
+497,PLAN_UMSATZ_TV19_2024_02_korrigiert.csv,aggregate,success,Verarbeitung erfolgreich,,1,2024-12-09 06:59:52,,2025-07-30 17:40:43
+498,TICKET_VERKAEUFE_TV2_2024_07_korrigiert.csv,ingest,success,Verarbeitung erfolgreich,,42,2025-09-11 16:55:58,34,2024-02-01 10:48:48
+499,PLAN_UMSATZ_TV17_2024_06.csv,aggregate,info,Verarbeitung gestartet,,65,2025-10-05 18:49:34,,
+500,SONSTIGE_ANGEBOTE_TV12_2025_03_korrigiert.csv,validate,info,Verarbeitung gestartet,,10,2024-11-05 14:54:49,,2025-01-17 11:27:38
+501,TICKET_VERKAEUFE_TV10_2025_06_korrigiert.csv,ingest,info,Verarbeitung gestartet,,2,2025-12-25 19:04:12,,
+502,SONSTIGE_ANGEBOTE_TV16_2025_10.csv,validate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,67,2024-08-14 01:24:41,,
+503,SONSTIGE_ANGEBOTE_TV20_2025_09_final.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,76,2025-12-26 12:32:19,,
+504,PLAN_UMSATZ_TV4_2025_12.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,15,2025-04-24 02:56:08,61,2024-12-11 17:59:17
+505,PLAN_UMSATZ_TV16_2025_05.csv,export,success,Verarbeitung erfolgreich,,57,2024-01-07 17:11:06,,
+506,SONSTIGE_ANGEBOTE_TV19_2025_12_final.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,43,2024-04-27 07:21:09,59,
+507,SONSTIGE_ANGEBOTE_TV4_2025_08_korrigiert.csv,export,info,Verarbeitung gestartet,,63,2024-07-19 07:02:58,,
+508,PLAN_UMSATZ_TV6_2024_11_korrigiert.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,15,2024-06-13 17:39:20,,
+509,SONSTIGE_ANGEBOTE_TV9_2024_10_testlauf.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,6,2025-06-27 22:28:10,,2024-02-14 23:51:18
+510,PLAN_UMSATZ_TV10_2024_05.csv,ingest,info,Verarbeitung gestartet,,58,2025-09-11 15:07:14,,
+511,TICKET_VERKAEUFE_TV4_2025_12.csv,export,info,Verarbeitung gestartet,,25,2025-08-29 11:45:00,11,
+512,PLAN_UMSATZ_TV7_2025_06_korrigiert.csv,ingest,info,Verarbeitung gestartet,,16,2024-12-31 09:11:11,6,2025-03-29 06:57:04
+513,SONSTIGE_ANGEBOTE_TV12_2025_03_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,24,2024-06-10 11:29:48,57,2024-02-27 04:20:15
+514,SONSTIGE_ANGEBOTE_TV7_2024_11_v1.csv,export,info,Verarbeitung gestartet,,35,2024-01-30 14:41:28,7,2024-09-21 10:17:45
+515,TICKET_VERKAEUFE_TV14_2024_01_testlauf.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,14,2024-11-27 02:00:27,,
+516,PLAN_UMSATZ_TV3_2024_12_v1.csv,ingest,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,,2025-02-03 14:30:26,8,
+517,SONSTIGE_ANGEBOTE_TV7_2025_02_final.csv,export,warning,Verarbeitung mit Warnungen,,52,2025-11-10 13:26:42,,2025-11-03 11:57:32
+518,PLAN_UMSATZ_TV8_2024_04.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,66,2024-03-18 18:06:04,47,2025-03-08 02:23:07
+519,SONSTIGE_ANGEBOTE_TV8_2025_01.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-11-28 23:53:48,,
+520,SONSTIGE_ANGEBOTE_TV3_2024_01_v1.csv,aggregate,info,Verarbeitung gestartet,,5,2024-10-21 12:04:38,,
+521,SONSTIGE_ANGEBOTE_TV15_2025_04.csv,aggregate,warning,Verarbeitung mit Warnungen,,11,2025-04-18 04:52:44,25,2024-07-22 19:13:51
+522,PLAN_UMSATZ_TV18_2024_10.csv,aggregate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,48,2024-03-08 12:52:54,,2024-09-03 23:37:21
+523,PLAN_UMSATZ_TV17_2025_04.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,55,2025-02-14 07:57:45,,2025-05-18 15:28:22
+524,PLAN_UMSATZ_TV8_2025_02_final.csv,export,info,Verarbeitung gestartet,,,2024-06-20 01:09:02,,
+525,TICKET_VERKAEUFE_TV14_2024_02.csv,aggregate,info,Verarbeitung gestartet,,59,2025-05-07 09:07:11,,2024-10-31 02:31:21
+526,PLAN_UMSATZ_TV9_2024_01.csv,aggregate,warning,Verarbeitung mit Warnungen,,43,2025-01-09 20:53:25,,2025-08-13 07:55:45
+527,TICKET_VERKAEUFE_TV11_2024_05_testlauf.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,80,2024-06-23 09:35:56,,
+528,TICKET_VERKAEUFE_TV10_2024_11_v1.csv,ingest,info,Verarbeitung gestartet,,68,2024-06-29 06:57:36,15,2024-05-14 20:37:55
+529,SONSTIGE_ANGEBOTE_TV11_2024_08_korrigiert.csv,export,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,67,2024-08-15 05:06:32,,
+530,TICKET_VERKAEUFE_TV7_2024_01.csv,ingest,info,Verarbeitung gestartet,,,2024-03-22 13:52:52,77,2025-10-20 06:19:46
+531,TICKET_VERKAEUFE_TV6_2025_06_korrigiert.csv,validate,info,Verarbeitung gestartet,,75,2024-05-27 18:16:27,6,
+532,TICKET_VERKAEUFE_TV14_2024_02.csv,validate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,35,2025-09-20 08:42:31,,
+533,TICKET_VERKAEUFE_TV2_2025_03.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-07-02 21:01:25,,2024-04-22 18:40:04
+534,TICKET_VERKAEUFE_TV12_2025_09.csv,aggregate,info,Verarbeitung gestartet,,,2025-04-11 09:37:14,44,2024-05-27 02:37:24
+535,PLAN_UMSATZ_TV5_2024_05.csv,aggregate,info,Verarbeitung gestartet,,40,2024-05-28 11:04:11,9,
+536,SONSTIGE_ANGEBOTE_TV1_2025_08_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,62,2025-01-08 11:16:55,,
+537,PLAN_UMSATZ_TV18_2024_08_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,,2025-06-29 15:26:40,73,2024-12-31 18:42:53
+538,TICKET_VERKAEUFE_TV11_2024_06.csv,ingest,info,Verarbeitung gestartet,,,2025-09-06 08:25:39,,
+539,PLAN_UMSATZ_TV17_2025_05.csv,aggregate,warning,Verarbeitung mit Warnungen,,4,2024-09-28 08:33:51,9,
+540,SONSTIGE_ANGEBOTE_TV4_2024_07.csv,ingest,info,Verarbeitung gestartet,,47,2024-02-09 17:06:21,66,
+541,SONSTIGE_ANGEBOTE_TV9_2025_11_v1.csv,aggregate,info,Verarbeitung gestartet,,72,2025-05-07 21:58:07,,
+542,PLAN_UMSATZ_TV12_2024_02_final.csv,validate,info,Verarbeitung gestartet,,46,2025-12-31 18:48:49,,
+543,TICKET_VERKAEUFE_TV18_2025_04.csv,aggregate,info,Verarbeitung gestartet,,41,2024-06-29 16:03:32,,
+544,SONSTIGE_ANGEBOTE_TV9_2024_10_testlauf.csv,export,warning,Verarbeitung mit Warnungen,,74,2025-03-10 05:57:39,,
+545,TICKET_VERKAEUFE_TV3_2024_08.csv,validate,info,Verarbeitung gestartet,,,2025-12-21 19:51:30,,2025-07-21 07:51:21
+546,TICKET_VERKAEUFE_TV2_2024_11_testlauf.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,41,2024-11-19 14:25:36,,2025-01-07 22:49:46
+547,SONSTIGE_ANGEBOTE_TV9_2024_01_final.csv,ingest,info,Verarbeitung gestartet,,21,2024-09-07 05:11:36,,
+548,SONSTIGE_ANGEBOTE_TV9_2024_06.csv,validate,info,Verarbeitung gestartet,,75,2024-08-16 04:53:52,,
+549,TICKET_VERKAEUFE_TV16_2024_11_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,66,2024-09-05 20:07:05,,
+550,SONSTIGE_ANGEBOTE_TV15_2025_04.csv,validate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,48,2024-12-22 11:10:22,,
+551,TICKET_VERKAEUFE_TV9_2025_10_final.csv,ingest,warning,Verarbeitung mit Warnungen,,24,2024-09-12 00:14:53,70,
+552,PLAN_UMSATZ_TV4_2024_11.csv,aggregate,success,Verarbeitung erfolgreich,,,2024-09-17 07:49:42,,2024-05-25 19:15:30
+553,PLAN_UMSATZ_TV6_2025_01.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,74,2025-05-08 04:36:59,,
+554,SONSTIGE_ANGEBOTE_TV18_2025_07_final.csv,aggregate,success,Verarbeitung erfolgreich,,22,2025-09-22 13:42:11,,2025-08-08 13:48:01
+555,PLAN_UMSATZ_TV6_2025_07.csv,export,success,Verarbeitung erfolgreich,,62,2025-07-18 11:19:11,66,2025-06-16 02:22:45
+556,SONSTIGE_ANGEBOTE_TV7_2025_02_final.csv,ingest,info,Verarbeitung gestartet,,36,2025-01-05 01:23:23,,2024-01-24 23:33:54
+557,SONSTIGE_ANGEBOTE_TV7_2024_11_v1.csv,validate,info,Verarbeitung gestartet,,9,2025-11-16 20:27:42,26,
+558,TICKET_VERKAEUFE_TV3_2025_04.csv,validate,info,Verarbeitung gestartet,,40,2024-03-02 23:28:36,,
+559,SONSTIGE_ANGEBOTE_TV8_2025_02.csv,export,info,Verarbeitung gestartet,,50,2024-04-23 06:30:47,,2025-09-20 12:56:46
+560,TICKET_VERKAEUFE_TV19_2024_12.csv,ingest,info,Verarbeitung gestartet,,64,2024-02-18 13:05:41,30,
+561,TICKET_VERKAEUFE_TV2_2024_06_final.csv,export,warning,Verarbeitung mit Warnungen,,,2025-03-15 21:10:57,17,2024-03-04 05:51:17
+562,PLAN_UMSATZ_TV7_2024_12.csv,aggregate,success,Verarbeitung erfolgreich,,48,2024-07-16 19:09:58,,2025-02-09 14:13:30
+563,SONSTIGE_ANGEBOTE_TV4_2025_06.csv,validate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,13,2024-05-17 22:32:55,,2024-03-14 10:39:37
+564,PLAN_UMSATZ_TV8_2025_05_final.csv,aggregate,success,Verarbeitung erfolgreich,,38,2025-04-26 23:01:21,75,2025-03-27 07:33:36
+565,TICKET_VERKAEUFE_TV12_2024_05_final.csv,validate,info,Verarbeitung gestartet,,,2025-05-27 21:33:41,,
+566,TICKET_VERKAEUFE_TV19_2024_10.csv,export,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,79,2025-03-23 16:30:59,5,
+567,PLAN_UMSATZ_TV18_2024_10.csv,validate,warning,Verarbeitung mit Warnungen,,31,2025-07-15 11:30:08,32,
+568,PLAN_UMSATZ_TV2_2025_03_v1.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,16,2024-03-22 07:40:32,71,
+569,TICKET_VERKAEUFE_TV15_2024_10.csv,validate,info,Verarbeitung gestartet,,58,2024-09-17 13:48:06,,2024-02-13 11:33:16
+570,TICKET_VERKAEUFE_TV13_2025_02_v1.csv,export,warning,Verarbeitung mit Warnungen,,68,2024-05-15 00:08:21,54,
+571,TICKET_VERKAEUFE_TV4_2024_08_v1.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,75,2025-05-20 04:12:22,,
+572,PLAN_UMSATZ_TV12_2024_02_final.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,57,2025-09-23 23:37:16,44,
+573,SONSTIGE_ANGEBOTE_TV9_2024_10_testlauf.csv,ingest,info,Verarbeitung gestartet,,37,2025-03-12 21:29:27,,
+574,TICKET_VERKAEUFE_TV16_2024_11_korrigiert.csv,validate,info,Verarbeitung gestartet,,72,2024-01-28 06:48:52,47,
+575,TICKET_VERKAEUFE_TV8_2025_01_testlauf.csv,ingest,info,Verarbeitung gestartet,,79,2024-04-22 15:20:49,,2025-12-30 22:18:00
+576,PLAN_UMSATZ_TV9_2024_05.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,38,2025-05-03 21:18:26,21,2025-04-28 12:04:05
+577,TICKET_VERKAEUFE_TV19_2024_01.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,46,2024-11-24 07:34:43,,2024-06-05 06:51:23
+578,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,export,info,Verarbeitung gestartet,,,2025-10-29 18:09:28,,
+579,PLAN_UMSATZ_TV7_2024_12.csv,validate,info,Verarbeitung gestartet,,39,2024-01-19 16:52:23,6,
+580,TICKET_VERKAEUFE_TV9_2024_08_v1.csv,ingest,info,Verarbeitung gestartet,,29,2025-10-22 06:47:34,49,
+581,SONSTIGE_ANGEBOTE_TV3_2025_08.csv,ingest,info,Verarbeitung gestartet,,57,2025-08-10 13:18:41,,
+582,TICKET_VERKAEUFE_TV10_2024_03.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,49,2024-02-20 21:45:46,,2024-02-20 01:17:51
+583,SONSTIGE_ANGEBOTE_TV13_2024_05.csv,ingest,info,Verarbeitung gestartet,,46,2024-09-04 21:58:28,,
+584,PLAN_UMSATZ_TV17_2025_03_final.csv,ingest,success,Verarbeitung erfolgreich,,5,2024-08-11 11:53:51,,2025-03-02 07:58:29
+585,SONSTIGE_ANGEBOTE_TV4_2025_06.csv,validate,info,Verarbeitung gestartet,,61,2024-01-16 16:51:08,,
+586,TICKET_VERKAEUFE_TV13_2024_12_final.csv,aggregate,success,Verarbeitung erfolgreich,,26,2024-09-09 17:00:11,,2024-03-04 14:02:53
+587,TICKET_VERKAEUFE_TV18_2025_04.csv,aggregate,info,Verarbeitung gestartet,,,2024-04-23 19:50:01,,
+588,SONSTIGE_ANGEBOTE_TV5_2024_09_korrigiert.csv,export,info,Verarbeitung gestartet,,66,2025-10-28 11:33:45,,2025-01-25 07:57:12
+589,PLAN_UMSATZ_TV5_2024_01_korrigiert.csv,ingest,info,Verarbeitung gestartet,,6,2025-04-30 19:19:29,55,
+590,PLAN_UMSATZ_TV20_2024_01.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-04-12 12:18:41,39,
+591,TICKET_VERKAEUFE_TV10_2025_06_korrigiert.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-10-04 14:44:47,,
+592,TICKET_VERKAEUFE_TV8_2025_09.csv,ingest,info,Verarbeitung gestartet,,,2024-05-19 22:06:32,,
+593,TICKET_VERKAEUFE_TV4_2024_06_testlauf.csv,export,info,Verarbeitung gestartet,,10,2025-07-20 01:06:24,8,2025-06-11 08:50:46
+594,SONSTIGE_ANGEBOTE_TV20_2024_02_v1.csv,ingest,success,Verarbeitung erfolgreich,,48,2024-12-01 19:37:52,,
+595,SONSTIGE_ANGEBOTE_TV16_2025_11_testlauf.csv,ingest,info,Verarbeitung gestartet,,,2024-01-16 21:21:02,21,
+596,PLAN_UMSATZ_TV10_2024_05.csv,export,info,Verarbeitung gestartet,,71,2024-05-24 17:53:08,,
+597,PLAN_UMSATZ_TV20_2025_02.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,71,2024-01-12 18:52:19,,
+598,PLAN_UMSATZ_TV11_2025_07_v1.csv,validate,info,Verarbeitung gestartet,,25,2025-08-01 07:24:23,,2025-02-12 06:12:43
+599,PLAN_UMSATZ_TV13_2025_11.csv,validate,info,Verarbeitung gestartet,,60,2025-12-28 23:14:46,8,2025-08-01 12:40:40
+600,TICKET_VERKAEUFE_TV9_2024_08_v1.csv,validate,info,Verarbeitung gestartet,,46,2024-08-30 16:50:51,7,
+601,SONSTIGE_ANGEBOTE_TV19_2025_04.csv,aggregate,success,Verarbeitung erfolgreich,,29,2025-07-28 07:08:14,,
+602,PLAN_UMSATZ_TV4_2024_11.csv,validate,info,Verarbeitung gestartet,,50,2024-05-22 13:01:40,,2025-08-19 14:33:59
+603,TICKET_VERKAEUFE_TV7_2024_01.csv,export,info,Verarbeitung gestartet,,37,2024-07-04 22:39:58,,
+604,PLAN_UMSATZ_TV16_2024_11.csv,validate,info,Verarbeitung gestartet,,12,2024-11-27 03:15:43,,2024-09-05 15:10:28
+605,TICKET_VERKAEUFE_TV11_2024_06.csv,aggregate,info,Verarbeitung gestartet,,,2024-07-26 03:33:28,,
+606,SONSTIGE_ANGEBOTE_TV7_2024_06_v1.csv,ingest,error,Verarbeitung fehlgeschlagen,PLZ ungültig,68,2024-07-18 15:19:57,,
+607,TICKET_VERKAEUFE_TV16_2024_02_v1.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-03-08 21:25:59,,
+608,SONSTIGE_ANGEBOTE_TV1_2025_05.csv,aggregate,info,Verarbeitung gestartet,,29,2025-05-29 07:53:21,,2024-03-12 20:14:49
+609,SONSTIGE_ANGEBOTE_TV9_2024_06.csv,ingest,info,Verarbeitung gestartet,,22,2024-09-28 01:19:06,6,2024-08-23 02:28:00
+610,PLAN_UMSATZ_TV4_2024_07.csv,ingest,info,Verarbeitung gestartet,,33,2025-01-05 14:21:22,,2024-05-12 15:19:16
+611,PLAN_UMSATZ_TV17_2024_07.csv,aggregate,success,Verarbeitung erfolgreich,,,2024-05-18 10:25:37,45,2025-08-02 00:33:32
+612,SONSTIGE_ANGEBOTE_TV9_2024_01_final.csv,ingest,info,Verarbeitung gestartet,,3,2024-03-28 22:31:16,,
+613,SONSTIGE_ANGEBOTE_TV4_2024_07.csv,validate,info,Verarbeitung gestartet,,20,2025-01-31 07:30:09,62,
+614,TICKET_VERKAEUFE_TV12_2024_09_v1.csv,aggregate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,32,2025-03-11 03:16:32,,
+615,SONSTIGE_ANGEBOTE_TV20_2025_06_final.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-12-27 22:59:32,12,
+616,SONSTIGE_ANGEBOTE_TV20_2025_06_final.csv,aggregate,info,Verarbeitung gestartet,,46,2024-08-05 21:29:07,41,2025-03-05 05:31:42
+617,PLAN_UMSATZ_TV17_2025_08_testlauf.csv,validate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,51,2025-09-24 00:05:05,25,2024-07-17 21:55:19
+618,SONSTIGE_ANGEBOTE_TV18_2025_07_final.csv,aggregate,info,Verarbeitung gestartet,,53,2024-01-01 19:16:16,,
+619,SONSTIGE_ANGEBOTE_TV5_2025_07.csv,export,info,Verarbeitung gestartet,,,2024-01-16 09:13:09,5,2025-06-24 10:59:26
+620,TICKET_VERKAEUFE_TV10_2024_03.csv,validate,info,Verarbeitung gestartet,,21,2024-10-06 05:11:00,,2024-03-14 14:51:31
+621,SONSTIGE_ANGEBOTE_TV7_2024_11_v1.csv,ingest,info,Verarbeitung gestartet,,9,2025-12-03 18:41:18,24,
+622,PLAN_UMSATZ_TV1_2024_05_final.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,42,2024-12-05 10:25:01,,
+623,TICKET_VERKAEUFE_TV18_2025_04.csv,aggregate,success,Verarbeitung erfolgreich,,72,2024-04-01 03:08:34,,2024-10-31 07:20:45
+624,TICKET_VERKAEUFE_TV6_2025_07_final.csv,ingest,success,Verarbeitung erfolgreich,,,2024-01-07 14:23:21,,2024-01-14 04:39:26
+625,PLAN_UMSATZ_TV20_2024_12_final.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,30,2024-01-09 00:51:54,64,
+626,PLAN_UMSATZ_TV10_2024_05.csv,ingest,warning,Verarbeitung mit Warnungen,,45,2025-10-29 00:40:15,22,2025-11-27 13:45:51
+627,SONSTIGE_ANGEBOTE_TV8_2024_04.csv,aggregate,info,Verarbeitung gestartet,,38,2024-07-03 22:03:08,,
+628,SONSTIGE_ANGEBOTE_TV17_2024_02_final.csv,aggregate,info,Verarbeitung gestartet,,4,2025-03-27 20:30:44,,
+629,SONSTIGE_ANGEBOTE_TV12_2024_10_v1.csv,export,warning,Verarbeitung mit Warnungen,,39,2025-06-20 07:08:17,43,
+630,SONSTIGE_ANGEBOTE_TV10_2024_05_v1.csv,aggregate,info,Verarbeitung gestartet,,,2024-12-05 10:01:32,,
+631,PLAN_UMSATZ_TV8_2024_04.csv,validate,info,Verarbeitung gestartet,,20,2025-09-18 00:24:34,,2025-09-21 23:31:44
+632,PLAN_UMSATZ_TV19_2024_02_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,9,2024-04-17 13:57:39,49,
+633,SONSTIGE_ANGEBOTE_TV10_2024_09.csv,validate,warning,Verarbeitung mit Warnungen,,15,2025-09-09 23:07:35,,2024-05-21 03:15:04
+634,PLAN_UMSATZ_TV2_2024_06_final.csv,export,info,Verarbeitung gestartet,,59,2025-02-22 01:13:33,,
+635,SONSTIGE_ANGEBOTE_TV6_2024_03_korrigiert.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-12-03 05:08:35,13,
+636,SONSTIGE_ANGEBOTE_TV4_2024_03_korrigiert.csv,export,info,Verarbeitung gestartet,,,2025-09-27 00:31:26,,
+637,SONSTIGE_ANGEBOTE_TV19_2025_12_final.csv,export,info,Verarbeitung gestartet,,,2025-12-02 07:01:43,,
+638,PLAN_UMSATZ_TV2_2024_06_final.csv,ingest,info,Verarbeitung gestartet,,17,2025-01-08 01:29:48,,
+639,SONSTIGE_ANGEBOTE_TV14_2025_12_korrigiert.csv,aggregate,success,Verarbeitung erfolgreich,,,2025-03-22 04:34:14,,
+640,PLAN_UMSATZ_TV20_2024_12_final.csv,ingest,info,Verarbeitung gestartet,,63,2025-06-16 20:24:57,16,
+641,TICKET_VERKAEUFE_TV14_2024_01_testlauf.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,72,2025-03-11 04:16:08,13,
+642,SONSTIGE_ANGEBOTE_TV11_2024_11_testlauf.csv,ingest,info,Verarbeitung gestartet,,40,2024-12-17 23:29:41,,
+643,PLAN_UMSATZ_TV17_2025_04.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,64,2024-02-17 19:31:53,27,2025-05-05 23:00:51
+644,TICKET_VERKAEUFE_TV8_2025_01_testlauf.csv,aggregate,info,Verarbeitung gestartet,,80,2024-08-03 03:36:20,,
+645,SONSTIGE_ANGEBOTE_TV3_2025_08_final.csv,validate,info,Verarbeitung gestartet,,22,2024-06-14 19:29:19,,
+646,SONSTIGE_ANGEBOTE_TV8_2025_04.csv,export,info,Verarbeitung gestartet,,31,2024-02-15 06:28:07,10,2025-05-20 18:06:58
+647,PLAN_UMSATZ_TV20_2025_08_korrigiert.csv,export,error,Verarbeitung fehlgeschlagen,PLZ ungültig,13,2025-11-15 03:18:30,72,
+648,TICKET_VERKAEUFE_TV14_2024_01_testlauf.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-05-17 22:31:20,,
+649,SONSTIGE_ANGEBOTE_TV13_2025_01.csv,validate,info,Verarbeitung gestartet,,1,2025-06-18 16:38:00,20,2024-03-02 01:17:02
+650,SONSTIGE_ANGEBOTE_TV4_2025_02_v1.csv,export,info,Verarbeitung gestartet,,46,2024-11-21 19:14:49,43,
+651,TICKET_VERKAEUFE_TV10_2025_07_testlauf.csv,validate,success,Verarbeitung erfolgreich,,,2025-09-28 18:33:39,,
+652,TICKET_VERKAEUFE_TV7_2025_11.csv,ingest,info,Verarbeitung gestartet,,62,2025-11-28 21:03:38,20,
+653,TICKET_VERKAEUFE_TV10_2024_11_v1.csv,export,error,Verarbeitung fehlgeschlagen,PLZ ungültig,2,2025-01-21 12:41:06,,
+654,PLAN_UMSATZ_TV8_2024_09_final.csv,validate,success,Verarbeitung erfolgreich,,56,2025-02-06 09:21:29,22,2025-01-21 19:43:44
+655,SONSTIGE_ANGEBOTE_TV14_2024_12_v1.csv,ingest,warning,Verarbeitung mit Warnungen,,14,2025-04-28 06:27:13,15,
+656,PLAN_UMSATZ_TV19_2024_02_korrigiert.csv,ingest,info,Verarbeitung gestartet,,8,2024-08-02 17:41:43,43,
+657,SONSTIGE_ANGEBOTE_TV5_2025_07.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,31,2025-05-18 06:38:35,,
+658,PLAN_UMSATZ_TV4_2024_11.csv,aggregate,info,Verarbeitung gestartet,,47,2024-09-06 09:19:21,,
+659,PLAN_UMSATZ_TV17_2025_05.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,61,2024-10-06 07:58:19,,
+660,TICKET_VERKAEUFE_TV18_2025_01.csv,validate,info,Verarbeitung gestartet,,60,2025-08-05 12:41:54,,
+661,PLAN_UMSATZ_TV8_2025_05_final.csv,aggregate,info,Verarbeitung gestartet,,54,2025-09-30 23:15:53,36,
+662,TICKET_VERKAEUFE_TV13_2025_02_v1.csv,aggregate,success,Verarbeitung erfolgreich,,,2025-08-11 11:02:11,73,
+663,TICKET_VERKAEUFE_TV16_2024_05_v1.csv,validate,warning,Verarbeitung mit Warnungen,,,2024-11-13 17:42:07,,2025-05-29 16:22:40
+664,SONSTIGE_ANGEBOTE_TV7_2024_08_v1.csv,export,info,Verarbeitung gestartet,,50,2025-02-27 18:48:16,,
+665,PLAN_UMSATZ_TV5_2024_05.csv,export,info,Verarbeitung gestartet,,35,2025-08-22 00:17:13,75,2024-10-06 15:40:23
+666,PLAN_UMSATZ_TV1_2025_06_final.csv,validate,info,Verarbeitung gestartet,,,2025-10-02 17:36:16,36,
+667,SONSTIGE_ANGEBOTE_TV9_2024_07_v1.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,68,2024-10-29 05:56:46,77,2024-05-12 12:38:58
+668,SONSTIGE_ANGEBOTE_TV20_2024_02_v1.csv,ingest,info,Verarbeitung gestartet,,79,2024-10-17 06:32:32,31,
+669,SONSTIGE_ANGEBOTE_TV19_2025_12_final.csv,aggregate,info,Verarbeitung gestartet,,54,2025-01-19 09:01:44,,2024-09-09 20:13:39
+670,TICKET_VERKAEUFE_TV14_2024_02.csv,export,warning,Verarbeitung mit Warnungen,,60,2024-10-16 17:46:47,,
+671,SONSTIGE_ANGEBOTE_TV4_2024_10_final.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,79,2024-09-07 16:00:11,,
+672,SONSTIGE_ANGEBOTE_TV4_2024_10_final.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,6,2024-02-28 23:30:34,75,
+673,PLAN_UMSATZ_TV18_2025_06.csv,aggregate,info,Verarbeitung gestartet,,,2025-11-19 15:58:09,,
+674,SONSTIGE_ANGEBOTE_TV12_2024_10_v1.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-01-30 14:22:44,48,
+675,PLAN_UMSATZ_TV17_2025_08_testlauf.csv,ingest,info,Verarbeitung gestartet,,17,2024-10-24 21:56:50,,
+676,SONSTIGE_ANGEBOTE_TV5_2025_02.csv,aggregate,info,Verarbeitung gestartet,,37,2025-06-13 12:55:49,79,
+677,PLAN_UMSATZ_TV2_2025_04_testlauf.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,61,2025-06-23 06:43:58,,
+678,SONSTIGE_ANGEBOTE_TV18_2025_09_v1.csv,export,info,Verarbeitung gestartet,,39,2025-12-07 21:13:52,13,2024-05-14 18:27:19
+679,TICKET_VERKAEUFE_TV11_2025_02.csv,aggregate,info,Verarbeitung gestartet,,19,2024-03-11 13:52:46,,
+680,TICKET_VERKAEUFE_TV18_2025_04.csv,validate,info,Verarbeitung gestartet,,70,2025-06-03 19:27:55,,
+681,SONSTIGE_ANGEBOTE_TV4_2025_06.csv,validate,success,Verarbeitung erfolgreich,,40,2025-10-20 08:34:41,,2025-02-24 10:37:28
+682,SONSTIGE_ANGEBOTE_TV5_2025_06.csv,ingest,info,Verarbeitung gestartet,,42,2024-10-18 09:25:03,,
+683,PLAN_UMSATZ_TV7_2025_06.csv,export,info,Verarbeitung gestartet,,9,2025-01-04 01:28:50,38,2025-04-09 04:33:28
+684,PLAN_UMSATZ_TV10_2024_05.csv,aggregate,info,Verarbeitung gestartet,,19,2024-08-14 08:50:34,68,
+685,PLAN_UMSATZ_TV1_2024_05_final.csv,export,warning,Verarbeitung mit Warnungen,,15,2025-06-25 17:40:19,,
+686,SONSTIGE_ANGEBOTE_TV20_2025_06_final.csv,validate,warning,Verarbeitung mit Warnungen,,,2025-07-10 17:29:01,63,
+687,TICKET_VERKAEUFE_TV14_2025_06_v1.csv,export,info,Verarbeitung gestartet,,67,2024-06-16 04:01:02,14,2025-02-04 23:15:46
+688,PLAN_UMSATZ_TV18_2024_08_korrigiert.csv,export,info,Verarbeitung gestartet,,39,2025-03-14 04:36:05,,
+689,TICKET_VERKAEUFE_TV9_2025_10_final.csv,aggregate,info,Verarbeitung gestartet,,23,2025-03-22 19:05:20,,2024-07-03 23:38:24
+690,SONSTIGE_ANGEBOTE_TV9_2024_07_v1.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,66,2025-09-25 03:43:27,21,2025-10-23 02:45:01
+691,SONSTIGE_ANGEBOTE_TV7_2025_02_final.csv,validate,success,Verarbeitung erfolgreich,,23,2025-10-20 20:05:33,27,2025-01-31 10:50:15
+692,TICKET_VERKAEUFE_TV2_2024_06_final.csv,ingest,info,Verarbeitung gestartet,,49,2024-10-07 18:21:43,,2024-09-24 06:31:40
+693,PLAN_UMSATZ_TV12_2024_02_final.csv,aggregate,success,Verarbeitung erfolgreich,,,2024-02-22 03:29:03,,
+694,PLAN_UMSATZ_TV5_2024_05.csv,validate,info,Verarbeitung gestartet,,45,2025-03-05 11:37:37,13,2025-03-13 00:20:53
+695,PLAN_UMSATZ_TV8_2024_02_testlauf.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-02-17 20:22:42,,2024-10-10 09:25:45
+696,TICKET_VERKAEUFE_TV2_2024_11_testlauf.csv,aggregate,success,Verarbeitung erfolgreich,,,2024-12-21 14:23:27,,
+697,TICKET_VERKAEUFE_TV12_2024_05_final.csv,aggregate,info,Verarbeitung gestartet,,,2024-11-07 07:32:43,,2025-11-22 11:23:12
+698,PLAN_UMSATZ_TV5_2024_01_korrigiert.csv,export,warning,Verarbeitung mit Warnungen,,,2024-03-12 02:18:16,,
+699,PLAN_UMSATZ_TV6_2025_07_final.csv,ingest,warning,Verarbeitung mit Warnungen,,,2025-09-11 08:27:28,,
+700,TICKET_VERKAEUFE_TV14_2024_02.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,35,2025-04-23 06:01:23,,2024-09-05 07:57:58
+701,TICKET_VERKAEUFE_TV8_2024_04.csv,aggregate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,55,2024-06-07 04:49:15,,2024-10-22 01:22:21
+702,PLAN_UMSATZ_TV20_2025_02.csv,validate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,23,2025-10-26 22:55:07,49,
+703,PLAN_UMSATZ_TV11_2025_04.csv,aggregate,info,Verarbeitung gestartet,,19,2024-01-04 05:26:59,,2024-09-20 01:21:27
+704,TICKET_VERKAEUFE_TV8_2024_04.csv,aggregate,info,Verarbeitung gestartet,,14,2024-10-18 13:26:53,,
+705,TICKET_VERKAEUFE_TV6_2025_06_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,48,2025-03-28 04:28:42,58,
+706,SONSTIGE_ANGEBOTE_TV13_2025_05_v1.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,46,2024-09-02 03:15:57,,2025-10-16 14:55:12
+707,SONSTIGE_ANGEBOTE_TV7_2024_08_v1.csv,ingest,info,Verarbeitung gestartet,,51,2025-12-29 08:31:30,67,
+708,SONSTIGE_ANGEBOTE_TV7_2024_06_v1.csv,export,info,Verarbeitung gestartet,,30,2025-05-27 01:56:35,,
+709,PLAN_UMSATZ_TV18_2024_08_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,5,2024-08-08 15:32:09,68,
+710,TICKET_VERKAEUFE_TV8_2024_04.csv,ingest,info,Verarbeitung gestartet,,32,2024-08-16 08:16:26,,2024-03-05 04:25:06
+711,PLAN_UMSATZ_TV2_2025_04_testlauf.csv,validate,info,Verarbeitung gestartet,,9,2024-10-26 08:18:01,,
+712,SONSTIGE_ANGEBOTE_TV9_2024_07_v1.csv,aggregate,info,Verarbeitung gestartet,,25,2024-09-09 12:46:22,,2024-08-19 18:36:45
+713,PLAN_UMSATZ_TV6_2025_08.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,15,2025-03-20 16:33:08,13,
+714,TICKET_VERKAEUFE_TV10_2025_07_testlauf.csv,export,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,,2025-12-14 20:18:18,,2024-06-29 05:39:19
+715,TICKET_VERKAEUFE_TV12_2024_03_testlauf.csv,export,error,Verarbeitung fehlgeschlagen,PLZ ungültig,40,2024-05-15 08:47:51,75,
+716,SONSTIGE_ANGEBOTE_TV1_2025_05.csv,validate,warning,Verarbeitung mit Warnungen,,36,2025-08-26 11:54:28,,
+717,PLAN_UMSATZ_TV7_2024_12.csv,export,info,Verarbeitung gestartet,,21,2025-08-01 14:38:38,4,2025-05-12 10:04:24
+718,SONSTIGE_ANGEBOTE_TV8_2025_09.csv,export,info,Verarbeitung gestartet,,,2024-02-13 08:48:13,,
+719,SONSTIGE_ANGEBOTE_TV8_2025_01.csv,ingest,info,Verarbeitung gestartet,,8,2025-03-17 15:09:43,,
+720,PLAN_UMSATZ_TV5_2025_12.csv,aggregate,success,Verarbeitung erfolgreich,,,2024-01-10 07:09:47,,
+721,PLAN_UMSATZ_TV13_2025_11.csv,aggregate,info,Verarbeitung gestartet,,45,2025-01-15 18:07:23,5,2024-12-17 07:58:15
+722,PLAN_UMSATZ_TV18_2025_05.csv,validate,info,Verarbeitung gestartet,,59,2025-06-05 07:37:01,,
+723,SONSTIGE_ANGEBOTE_TV19_2025_04.csv,aggregate,success,Verarbeitung erfolgreich,,2,2025-06-24 21:13:50,,
+724,TICKET_VERKAEUFE_TV7_2024_01.csv,export,success,Verarbeitung erfolgreich,,62,2024-04-14 15:01:02,,
+725,SONSTIGE_ANGEBOTE_TV11_2025_08_final.csv,ingest,success,Verarbeitung erfolgreich,,56,2025-04-16 07:21:39,,
+726,TICKET_VERKAEUFE_TV4_2024_10.csv,aggregate,info,Verarbeitung gestartet,,33,2025-08-13 11:17:20,,
+727,PLAN_UMSATZ_TV1_2024_05_final.csv,validate,info,Verarbeitung gestartet,,4,2024-08-17 18:07:29,,
+728,PLAN_UMSATZ_TV5_2024_06_testlauf.csv,export,info,Verarbeitung gestartet,,27,2025-10-19 20:41:42,,2025-10-10 01:18:08
+729,PLAN_UMSATZ_TV7_2025_06.csv,export,success,Verarbeitung erfolgreich,,,2024-02-22 01:04:15,64,
+730,PLAN_UMSATZ_TV17_2025_02.csv,ingest,info,Verarbeitung gestartet,,54,2024-07-24 09:56:24,,2025-11-14 04:15:05
+731,SONSTIGE_ANGEBOTE_TV1_2025_08_korrigiert.csv,export,info,Verarbeitung gestartet,,,2025-07-05 04:59:33,66,
+732,SONSTIGE_ANGEBOTE_TV18_2025_07_final.csv,validate,info,Verarbeitung gestartet,,54,2025-01-10 07:04:38,,
+733,PLAN_UMSATZ_TV18_2024_04.csv,ingest,info,Verarbeitung gestartet,,69,2025-02-08 11:25:57,,
+734,SONSTIGE_ANGEBOTE_TV16_2025_10.csv,export,info,Verarbeitung gestartet,,,2025-07-08 16:45:14,,2025-08-23 02:25:23
+735,TICKET_VERKAEUFE_TV2_2024_06_final.csv,ingest,warning,Verarbeitung mit Warnungen,,4,2024-04-03 14:05:29,16,
+736,TICKET_VERKAEUFE_TV14_2024_02.csv,validate,info,Verarbeitung gestartet,,5,2025-11-27 06:09:21,79,2025-09-21 07:29:28
+737,PLAN_UMSATZ_TV5_2025_09_final.csv,aggregate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,,2024-04-02 05:14:55,9,
+738,TICKET_VERKAEUFE_TV17_2025_03_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,,2025-01-30 09:45:04,,
+739,PLAN_UMSATZ_TV17_2025_02.csv,validate,info,Verarbeitung gestartet,,,2024-05-23 11:44:04,,
+740,TICKET_VERKAEUFE_TV19_2024_10.csv,validate,info,Verarbeitung gestartet,,34,2024-03-06 02:56:55,77,
+741,TICKET_VERKAEUFE_TV18_2025_01.csv,validate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,10,2024-08-16 12:13:00,,
+742,TICKET_VERKAEUFE_TV17_2025_03_korrigiert.csv,aggregate,success,Verarbeitung erfolgreich,,5,2025-08-21 08:40:53,59,2025-03-18 02:24:03
+743,SONSTIGE_ANGEBOTE_TV19_2025_10_testlauf.csv,aggregate,success,Verarbeitung erfolgreich,,52,2025-03-09 14:47:22,15,2025-02-09 23:38:58
+744,SONSTIGE_ANGEBOTE_TV10_2024_09_korrigiert.csv,export,warning,Verarbeitung mit Warnungen,,46,2024-09-20 08:38:21,,2024-04-22 21:43:56
+745,PLAN_UMSATZ_TV4_2025_04.csv,validate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,23,2025-04-21 12:37:12,36,
+746,PLAN_UMSATZ_TV4_2024_07.csv,validate,info,Verarbeitung gestartet,,8,2024-11-11 09:04:04,22,2024-10-05 08:41:28
+747,SONSTIGE_ANGEBOTE_TV4_2025_02_v1.csv,ingest,info,Verarbeitung gestartet,,45,2025-08-28 06:25:49,23,2024-05-30 14:01:56
+748,PLAN_UMSATZ_TV18_2025_06.csv,validate,info,Verarbeitung gestartet,,13,2024-05-12 06:45:59,,2025-04-27 03:08:29
+749,TICKET_VERKAEUFE_TV4_2024_08_v1.csv,ingest,info,Verarbeitung gestartet,,,2025-12-02 18:11:32,13,
+750,PLAN_UMSATZ_TV4_2024_11.csv,validate,info,Verarbeitung gestartet,,60,2025-07-29 13:44:14,70,2025-08-21 01:07:52
+751,PLAN_UMSATZ_TV7_2024_09.csv,ingest,info,Verarbeitung gestartet,,,2024-01-15 19:31:35,,2024-02-25 06:57:16
+752,SONSTIGE_ANGEBOTE_TV2_2025_08_v1.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-10-01 16:10:44,80,
+753,TICKET_VERKAEUFE_TV10_2024_11_v1.csv,validate,info,Verarbeitung gestartet,,,2025-08-05 03:19:30,33,2025-02-28 01:46:11
+754,PLAN_UMSATZ_TV11_2024_04.csv,export,info,Verarbeitung gestartet,,54,2024-02-19 11:49:36,,2024-01-22 07:15:51
+755,SONSTIGE_ANGEBOTE_TV5_2025_07.csv,aggregate,info,Verarbeitung gestartet,,74,2025-04-06 12:52:57,23,2025-08-06 11:32:45
+756,PLAN_UMSATZ_TV17_2024_09.csv,validate,info,Verarbeitung gestartet,,,2025-05-31 04:29:07,,
+757,TICKET_VERKAEUFE_TV20_2024_10_testlauf.csv,export,info,Verarbeitung gestartet,,56,2024-08-24 19:13:50,,
+758,TICKET_VERKAEUFE_TV1_2024_12_testlauf.csv,export,info,Verarbeitung gestartet,,8,2024-10-07 02:07:30,,
+759,SONSTIGE_ANGEBOTE_TV8_2025_09.csv,validate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,,2024-02-10 19:12:00,24,
+760,PLAN_UMSATZ_TV18_2025_01_final.csv,aggregate,info,Verarbeitung gestartet,,64,2024-03-23 21:26:53,,2025-11-29 19:48:47
+761,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,export,info,Verarbeitung gestartet,,72,2024-02-22 06:40:13,48,2024-07-01 11:32:34
+762,SONSTIGE_ANGEBOTE_TV7_2025_06_final.csv,export,success,Verarbeitung erfolgreich,,4,2024-04-30 00:30:31,19,
+763,TICKET_VERKAEUFE_TV10_2025_07_testlauf.csv,export,info,Verarbeitung gestartet,,9,2024-06-27 12:36:51,24,
+764,SONSTIGE_ANGEBOTE_TV16_2025_10.csv,aggregate,info,Verarbeitung gestartet,,11,2024-10-17 16:33:43,7,
+765,SONSTIGE_ANGEBOTE_TV5_2025_06.csv,export,success,Verarbeitung erfolgreich,,61,2025-09-18 03:20:41,,
+766,PLAN_UMSATZ_TV9_2024_01.csv,validate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,,2024-09-24 08:47:27,16,
+767,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,export,info,Verarbeitung gestartet,,,2024-09-25 12:14:11,,
+768,PLAN_UMSATZ_TV17_2025_05.csv,validate,info,Verarbeitung gestartet,,23,2025-12-23 21:05:04,,
+769,PLAN_UMSATZ_TV11_2025_07_v1.csv,validate,info,Verarbeitung gestartet,,,2025-05-09 19:49:47,17,2024-10-08 17:14:37
+770,PLAN_UMSATZ_TV1_2024_04.csv,ingest,info,Verarbeitung gestartet,,,2025-04-10 00:34:52,36,
+771,PLAN_UMSATZ_TV5_2024_06_testlauf.csv,ingest,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,7,2024-04-19 13:08:06,,
+772,PLAN_UMSATZ_TV19_2025_08.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,77,2024-04-13 05:02:29,1,2024-01-21 09:43:24
+773,SONSTIGE_ANGEBOTE_TV14_2025_08.csv,aggregate,info,Verarbeitung gestartet,,69,2025-04-21 20:03:29,64,
+774,TICKET_VERKAEUFE_TV12_2024_04.csv,export,info,Verarbeitung gestartet,,72,2025-02-25 18:26:53,24,2024-05-12 20:50:11
+775,PLAN_UMSATZ_TV13_2025_11.csv,validate,info,Verarbeitung gestartet,,68,2025-06-17 01:05:07,,2024-07-29 11:51:05
+776,TICKET_VERKAEUFE_TV14_2024_01_testlauf.csv,export,success,Verarbeitung erfolgreich,,,2025-07-14 05:08:56,55,
+777,SONSTIGE_ANGEBOTE_TV14_2025_08.csv,validate,info,Verarbeitung gestartet,,45,2025-04-15 09:21:57,74,
+778,SONSTIGE_ANGEBOTE_TV9_2025_11_v1.csv,ingest,info,Verarbeitung gestartet,,73,2024-11-21 03:20:48,,2024-01-03 21:30:08
+779,TICKET_VERKAEUFE_TV6_2025_03.csv,ingest,info,Verarbeitung gestartet,,40,2024-08-25 10:04:05,,
+780,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,aggregate,info,Verarbeitung gestartet,,11,2024-10-28 14:32:40,,
+781,PLAN_UMSATZ_TV13_2024_09.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-08-22 12:50:54,,
+782,PLAN_UMSATZ_TV2_2025_04_testlauf.csv,export,info,Verarbeitung gestartet,,52,2025-03-01 02:02:36,53,2024-12-04 00:56:31
+783,TICKET_VERKAEUFE_TV14_2024_01_testlauf.csv,validate,success,Verarbeitung erfolgreich,,19,2025-05-25 00:31:45,,
+784,PLAN_UMSATZ_TV18_2024_10.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,23,2025-12-12 14:16:32,,
+785,PLAN_UMSATZ_TV5_2024_05.csv,ingest,success,Verarbeitung erfolgreich,,57,2025-06-30 02:43:48,,
+786,PLAN_UMSATZ_TV20_2025_08_korrigiert.csv,ingest,info,Verarbeitung gestartet,,52,2024-10-02 05:52:03,,2024-03-19 02:15:37
+787,PLAN_UMSATZ_TV8_2025_02_final.csv,ingest,info,Verarbeitung gestartet,,27,2025-08-02 07:18:49,62,
+788,TICKET_VERKAEUFE_TV4_2024_08_v1.csv,validate,info,Verarbeitung gestartet,,77,2024-10-06 11:54:21,,2024-10-03 03:25:44
+789,SONSTIGE_ANGEBOTE_TV18_2025_09_v1.csv,ingest,info,Verarbeitung gestartet,,59,2024-11-05 18:02:06,26,2024-04-13 17:31:14
+790,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,ingest,info,Verarbeitung gestartet,,75,2025-04-03 03:18:14,71,2025-05-28 01:07:26
+791,TICKET_VERKAEUFE_TV9_2024_01.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,25,2025-02-24 11:34:02,37,
+792,PLAN_UMSATZ_TV6_2025_07_final.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,55,2025-01-15 10:11:03,,
+793,SONSTIGE_ANGEBOTE_TV9_2025_11_final.csv,export,info,Verarbeitung gestartet,,,2025-09-19 02:27:38,,
+794,SONSTIGE_ANGEBOTE_TV11_2024_11_testlauf.csv,aggregate,success,Verarbeitung erfolgreich,,2,2025-01-15 08:26:11,,
+795,PLAN_UMSATZ_TV7_2024_12.csv,ingest,info,Verarbeitung gestartet,,77,2025-07-16 14:18:58,15,2024-05-27 13:19:06
+796,TICKET_VERKAEUFE_TV4_2024_08_v1.csv,validate,info,Verarbeitung gestartet,,47,2024-02-28 09:19:55,40,2024-05-04 16:27:45
+797,SONSTIGE_ANGEBOTE_TV17_2024_06_v1.csv,ingest,info,Verarbeitung gestartet,,56,2024-03-04 05:12:36,47,
+798,PLAN_UMSATZ_TV18_2025_05.csv,aggregate,info,Verarbeitung gestartet,,58,2025-01-25 11:02:57,32,2024-02-13 21:43:57
+799,SONSTIGE_ANGEBOTE_TV9_2024_07_v1.csv,export,success,Verarbeitung erfolgreich,,71,2025-08-11 05:30:44,60,
+800,PLAN_UMSATZ_TV8_2024_09_final.csv,validate,success,Verarbeitung erfolgreich,,,2025-07-10 11:50:03,,
+801,PLAN_UMSATZ_TV16_2025_05.csv,validate,warning,Verarbeitung mit Warnungen,,64,2025-10-19 15:19:50,,
+802,TICKET_VERKAEUFE_TV1_2024_01.csv,aggregate,success,Verarbeitung erfolgreich,,,2024-12-03 13:17:37,25,
+803,TICKET_VERKAEUFE_TV10_2024_03.csv,export,warning,Verarbeitung mit Warnungen,,48,2025-02-24 10:12:23,39,2024-07-24 20:43:42
+804,PLAN_UMSATZ_TV4_2024_07.csv,export,info,Verarbeitung gestartet,,35,2025-05-07 02:47:20,13,
+805,PLAN_UMSATZ_TV11_2024_04.csv,validate,info,Verarbeitung gestartet,,55,2025-05-11 23:05:20,,
+806,PLAN_UMSATZ_TV4_2024_11.csv,ingest,info,Verarbeitung gestartet,,,2024-03-08 17:20:03,46,2024-03-18 13:55:14
+807,SONSTIGE_ANGEBOTE_TV8_2024_04.csv,ingest,info,Verarbeitung gestartet,,77,2025-09-14 14:35:43,,
+808,TICKET_VERKAEUFE_TV16_2024_11_korrigiert.csv,ingest,info,Verarbeitung gestartet,,,2025-06-04 06:31:13,,
+809,SONSTIGE_ANGEBOTE_TV8_2024_04.csv,aggregate,info,Verarbeitung gestartet,,22,2025-03-01 05:17:15,,
+810,PLAN_UMSATZ_TV3_2024_12_v1.csv,export,info,Verarbeitung gestartet,,78,2024-07-11 09:24:45,,2025-03-02 05:55:42
+811,PLAN_UMSATZ_TV9_2024_01.csv,ingest,info,Verarbeitung gestartet,,14,2024-04-08 21:43:14,47,
+812,PLAN_UMSATZ_TV9_2024_09_testlauf.csv,export,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,9,2025-06-05 02:26:04,,
+813,SONSTIGE_ANGEBOTE_TV16_2025_11_testlauf.csv,aggregate,info,Verarbeitung gestartet,,46,2025-08-16 08:21:37,16,
+814,SONSTIGE_ANGEBOTE_TV10_2024_09.csv,export,success,Verarbeitung erfolgreich,,,2024-05-26 20:32:45,20,
+815,PLAN_UMSATZ_TV12_2024_02.csv,export,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,20,2024-02-18 14:32:17,26,
+816,PLAN_UMSATZ_TV18_2024_06.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,26,2025-11-20 23:16:21,46,2024-10-02 07:31:27
+817,PLAN_UMSATZ_TV8_2024_09_final.csv,export,info,Verarbeitung gestartet,,,2025-11-04 17:24:48,,2025-05-06 06:18:29
+818,TICKET_VERKAEUFE_TV6_2025_06_korrigiert.csv,ingest,info,Verarbeitung gestartet,,52,2025-11-28 18:19:44,,
+819,TICKET_VERKAEUFE_TV1_2024_01.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,52,2024-09-17 07:36:44,,
+820,SONSTIGE_ANGEBOTE_TV11_2024_08_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,70,2025-06-30 02:35:26,,
+821,TICKET_VERKAEUFE_TV12_2024_05_final.csv,ingest,info,Verarbeitung gestartet,,38,2024-10-27 09:46:23,44,2024-01-16 17:38:17
+822,PLAN_UMSATZ_TV13_2024_09.csv,export,warning,Verarbeitung mit Warnungen,,,2025-09-05 04:44:56,15,2024-10-20 15:36:30
+823,SONSTIGE_ANGEBOTE_TV11_2024_08_korrigiert.csv,validate,info,Verarbeitung gestartet,,53,2024-11-28 17:51:17,,2025-02-06 20:02:51
+824,SONSTIGE_ANGEBOTE_TV17_2024_02_final.csv,aggregate,info,Verarbeitung gestartet,,19,2025-05-02 21:14:54,25,
+825,TICKET_VERKAEUFE_TV10_2025_07_testlauf.csv,validate,warning,Verarbeitung mit Warnungen,,43,2025-01-20 15:26:08,,
+826,SONSTIGE_ANGEBOTE_TV20_2024_01_final.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,46,2025-05-31 08:20:31,31,
+827,TICKET_VERKAEUFE_TV12_2024_03.csv,export,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,38,2024-07-24 18:10:31,,2024-05-13 10:33:18
+828,PLAN_UMSATZ_TV4_2025_04.csv,aggregate,info,Verarbeitung gestartet,,57,2025-04-24 21:31:51,,
+829,PLAN_UMSATZ_TV18_2025_05.csv,ingest,info,Verarbeitung gestartet,,70,2025-04-03 19:41:45,57,2024-03-13 22:43:09
+830,PLAN_UMSATZ_TV19_2025_08.csv,ingest,info,Verarbeitung gestartet,,,2025-09-02 08:50:49,,
+831,PLAN_UMSATZ_TV17_2025_04.csv,aggregate,success,Verarbeitung erfolgreich,,47,2024-03-28 21:15:46,74,
+832,PLAN_UMSATZ_TV11_2025_04.csv,validate,info,Verarbeitung gestartet,,,2025-04-22 15:01:05,,
+833,PLAN_UMSATZ_TV11_2025_04.csv,ingest,success,Verarbeitung erfolgreich,,12,2024-02-09 17:21:28,21,2024-11-02 19:17:04
+834,SONSTIGE_ANGEBOTE_TV5_2025_02.csv,aggregate,success,Verarbeitung erfolgreich,,48,2025-08-23 03:01:14,,
+835,SONSTIGE_ANGEBOTE_TV14_2025_11.csv,aggregate,info,Verarbeitung gestartet,,,2024-04-12 22:20:37,71,
+836,PLAN_UMSATZ_TV20_2025_02.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,53,2024-02-06 17:04:53,,
+837,PLAN_UMSATZ_TV2_2024_02_korrigiert.csv,export,success,Verarbeitung erfolgreich,,66,2024-05-20 15:51:20,,
+838,SONSTIGE_ANGEBOTE_TV9_2024_08_v1.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,9,2025-03-28 00:17:07,,
+839,SONSTIGE_ANGEBOTE_TV8_2025_02.csv,ingest,info,Verarbeitung gestartet,,58,2024-12-08 10:31:44,22,2024-06-04 17:27:01
+840,SONSTIGE_ANGEBOTE_TV17_2024_06_v1.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-12-02 13:39:27,,2024-01-27 11:13:37
+841,PLAN_UMSATZ_TV6_2025_07.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,53,2024-05-09 12:04:04,,
+842,TICKET_VERKAEUFE_TV2_2024_09_testlauf.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-04-02 20:49:45,,2025-12-13 02:46:52
+843,TICKET_VERKAEUFE_TV6_2025_10_korrigiert.csv,aggregate,success,Verarbeitung erfolgreich,,68,2025-07-12 10:59:02,33,
+844,TICKET_VERKAEUFE_TV13_2025_08_v1.csv,aggregate,info,Verarbeitung gestartet,,25,2025-12-09 17:43:41,,2024-07-02 19:45:16
+845,TICKET_VERKAEUFE_TV14_2024_03.csv,ingest,info,Verarbeitung gestartet,,63,2024-09-13 01:28:04,,2024-01-23 08:46:56
+846,SONSTIGE_ANGEBOTE_TV12_2024_10_v1.csv,aggregate,info,Verarbeitung gestartet,,69,2024-05-12 11:40:47,,
+847,TICKET_VERKAEUFE_TV13_2025_07_testlauf.csv,aggregate,success,Verarbeitung erfolgreich,,68,2024-03-08 07:45:09,15,2024-01-12 08:50:45
+848,SONSTIGE_ANGEBOTE_TV3_2024_01_v1.csv,validate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,56,2025-05-03 09:41:32,,2025-05-10 19:16:36
+849,TICKET_VERKAEUFE_TV16_2024_05_v1.csv,export,info,Verarbeitung gestartet,,66,2025-04-21 17:49:21,,
+850,SONSTIGE_ANGEBOTE_TV9_2024_08_v1.csv,aggregate,success,Verarbeitung erfolgreich,,33,2024-03-28 03:28:20,,
+851,SONSTIGE_ANGEBOTE_TV1_2025_08_korrigiert.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,33,2025-12-19 13:56:30,36,
+852,SONSTIGE_ANGEBOTE_TV12_2024_10_v1.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,47,2024-01-09 05:00:51,,
+853,TICKET_VERKAEUFE_TV18_2024_05_testlauf.csv,aggregate,warning,Verarbeitung mit Warnungen,,77,2025-12-09 16:54:51,,
+854,SONSTIGE_ANGEBOTE_TV1_2024_12_v1.csv,validate,info,Verarbeitung gestartet,,44,2025-07-02 03:01:11,,
+855,PLAN_UMSATZ_TV19_2024_02_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,18,2024-11-23 01:30:21,49,
+856,SONSTIGE_ANGEBOTE_TV14_2025_08.csv,export,info,Verarbeitung gestartet,,73,2024-04-05 23:06:58,,
+857,PLAN_UMSATZ_TV8_2025_05_final.csv,validate,success,Verarbeitung erfolgreich,,57,2025-04-25 12:25:41,16,
+858,TICKET_VERKAEUFE_TV13_2025_08_v1.csv,validate,info,Verarbeitung gestartet,,8,2025-12-16 13:20:48,,2024-11-02 14:58:06
+859,SONSTIGE_ANGEBOTE_TV8_2025_04.csv,ingest,success,Verarbeitung erfolgreich,,21,2024-07-01 18:01:05,63,
+860,SONSTIGE_ANGEBOTE_TV7_2025_02_final.csv,aggregate,info,Verarbeitung gestartet,,3,2024-06-10 18:33:27,62,
+861,TICKET_VERKAEUFE_TV5_2024_06.csv,validate,info,Verarbeitung gestartet,,,2024-12-08 22:22:39,,
+862,SONSTIGE_ANGEBOTE_TV18_2024_08_v1.csv,validate,info,Verarbeitung gestartet,,52,2025-06-13 23:26:21,,
+863,TICKET_VERKAEUFE_TV14_2025_06_v1.csv,export,info,Verarbeitung gestartet,,67,2025-12-30 11:51:28,16,2025-09-06 16:30:04
+864,PLAN_UMSATZ_TV11_2025_04.csv,validate,info,Verarbeitung gestartet,,,2024-05-26 06:10:45,45,
+865,SONSTIGE_ANGEBOTE_TV18_2025_09_v1.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,71,2024-02-22 17:39:03,,2024-12-07 00:19:28
+866,TICKET_VERKAEUFE_TV9_2024_08_v1.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,47,2025-03-08 08:42:00,48,
+867,TICKET_VERKAEUFE_TV6_2025_10_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,37,2025-04-19 00:57:25,59,2024-10-05 18:11:19
+868,SONSTIGE_ANGEBOTE_TV7_2024_08_v1.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,42,2025-01-03 01:55:11,9,
+869,PLAN_UMSATZ_TV5_2024_06_testlauf.csv,aggregate,warning,Verarbeitung mit Warnungen,,75,2024-09-24 16:29:23,,2025-08-23 04:07:15
+870,PLAN_UMSATZ_TV8_2025_05_final.csv,validate,success,Verarbeitung erfolgreich,,23,2024-11-04 12:57:21,,2024-08-04 19:23:59
+871,TICKET_VERKAEUFE_TV16_2024_02_v1.csv,ingest,warning,Verarbeitung mit Warnungen,,,2025-05-27 19:11:40,,2024-04-02 17:44:39
+872,TICKET_VERKAEUFE_TV12_2024_03_testlauf.csv,validate,info,Verarbeitung gestartet,,76,2024-01-18 10:18:22,,
+873,PLAN_UMSATZ_TV7_2025_06.csv,validate,info,Verarbeitung gestartet,,58,2024-07-11 15:54:04,40,2024-09-30 19:26:20
+874,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,64,2025-01-02 07:54:30,38,2024-05-18 00:52:27
+875,PLAN_UMSATZ_TV18_2025_05.csv,ingest,info,Verarbeitung gestartet,,9,2025-04-30 16:45:38,,
+876,SONSTIGE_ANGEBOTE_TV15_2025_04.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,76,2024-07-15 00:37:14,,2024-07-05 04:20:38
+877,PLAN_UMSATZ_TV15_2024_02_final.csv,validate,info,Verarbeitung gestartet,,68,2025-11-16 21:28:40,55,
+878,SONSTIGE_ANGEBOTE_TV7_2024_08_v1.csv,aggregate,info,Verarbeitung gestartet,,16,2024-02-15 02:55:03,,
+879,PLAN_UMSATZ_TV17_2025_05.csv,export,info,Verarbeitung gestartet,,44,2025-07-11 15:59:28,,
+880,SONSTIGE_ANGEBOTE_TV16_2025_10.csv,aggregate,success,Verarbeitung erfolgreich,,,2025-11-24 13:17:15,70,2024-02-13 08:12:25
+881,PLAN_UMSATZ_TV16_2025_05.csv,aggregate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,,2024-11-25 20:55:03,,
+882,PLAN_UMSATZ_TV3_2024_01_testlauf.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,53,2025-02-14 01:49:53,,2025-11-22 06:42:32
+883,PLAN_UMSATZ_TV4_2025_04.csv,validate,info,Verarbeitung gestartet,,71,2025-01-17 17:51:08,32,2025-12-29 04:08:25
+884,TICKET_VERKAEUFE_TV18_2025_01.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-02-19 14:48:26,,
+885,TICKET_VERKAEUFE_TV4_2025_09.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,1,2024-07-28 15:12:42,,
+886,PLAN_UMSATZ_TV20_2025_10_v1.csv,validate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,44,2025-06-18 03:18:12,,2024-07-26 22:05:06
+887,SONSTIGE_ANGEBOTE_TV9_2024_01_final.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,48,2024-08-03 00:13:33,,2024-07-06 05:21:20
+888,SONSTIGE_ANGEBOTE_TV12_2025_03_korrigiert.csv,validate,info,Verarbeitung gestartet,,49,2025-09-03 06:51:52,78,
+889,PLAN_UMSATZ_TV18_2025_01_final.csv,ingest,info,Verarbeitung gestartet,,78,2025-03-02 10:59:32,27,2025-08-30 14:55:04
+890,TICKET_VERKAEUFE_TV7_2025_11.csv,export,info,Verarbeitung gestartet,,68,2024-04-26 01:47:47,,
+891,SONSTIGE_ANGEBOTE_TV13_2024_02_v1.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,13,2024-11-23 13:35:50,,
+892,TICKET_VERKAEUFE_TV9_2025_07.csv,validate,info,Verarbeitung gestartet,,11,2024-08-12 07:27:22,,2024-09-28 18:25:14
+893,PLAN_UMSATZ_TV4_2025_04.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,37,2025-04-22 05:21:02,,
+894,PLAN_UMSATZ_TV9_2025_05_v1.csv,export,info,Verarbeitung gestartet,,,2024-06-28 11:29:07,,
+895,SONSTIGE_ANGEBOTE_TV17_2024_06_v1.csv,aggregate,info,Verarbeitung gestartet,,26,2024-02-10 21:23:06,,
+896,SONSTIGE_ANGEBOTE_TV20_2024_03.csv,validate,info,Verarbeitung gestartet,,17,2025-09-09 05:41:46,,
+897,PLAN_UMSATZ_TV2_2025_03_v1.csv,ingest,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,50,2025-11-19 13:01:16,71,
+898,PLAN_UMSATZ_TV2_2024_06_final.csv,aggregate,info,Verarbeitung gestartet,,,2025-10-01 18:59:42,,2024-07-17 09:43:47
+899,SONSTIGE_ANGEBOTE_TV17_2024_06_v1.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-01-11 18:32:23,,2024-04-08 16:10:25
+900,SONSTIGE_ANGEBOTE_TV11_2025_04_final.csv,ingest,info,Verarbeitung gestartet,,45,2024-02-11 19:22:58,,
+901,TICKET_VERKAEUFE_TV9_2025_07.csv,ingest,info,Verarbeitung gestartet,,39,2024-03-19 12:42:54,,
+902,SONSTIGE_ANGEBOTE_TV1_2025_08_korrigiert.csv,validate,success,Verarbeitung erfolgreich,,,2024-04-25 20:21:49,,2025-03-18 18:11:58
+903,SONSTIGE_ANGEBOTE_TV4_2024_07.csv,aggregate,success,Verarbeitung erfolgreich,,45,2025-01-11 23:57:56,61,2024-01-20 10:32:21
+904,PLAN_UMSATZ_TV20_2025_10_v1.csv,aggregate,info,Verarbeitung gestartet,,23,2025-11-08 21:39:19,,2025-06-14 16:59:36
+905,SONSTIGE_ANGEBOTE_TV9_2024_10_testlauf.csv,aggregate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,49,2024-05-06 04:27:13,27,
+906,SONSTIGE_ANGEBOTE_TV19_2025_12_final.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,28,2025-11-14 01:28:26,60,
+907,PLAN_UMSATZ_TV20_2024_12_final.csv,ingest,success,Verarbeitung erfolgreich,,17,2024-12-22 18:39:51,52,2025-07-06 16:37:05
+908,PLAN_UMSATZ_TV9_2025_05_v1.csv,aggregate,info,Verarbeitung gestartet,,57,2024-10-11 11:48:29,11,
+909,SONSTIGE_ANGEBOTE_TV10_2024_05_v1.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,74,2025-05-15 01:20:37,,
+910,PLAN_UMSATZ_TV17_2024_09.csv,validate,warning,Verarbeitung mit Warnungen,,15,2025-01-23 21:58:46,11,
+911,TICKET_VERKAEUFE_TV19_2024_10.csv,export,error,Verarbeitung fehlgeschlagen,PLZ ungültig,69,2025-10-17 17:56:22,40,2025-01-26 01:11:36
+912,TICKET_VERKAEUFE_TV12_2024_09_v1.csv,validate,info,Verarbeitung gestartet,,40,2024-03-22 21:05:51,,
+913,TICKET_VERKAEUFE_TV2_2024_09_testlauf.csv,export,info,Verarbeitung gestartet,,21,2025-10-08 08:01:05,51,
+914,TICKET_VERKAEUFE_TV3_2025_04.csv,validate,info,Verarbeitung gestartet,,22,2024-07-31 06:32:58,66,
+915,SONSTIGE_ANGEBOTE_TV17_2024_06.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,23,2024-04-15 01:01:22,,2024-12-13 05:02:31
+916,TICKET_VERKAEUFE_TV19_2024_01.csv,export,info,Verarbeitung gestartet,,67,2025-06-24 02:38:25,52,2024-02-17 03:34:29
+917,PLAN_UMSATZ_TV20_2024_12_final.csv,aggregate,info,Verarbeitung gestartet,,60,2025-04-03 19:40:34,44,2024-01-22 12:54:23
+918,TICKET_VERKAEUFE_TV5_2024_06.csv,aggregate,warning,Verarbeitung mit Warnungen,,57,2024-12-27 06:31:07,,2024-01-07 16:50:44
+919,PLAN_UMSATZ_TV5_2025_09_final.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,17,2025-12-25 19:20:19,,2025-06-26 05:28:20
+920,SONSTIGE_ANGEBOTE_TV17_2025_07_korrigiert.csv,ingest,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,3,2025-07-12 01:58:37,,
+921,TICKET_VERKAEUFE_TV18_2024_05_testlauf.csv,validate,info,Verarbeitung gestartet,,57,2024-09-09 13:44:36,,2024-08-01 13:07:24
+922,SONSTIGE_ANGEBOTE_TV14_2025_02.csv,ingest,info,Verarbeitung gestartet,,44,2025-09-10 07:11:20,,
+923,PLAN_UMSATZ_TV13_2025_11.csv,ingest,success,Verarbeitung erfolgreich,,,2024-09-15 00:08:41,,
+924,TICKET_VERKAEUFE_TV2_2024_09_testlauf.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,43,2024-03-09 15:40:56,5,2025-12-06 01:27:28
+925,PLAN_UMSATZ_TV2_2025_04_testlauf.csv,aggregate,warning,Verarbeitung mit Warnungen,,33,2025-04-29 19:57:17,49,2025-01-18 17:35:12
+926,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,aggregate,info,Verarbeitung gestartet,,34,2024-11-26 22:37:28,18,2025-08-10 01:01:30
+927,TICKET_VERKAEUFE_TV18_2025_01.csv,validate,info,Verarbeitung gestartet,,23,2024-05-17 02:57:46,,
+928,PLAN_UMSATZ_TV6_2025_08.csv,aggregate,info,Verarbeitung gestartet,,36,2025-04-22 14:29:18,7,2025-01-24 01:04:35
+929,PLAN_UMSATZ_TV4_2024_11.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,,2024-10-02 00:50:08,,
+930,PLAN_UMSATZ_TV6_2024_01.csv,ingest,info,Verarbeitung gestartet,,,2025-06-21 03:39:06,,2025-08-27 11:32:50
+931,PLAN_UMSATZ_TV10_2025_10_testlauf.csv,ingest,info,Verarbeitung gestartet,,,2025-11-24 09:33:01,50,
+932,PLAN_UMSATZ_TV6_2025_01.csv,aggregate,info,Verarbeitung gestartet,,30,2025-11-24 18:10:12,,
+933,PLAN_UMSATZ_TV11_2025_01_korrigiert.csv,export,info,Verarbeitung gestartet,,,2024-05-02 21:09:15,11,
+934,SONSTIGE_ANGEBOTE_TV3_2024_01_v1.csv,validate,info,Verarbeitung gestartet,,,2025-01-13 18:40:22,,
+935,SONSTIGE_ANGEBOTE_TV5_2025_05_v1.csv,aggregate,info,Verarbeitung gestartet,,37,2024-02-06 04:02:43,71,
+936,PLAN_UMSATZ_TV12_2025_02_final.csv,aggregate,warning,Verarbeitung mit Warnungen,,71,2024-08-07 15:39:14,,2024-03-14 22:55:06
+937,TICKET_VERKAEUFE_TV6_2025_10_korrigiert.csv,export,info,Verarbeitung gestartet,,,2025-08-15 09:02:05,59,2024-02-08 20:46:19
+938,TICKET_VERKAEUFE_TV20_2025_11_testlauf.csv,aggregate,info,Verarbeitung gestartet,,,2024-12-26 08:28:30,25,2024-02-13 23:00:50
+939,SONSTIGE_ANGEBOTE_TV13_2024_02_v1.csv,aggregate,info,Verarbeitung gestartet,,32,2024-02-08 07:10:08,,
+940,PLAN_UMSATZ_TV5_2024_05.csv,export,info,Verarbeitung gestartet,,34,2025-07-15 17:05:24,63,2024-04-24 04:32:38
+941,TICKET_VERKAEUFE_TV19_2024_01.csv,export,info,Verarbeitung gestartet,,7,2024-05-15 10:40:13,,2024-12-19 08:47:22
+942,SONSTIGE_ANGEBOTE_TV18_2025_07_final.csv,aggregate,success,Verarbeitung erfolgreich,,,2024-06-04 12:21:24,,2024-07-16 00:34:15
+943,PLAN_UMSATZ_TV17_2025_05.csv,aggregate,info,Verarbeitung gestartet,,,2024-05-25 17:55:34,,
+944,TICKET_VERKAEUFE_TV9_2024_01.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,29,2024-07-05 10:43:29,69,
+945,PLAN_UMSATZ_TV18_2025_05.csv,aggregate,info,Verarbeitung gestartet,,15,2024-01-26 14:19:57,,
+946,PLAN_UMSATZ_TV12_2025_02_final.csv,export,info,Verarbeitung gestartet,,33,2024-11-26 20:50:59,4,
+947,PLAN_UMSATZ_TV9_2024_09_testlauf.csv,validate,info,Verarbeitung gestartet,,,2025-10-13 21:55:17,,
+948,SONSTIGE_ANGEBOTE_TV9_2024_08_v1.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,8,2025-06-08 07:37:54,70,2024-11-01 12:34:28
+949,TICKET_VERKAEUFE_TV4_2024_06_testlauf.csv,ingest,info,Verarbeitung gestartet,,14,2024-05-08 09:51:53,,
+950,TICKET_VERKAEUFE_TV3_2024_08.csv,validate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,,2025-11-21 06:14:21,,2024-12-19 13:44:22
+951,PLAN_UMSATZ_TV11_2024_04.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-09-07 04:12:44,,
+952,PLAN_UMSATZ_TV18_2024_12_testlauf.csv,aggregate,success,Verarbeitung erfolgreich,,13,2025-05-08 22:34:08,44,2025-03-19 09:56:32
+953,TICKET_VERKAEUFE_TV6_2025_07_final.csv,validate,info,Verarbeitung gestartet,,,2025-04-23 04:03:35,5,2024-02-06 05:32:52
+954,PLAN_UMSATZ_TV15_2024_02_final.csv,export,info,Verarbeitung gestartet,,60,2025-05-31 21:40:12,,
+955,TICKET_VERKAEUFE_TV18_2025_01.csv,aggregate,info,Verarbeitung gestartet,,45,2025-09-16 16:02:52,,2025-03-15 11:09:24
+956,PLAN_UMSATZ_TV15_2024_02_final.csv,ingest,warning,Verarbeitung mit Warnungen,,24,2025-02-25 12:07:43,75,
+957,SONSTIGE_ANGEBOTE_TV9_2024_07_v1.csv,validate,info,Verarbeitung gestartet,,64,2025-02-11 19:02:21,49,
+958,SONSTIGE_ANGEBOTE_TV19_2025_12_final.csv,validate,info,Verarbeitung gestartet,,44,2025-10-13 20:45:19,,
+959,PLAN_UMSATZ_TV5_2024_06_testlauf.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-03-26 06:19:25,73,
+960,SONSTIGE_ANGEBOTE_TV8_2025_01.csv,validate,info,Verarbeitung gestartet,,76,2025-04-03 07:11:18,,2024-07-02 20:56:57
+961,SONSTIGE_ANGEBOTE_TV4_2024_10_final.csv,export,error,Verarbeitung fehlgeschlagen,PLZ ungültig,59,2024-07-25 05:08:56,14,2024-10-07 23:52:10
+962,PLAN_UMSATZ_TV17_2025_03_final.csv,ingest,info,Verarbeitung gestartet,,7,2025-04-13 17:42:55,,
+963,PLAN_UMSATZ_TV19_2024_02_korrigiert.csv,export,error,Verarbeitung fehlgeschlagen,PLZ ungültig,64,2025-03-22 17:26:44,,2024-03-08 16:32:58
+964,PLAN_UMSATZ_TV7_2024_12.csv,export,info,Verarbeitung gestartet,,,2025-06-05 08:39:18,,2025-07-02 16:30:57
+965,PLAN_UMSATZ_TV17_2025_05.csv,ingest,info,Verarbeitung gestartet,,,2025-09-21 01:50:37,,2024-09-26 01:33:44
+966,TICKET_VERKAEUFE_TV20_2025_11_testlauf.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,39,2024-05-25 08:59:43,48,
+967,SONSTIGE_ANGEBOTE_TV20_2024_03.csv,aggregate,info,Verarbeitung gestartet,,,2024-03-12 01:00:10,,
+968,SONSTIGE_ANGEBOTE_TV16_2025_10.csv,export,success,Verarbeitung erfolgreich,,18,2024-07-24 05:25:39,80,2025-06-12 09:45:04
+969,PLAN_UMSATZ_TV9_2024_09_testlauf.csv,ingest,info,Verarbeitung gestartet,,37,2025-08-25 02:20:43,74,
+970,SONSTIGE_ANGEBOTE_TV14_2025_12_korrigiert.csv,ingest,info,Verarbeitung gestartet,,67,2024-09-12 19:18:41,,
+971,PLAN_UMSATZ_TV9_2025_05_v1.csv,aggregate,info,Verarbeitung gestartet,,5,2025-05-24 10:48:21,60,
+972,TICKET_VERKAEUFE_TV12_2024_04.csv,aggregate,success,Verarbeitung erfolgreich,,74,2024-10-04 19:15:08,,
+973,PLAN_UMSATZ_TV10_2025_03_v1.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,20,2024-04-19 05:47:27,76,2024-11-21 23:28:15
+974,TICKET_VERKAEUFE_TV7_2025_11.csv,validate,success,Verarbeitung erfolgreich,,,2025-04-28 04:55:43,43,
+975,SONSTIGE_ANGEBOTE_TV4_2025_06.csv,aggregate,info,Verarbeitung gestartet,,1,2025-12-04 12:24:41,11,
+976,SONSTIGE_ANGEBOTE_TV8_2025_02.csv,ingest,info,Verarbeitung gestartet,,44,2024-04-18 03:04:27,17,
+977,SONSTIGE_ANGEBOTE_TV14_2025_12_korrigiert.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,40,2025-07-14 16:03:40,,2025-12-26 11:02:42
+978,PLAN_UMSATZ_TV16_2024_11.csv,aggregate,info,Verarbeitung gestartet,,,2025-08-27 21:42:59,41,
+979,TICKET_VERKAEUFE_TV10_2025_08_korrigiert.csv,export,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,,2025-01-05 12:02:03,52,2025-07-03 18:50:54
+980,SONSTIGE_ANGEBOTE_TV13_2024_05.csv,aggregate,info,Verarbeitung gestartet,,,2025-05-19 03:29:42,,
+981,SONSTIGE_ANGEBOTE_TV4_2025_06.csv,ingest,info,Verarbeitung gestartet,,69,2025-10-13 13:19:31,,2025-01-24 03:30:53
+982,PLAN_UMSATZ_TV18_2025_01_final.csv,validate,info,Verarbeitung gestartet,,56,2024-04-02 17:15:04,,2025-02-18 05:18:28
+983,TICKET_VERKAEUFE_TV2_2024_07_korrigiert.csv,export,info,Verarbeitung gestartet,,53,2025-08-06 00:48:25,21,2024-07-05 08:57:53
+984,SONSTIGE_ANGEBOTE_TV14_2025_08.csv,ingest,info,Verarbeitung gestartet,,,2024-02-28 03:04:08,,
+985,SONSTIGE_ANGEBOTE_TV14_2025_11.csv,ingest,info,Verarbeitung gestartet,,33,2024-07-09 23:00:52,19,2024-07-13 13:46:21
+986,TICKET_VERKAEUFE_TV1_2025_05_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,24,2024-02-15 23:36:54,,
+987,TICKET_VERKAEUFE_TV13_2025_07_testlauf.csv,validate,info,Verarbeitung gestartet,,72,2024-11-16 20:58:13,,2025-06-02 05:39:26
+988,SONSTIGE_ANGEBOTE_TV15_2025_03_v1.csv,aggregate,success,Verarbeitung erfolgreich,,43,2024-10-02 08:34:20,26,2025-05-05 08:36:50
+989,PLAN_UMSATZ_TV18_2024_12_testlauf.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,41,2024-01-04 09:47:43,,
+990,PLAN_UMSATZ_TV7_2024_09.csv,ingest,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,37,2025-11-17 06:30:42,42,
+991,TICKET_VERKAEUFE_TV18_2025_04.csv,export,info,Verarbeitung gestartet,,,2025-07-27 13:47:24,,
+992,SONSTIGE_ANGEBOTE_TV8_2025_01.csv,export,info,Verarbeitung gestartet,,53,2024-06-30 16:13:25,,2024-05-24 22:08:23
+993,SONSTIGE_ANGEBOTE_TV17_2025_07_korrigiert.csv,ingest,info,Verarbeitung gestartet,,37,2025-02-19 19:29:14,,
+994,TICKET_VERKAEUFE_TV10_2025_07_testlauf.csv,aggregate,success,Verarbeitung erfolgreich,,13,2024-05-08 22:01:50,,
+995,PLAN_UMSATZ_TV7_2025_06_korrigiert.csv,validate,success,Verarbeitung erfolgreich,,49,2024-11-04 21:59:30,5,2025-04-05 15:00:09
+996,PLAN_UMSATZ_TV4_2024_07.csv,validate,warning,Verarbeitung mit Warnungen,,33,2024-03-14 22:52:06,,
+997,TICKET_VERKAEUFE_TV12_2024_05_final.csv,ingest,info,Verarbeitung gestartet,,25,2024-02-01 23:57:50,33,2024-09-18 20:53:24
+998,PLAN_UMSATZ_TV8_2025_06.csv,aggregate,info,Verarbeitung gestartet,,33,2025-06-13 18:53:49,,2025-01-19 16:17:39
+999,PLAN_UMSATZ_TV9_2024_05.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,16,2024-07-30 05:23:29,,2025-05-01 08:42:59
+1000,SONSTIGE_ANGEBOTE_TV11_2025_08_final.csv,aggregate,info,Verarbeitung gestartet,,75,2024-01-04 09:09:56,,
+1001,TICKET_VERKAEUFE_TV4_2024_06_testlauf.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,67,2024-04-07 23:50:56,1,
+1002,SONSTIGE_ANGEBOTE_TV5_2025_07.csv,export,info,Verarbeitung gestartet,,47,2024-07-10 23:32:36,63,2024-01-14 11:37:44
+1003,PLAN_UMSATZ_TV8_2024_02_testlauf.csv,aggregate,info,Verarbeitung gestartet,,45,2024-05-07 03:41:07,,2024-08-14 03:02:38
+1004,TICKET_VERKAEUFE_TV16_2024_02_v1.csv,export,success,Verarbeitung erfolgreich,,32,2025-06-16 15:23:52,,2025-06-25 00:56:16
+1005,TICKET_VERKAEUFE_TV4_2024_06_testlauf.csv,export,info,Verarbeitung gestartet,,20,2025-02-19 05:25:52,,2024-02-18 08:47:06
+1006,SONSTIGE_ANGEBOTE_TV16_2024_04.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,72,2024-05-17 06:20:22,14,
+1007,SONSTIGE_ANGEBOTE_TV17_2025_07_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,31,2024-12-22 23:43:00,,2024-09-12 09:39:44
+1008,PLAN_UMSATZ_TV15_2024_08.csv,ingest,info,Verarbeitung gestartet,,74,2025-12-07 04:48:30,16,
+1009,PLAN_UMSATZ_TV9_2024_07.csv,aggregate,info,Verarbeitung gestartet,,5,2024-12-17 03:53:36,,
+1010,TICKET_VERKAEUFE_TV19_2024_12.csv,validate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,40,2025-08-27 01:43:46,,
+1011,PLAN_UMSATZ_TV12_2025_02_final.csv,ingest,info,Verarbeitung gestartet,,72,2025-05-09 22:43:12,,2024-12-30 00:25:55
+1012,SONSTIGE_ANGEBOTE_TV20_2024_01_final.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,7,2025-09-06 03:18:03,,2024-09-27 20:42:25
+1013,TICKET_VERKAEUFE_TV6_2025_06_korrigiert.csv,validate,info,Verarbeitung gestartet,,59,2025-01-13 15:36:02,,
+1014,TICKET_VERKAEUFE_TV2_2025_03.csv,export,info,Verarbeitung gestartet,,20,2025-07-26 02:22:15,27,
+1015,PLAN_UMSATZ_TV10_2025_03_v1.csv,aggregate,warning,Verarbeitung mit Warnungen,,35,2025-10-10 06:51:03,30,
+1016,PLAN_UMSATZ_TV20_2024_12_final.csv,aggregate,info,Verarbeitung gestartet,,,2025-03-25 20:45:09,,2025-01-16 22:08:49
+1017,TICKET_VERKAEUFE_TV18_2025_04.csv,aggregate,info,Verarbeitung gestartet,,,2025-12-02 05:32:58,36,
+1018,SONSTIGE_ANGEBOTE_TV4_2025_08_korrigiert.csv,export,info,Verarbeitung gestartet,,22,2025-10-21 15:33:10,,
+1019,TICKET_VERKAEUFE_TV4_2024_06_testlauf.csv,ingest,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,,2025-06-23 07:17:32,,
+1020,TICKET_VERKAEUFE_TV6_2025_06_korrigiert.csv,export,info,Verarbeitung gestartet,,7,2024-09-06 12:16:35,,2025-10-07 12:10:34
+1021,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,ingest,info,Verarbeitung gestartet,,26,2025-08-07 08:11:13,,
+1022,PLAN_UMSATZ_TV12_2025_02_final.csv,ingest,info,Verarbeitung gestartet,,29,2024-10-15 12:51:14,,
+1023,SONSTIGE_ANGEBOTE_TV14_2025_11.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,13,2024-01-08 20:54:40,,
+1024,TICKET_VERKAEUFE_TV5_2024_06.csv,export,info,Verarbeitung gestartet,,,2025-01-16 17:29:41,3,2025-07-14 15:32:17
+1025,PLAN_UMSATZ_TV19_2025_08.csv,ingest,warning,Verarbeitung mit Warnungen,,,2024-10-20 12:55:46,37,
+1026,TICKET_VERKAEUFE_TV8_2025_01_testlauf.csv,validate,info,Verarbeitung gestartet,,36,2025-03-29 11:49:43,,
+1027,TICKET_VERKAEUFE_TV4_2024_06_testlauf.csv,aggregate,info,Verarbeitung gestartet,,18,2024-06-12 00:17:23,17,
+1028,SONSTIGE_ANGEBOTE_TV7_2024_08_v1.csv,ingest,success,Verarbeitung erfolgreich,,72,2025-05-26 04:34:15,,2024-03-31 20:48:22
+1029,PLAN_UMSATZ_TV17_2025_05.csv,ingest,info,Verarbeitung gestartet,,7,2025-09-25 05:22:33,,
+1030,SONSTIGE_ANGEBOTE_TV9_2024_01_final.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-03-19 12:44:29,,2025-04-24 21:29:47
+1031,SONSTIGE_ANGEBOTE_TV12_2024_10_v1.csv,export,info,Verarbeitung gestartet,,63,2025-06-16 16:44:42,2,
+1032,SONSTIGE_ANGEBOTE_TV8_2025_04.csv,ingest,info,Verarbeitung gestartet,,10,2025-10-08 09:15:53,,2024-12-04 02:19:17
+1033,TICKET_VERKAEUFE_TV20_2025_06_korrigiert.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,40,2025-04-30 17:27:26,,
+1034,TICKET_VERKAEUFE_TV10_2025_06_korrigiert.csv,export,warning,Verarbeitung mit Warnungen,,19,2024-04-12 11:52:46,,2025-08-13 19:31:44
+1035,SONSTIGE_ANGEBOTE_TV16_2025_11_testlauf.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,24,2024-08-16 00:44:08,,2024-11-06 02:52:04
+1036,SONSTIGE_ANGEBOTE_TV2_2025_08_v1.csv,export,info,Verarbeitung gestartet,,63,2025-04-29 19:02:24,73,
+1037,SONSTIGE_ANGEBOTE_TV5_2025_06.csv,export,success,Verarbeitung erfolgreich,,46,2025-05-31 03:38:46,,2024-02-29 10:38:30
+1038,PLAN_UMSATZ_TV12_2024_02.csv,export,info,Verarbeitung gestartet,,39,2024-05-01 14:59:37,31,2025-09-23 13:21:28
+1039,SONSTIGE_ANGEBOTE_TV18_2024_12.csv,validate,info,Verarbeitung gestartet,,5,2024-01-31 02:58:02,,
+1040,TICKET_VERKAEUFE_TV7_2024_01.csv,validate,info,Verarbeitung gestartet,,37,2025-01-14 10:18:27,,
+1041,TICKET_VERKAEUFE_TV19_2024_10.csv,export,success,Verarbeitung erfolgreich,,,2025-10-25 22:07:48,,2025-12-07 19:27:32
+1042,PLAN_UMSATZ_TV10_2025_10_testlauf.csv,export,warning,Verarbeitung mit Warnungen,,,2024-07-16 02:15:38,,
+1043,PLAN_UMSATZ_TV17_2025_04.csv,validate,info,Verarbeitung gestartet,,,2025-06-23 16:33:27,,
+1044,SONSTIGE_ANGEBOTE_TV18_2025_09_v1.csv,export,info,Verarbeitung gestartet,,53,2024-07-07 00:22:52,,
+1045,TICKET_VERKAEUFE_TV4_2025_09.csv,export,info,Verarbeitung gestartet,,,2024-12-09 12:15:21,14,2024-01-27 19:57:09
+1046,PLAN_UMSATZ_TV6_2025_01.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,35,2025-01-30 12:19:24,,
+1047,TICKET_VERKAEUFE_TV8_2025_01_testlauf.csv,export,info,Verarbeitung gestartet,,77,2025-08-12 06:58:22,,
+1048,SONSTIGE_ANGEBOTE_TV19_2025_04.csv,export,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,44,2025-12-21 10:10:55,,2024-04-20 15:39:34
+1049,PLAN_UMSATZ_TV18_2025_05.csv,validate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,68,2025-02-06 21:06:22,,2025-03-18 13:42:19
+1050,PLAN_UMSATZ_TV8_2025_06.csv,validate,info,Verarbeitung gestartet,,38,2025-12-02 06:30:16,,
+1051,SONSTIGE_ANGEBOTE_TV8_2025_02.csv,validate,info,Verarbeitung gestartet,,50,2024-07-04 21:20:49,,
+1052,TICKET_VERKAEUFE_TV7_2025_11.csv,ingest,info,Verarbeitung gestartet,,24,2025-10-26 03:44:50,,
+1053,TICKET_VERKAEUFE_TV1_2024_10.csv,ingest,info,Verarbeitung gestartet,,23,2025-06-12 01:26:36,,
+1054,PLAN_UMSATZ_TV16_2024_11.csv,validate,info,Verarbeitung gestartet,,28,2025-04-11 20:53:43,,2024-04-04 18:38:01
+1055,PLAN_UMSATZ_TV4_2025_04.csv,aggregate,info,Verarbeitung gestartet,,27,2024-11-13 17:14:57,,
+1056,PLAN_UMSATZ_TV6_2025_07_final.csv,validate,info,Verarbeitung gestartet,,3,2024-08-20 07:15:20,,2024-01-15 12:39:55
+1057,SONSTIGE_ANGEBOTE_TV2_2025_08_v1.csv,ingest,success,Verarbeitung erfolgreich,,5,2025-06-25 03:06:22,,2025-05-24 19:06:25
+1058,PLAN_UMSATZ_TV1_2025_06_final.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,48,2025-08-11 21:46:11,,
+1059,SONSTIGE_ANGEBOTE_TV9_2024_10_testlauf.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,58,2024-08-26 04:17:38,,
+1060,TICKET_VERKAEUFE_TV11_2025_02.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-03-13 02:03:04,78,
+1061,TICKET_VERKAEUFE_TV9_2025_04.csv,export,info,Verarbeitung gestartet,,38,2024-12-22 00:06:17,,
+1062,SONSTIGE_ANGEBOTE_TV11_2024_08_korrigiert.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-12-20 16:02:45,34,
+1063,PLAN_UMSATZ_TV6_2025_01.csv,validate,info,Verarbeitung gestartet,,,2024-02-10 02:07:53,,
+1064,PLAN_UMSATZ_TV9_2024_09_testlauf.csv,aggregate,info,Verarbeitung gestartet,,68,2024-05-14 19:17:19,,
+1065,PLAN_UMSATZ_TV20_2025_08_korrigiert.csv,ingest,info,Verarbeitung gestartet,,42,2024-05-02 11:23:27,60,
+1066,SONSTIGE_ANGEBOTE_TV3_2024_12.csv,aggregate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,50,2025-12-19 17:55:14,,2025-11-12 09:19:32
+1067,PLAN_UMSATZ_TV9_2024_07.csv,aggregate,info,Verarbeitung gestartet,,7,2024-02-11 22:35:55,39,
+1068,SONSTIGE_ANGEBOTE_TV13_2024_02_v1.csv,aggregate,info,Verarbeitung gestartet,,,2025-04-20 20:03:32,12,
+1069,TICKET_VERKAEUFE_TV4_2025_12.csv,validate,info,Verarbeitung gestartet,,29,2025-01-03 22:01:40,,2024-11-16 14:09:31
+1070,PLAN_UMSATZ_TV6_2025_08.csv,export,info,Verarbeitung gestartet,,,2025-05-26 10:59:40,47,
+1071,SONSTIGE_ANGEBOTE_TV17_2024_06.csv,aggregate,info,Verarbeitung gestartet,,,2025-03-07 03:34:42,43,
+1072,SONSTIGE_ANGEBOTE_TV17_2024_02_final.csv,export,info,Verarbeitung gestartet,,10,2024-07-09 12:07:38,,2025-09-11 11:05:50
+1073,PLAN_UMSATZ_TV17_2025_02.csv,export,info,Verarbeitung gestartet,,,2025-09-02 20:39:39,70,
+1074,TICKET_VERKAEUFE_TV11_2024_04_v1.csv,ingest,info,Verarbeitung gestartet,,23,2025-04-03 09:31:31,,2024-09-04 11:47:49
+1075,TICKET_VERKAEUFE_TV7_2025_10.csv,validate,info,Verarbeitung gestartet,,16,2025-03-20 12:16:33,,
+1076,TICKET_VERKAEUFE_TV9_2024_01.csv,validate,info,Verarbeitung gestartet,,62,2024-12-26 07:14:44,15,
+1077,PLAN_UMSATZ_TV11_2025_07_v1.csv,aggregate,success,Verarbeitung erfolgreich,,,2024-06-23 08:07:23,11,2025-08-17 13:32:09
+1078,PLAN_UMSATZ_TV13_2024_09.csv,aggregate,info,Verarbeitung gestartet,,68,2025-05-20 03:39:21,36,2025-01-28 08:27:39
+1079,TICKET_VERKAEUFE_TV9_2025_04.csv,validate,info,Verarbeitung gestartet,,,2025-06-18 07:58:01,,2024-02-19 19:03:57
+1080,SONSTIGE_ANGEBOTE_TV8_2025_01.csv,validate,info,Verarbeitung gestartet,,20,2025-02-10 03:14:42,,
+1081,PLAN_UMSATZ_TV5_2024_06.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,31,2024-08-25 16:29:56,,
+1082,SONSTIGE_ANGEBOTE_TV20_2024_03.csv,validate,error,Verarbeitung fehlgeschlagen,PLZ ungültig,26,2024-07-12 21:56:19,,2024-02-17 03:53:13
+1083,SONSTIGE_ANGEBOTE_TV19_2025_12_final.csv,aggregate,success,Verarbeitung erfolgreich,,65,2025-01-22 19:26:47,63,
+1084,SONSTIGE_ANGEBOTE_TV9_2025_11_v1.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,25,2024-05-17 02:00:31,,
+1085,PLAN_UMSATZ_TV17_2025_05.csv,validate,info,Verarbeitung gestartet,,35,2025-10-01 17:16:38,,
+1086,PLAN_UMSATZ_TV17_2025_02.csv,aggregate,info,Verarbeitung gestartet,,76,2024-10-23 13:24:41,,
+1087,SONSTIGE_ANGEBOTE_TV19_2025_12_final.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-10-28 13:19:10,,2025-12-19 23:07:48
+1088,TICKET_VERKAEUFE_TV14_2024_03.csv,ingest,info,Verarbeitung gestartet,,,2025-10-23 19:58:02,46,
+1089,PLAN_UMSATZ_TV10_2025_10_testlauf.csv,validate,info,Verarbeitung gestartet,,68,2025-01-01 19:51:53,,2025-06-19 20:35:19
+1090,PLAN_UMSATZ_TV13_2024_09.csv,ingest,info,Verarbeitung gestartet,,3,2025-03-25 15:20:16,,
+1091,SONSTIGE_ANGEBOTE_TV18_2024_12.csv,export,info,Verarbeitung gestartet,,53,2024-11-22 15:46:14,2,2025-07-31 23:42:17
+1092,PLAN_UMSATZ_TV8_2025_02_final.csv,validate,info,Verarbeitung gestartet,,79,2024-08-13 10:12:25,,2024-05-05 04:33:08
+1093,PLAN_UMSATZ_TV17_2025_04.csv,export,info,Verarbeitung gestartet,,58,2024-02-11 11:55:20,,
+1094,TICKET_VERKAEUFE_TV16_2024_02_v1.csv,ingest,warning,Verarbeitung mit Warnungen,,33,2024-04-10 20:31:13,,
+1095,TICKET_VERKAEUFE_TV6_2025_07_final.csv,export,success,Verarbeitung erfolgreich,,22,2024-03-20 12:40:06,,2024-03-04 03:42:30
+1096,TICKET_VERKAEUFE_TV6_2025_10_korrigiert.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,25,2024-11-16 05:45:30,43,2024-02-21 04:17:12
+1097,TICKET_VERKAEUFE_TV9_2025_10_final.csv,validate,info,Verarbeitung gestartet,,77,2024-07-15 22:04:09,80,
+1098,PLAN_UMSATZ_TV9_2024_09_testlauf.csv,export,success,Verarbeitung erfolgreich,,73,2024-08-21 11:05:08,6,2025-05-03 05:23:39
+1099,TICKET_VERKAEUFE_TV2_2024_09_testlauf.csv,validate,info,Verarbeitung gestartet,,63,2025-11-27 19:18:08,,
+1100,PLAN_UMSATZ_TV4_2024_11.csv,export,info,Verarbeitung gestartet,,73,2024-02-02 06:34:13,,
+1101,TICKET_VERKAEUFE_TV1_2024_10.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,74,2025-10-28 13:51:40,72,2025-08-27 13:42:57
+1102,TICKET_VERKAEUFE_TV12_2024_05_final.csv,aggregate,warning,Verarbeitung mit Warnungen,,12,2025-02-16 16:57:00,,
+1103,TICKET_VERKAEUFE_TV20_2024_10_testlauf.csv,validate,warning,Verarbeitung mit Warnungen,,10,2025-09-01 14:24:26,27,
+1104,TICKET_VERKAEUFE_TV9_2025_07.csv,aggregate,info,Verarbeitung gestartet,,,2025-01-16 04:56:39,,
+1105,TICKET_VERKAEUFE_TV6_2025_07_final.csv,validate,success,Verarbeitung erfolgreich,,,2025-05-18 20:04:01,80,2025-03-25 02:04:54
+1106,PLAN_UMSATZ_TV11_2025_07_v1.csv,validate,info,Verarbeitung gestartet,,38,2025-10-27 12:41:26,,
+1107,SONSTIGE_ANGEBOTE_TV18_2024_08_v1.csv,export,info,Verarbeitung gestartet,,,2025-01-01 10:23:55,,
+1108,PLAN_UMSATZ_TV4_2024_11.csv,ingest,info,Verarbeitung gestartet,,48,2025-06-24 14:04:40,,
+1109,SONSTIGE_ANGEBOTE_TV14_2025_08.csv,validate,info,Verarbeitung gestartet,,,2025-06-09 21:17:29,,
+1110,PLAN_UMSATZ_TV11_2025_04.csv,ingest,info,Verarbeitung gestartet,,79,2025-03-16 03:14:00,24,
+1111,PLAN_UMSATZ_TV19_2025_08.csv,export,info,Verarbeitung gestartet,,33,2025-10-03 14:57:12,,
+1112,SONSTIGE_ANGEBOTE_TV18_2025_07_final.csv,export,info,Verarbeitung gestartet,,14,2024-06-11 08:51:52,,
+1113,PLAN_UMSATZ_TV12_2024_02.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,29,2025-04-20 15:01:29,,2024-05-31 19:25:01
+1114,PLAN_UMSATZ_TV5_2024_06.csv,ingest,info,Verarbeitung gestartet,,69,2025-11-07 20:54:39,49,2025-08-18 22:17:52
+1115,SONSTIGE_ANGEBOTE_TV4_2025_06.csv,aggregate,info,Verarbeitung gestartet,,66,2024-04-27 06:27:27,,2024-07-17 12:43:33
+1116,TICKET_VERKAEUFE_TV4_2025_12.csv,export,info,Verarbeitung gestartet,,,2025-06-02 06:31:29,,2025-03-07 13:38:12
+1117,SONSTIGE_ANGEBOTE_TV8_2025_02.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,50,2025-12-11 03:18:16,,
+1118,SONSTIGE_ANGEBOTE_TV5_2024_09_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,26,2024-09-12 19:51:02,16,
+1119,PLAN_UMSATZ_TV10_2024_05.csv,validate,info,Verarbeitung gestartet,,72,2025-05-13 10:00:38,,
+1120,PLAN_UMSATZ_TV8_2025_05_final.csv,aggregate,info,Verarbeitung gestartet,,60,2025-09-06 02:27:39,40,2025-05-28 10:54:03
+1121,PLAN_UMSATZ_TV17_2024_06.csv,ingest,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,76,2024-09-05 09:11:23,,
+1122,SONSTIGE_ANGEBOTE_TV4_2024_03_korrigiert.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ungültiges Datumsformat,37,2025-12-11 01:00:39,62,2025-12-29 21:36:35
+1123,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,export,info,Verarbeitung gestartet,,,2025-08-29 14:57:54,8,2024-04-04 07:59:31
+1124,TICKET_VERKAEUFE_TV14_2024_03.csv,validate,info,Verarbeitung gestartet,,62,2024-12-28 04:21:51,9,
+1125,PLAN_UMSATZ_TV6_2025_07.csv,export,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,48,2024-06-18 23:16:12,66,
+1126,SONSTIGE_ANGEBOTE_TV3_2024_01_v1.csv,validate,info,Verarbeitung gestartet,,,2024-01-27 02:04:04,,
+1127,PLAN_UMSATZ_TV16_2025_05.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,47,2024-12-08 01:03:30,77,2025-10-05 05:15:58
+1128,SONSTIGE_ANGEBOTE_TV5_2025_07.csv,validate,info,Verarbeitung gestartet,,29,2024-10-09 03:34:17,,
+1129,PLAN_UMSATZ_TV18_2024_06.csv,ingest,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,,2024-03-07 22:20:43,44,2025-04-30 14:01:03
+1130,PLAN_UMSATZ_TV11_2024_04.csv,ingest,info,Verarbeitung gestartet,,29,2024-04-19 19:51:20,15,
+1131,TICKET_VERKAEUFE_TV12_2024_03.csv,export,info,Verarbeitung gestartet,,72,2024-10-01 01:51:21,,2024-10-27 19:41:43
+1132,TICKET_VERKAEUFE_TV17_2025_03_korrigiert.csv,ingest,success,Verarbeitung erfolgreich,,68,2024-05-12 20:49:42,,2025-12-15 16:32:09
+1133,TICKET_VERKAEUFE_TV10_2024_03.csv,aggregate,info,Verarbeitung gestartet,,,2025-08-12 20:01:52,,
+1134,SONSTIGE_ANGEBOTE_TV17_2024_02_final.csv,ingest,info,Verarbeitung gestartet,,48,2024-01-25 13:59:27,5,2024-07-05 20:28:33
+1135,TICKET_VERKAEUFE_TV12_2024_05_final.csv,export,warning,Verarbeitung mit Warnungen,,,2025-02-24 03:53:30,,
+1136,SONSTIGE_ANGEBOTE_TV10_2024_09_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,52,2025-04-09 20:18:45,67,
+1137,TICKET_VERKAEUFE_TV9_2024_08_v1.csv,ingest,info,Verarbeitung gestartet,,11,2025-01-07 12:44:06,54,2024-11-18 12:07:35
+1138,PLAN_UMSATZ_TV5_2024_06.csv,validate,warning,Verarbeitung mit Warnungen,,1,2024-03-09 14:30:09,,
+1139,PLAN_UMSATZ_TV19_2025_08.csv,aggregate,info,Verarbeitung gestartet,,73,2025-09-03 17:44:33,71,
+1140,SONSTIGE_ANGEBOTE_TV3_2024_08_testlauf.csv,export,success,Verarbeitung erfolgreich,,13,2025-05-01 17:52:12,20,2025-09-25 15:34:46
+1141,PLAN_UMSATZ_TV11_2024_04.csv,aggregate,info,Verarbeitung gestartet,,17,2025-08-25 21:47:05,31,
+1142,SONSTIGE_ANGEBOTE_TV17_2025_07_korrigiert.csv,aggregate,success,Verarbeitung erfolgreich,,80,2025-06-01 21:51:40,,2025-08-03 20:32:02
+1143,TICKET_VERKAEUFE_TV3_2024_08.csv,export,info,Verarbeitung gestartet,,39,2025-12-12 16:16:49,,
+1144,SONSTIGE_ANGEBOTE_TV9_2024_07_v1.csv,ingest,info,Verarbeitung gestartet,,15,2024-04-26 23:32:41,,
+1145,SONSTIGE_ANGEBOTE_TV13_2025_12_testlauf.csv,aggregate,error,Verarbeitung fehlgeschlagen,Ticketcode unbekannt,65,2024-12-10 06:04:16,,2025-09-11 01:07:32
+1146,TICKET_VERKAEUFE_TV5_2024_08_korrigiert.csv,validate,success,Verarbeitung erfolgreich,,2,2024-08-13 19:53:14,74,2025-06-27 21:23:17
+1147,TICKET_VERKAEUFE_TV7_2025_11.csv,export,info,Verarbeitung gestartet,,17,2025-06-08 22:56:32,11,
+1148,PLAN_UMSATZ_TV3_2024_01_testlauf.csv,export,warning,Verarbeitung mit Warnungen,,13,2024-02-11 16:01:47,,2024-03-05 16:39:45
+1149,PLAN_UMSATZ_TV17_2024_07.csv,export,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2025-07-10 01:57:54,,2024-12-23 09:11:04
+1150,SONSTIGE_ANGEBOTE_TV3_2024_12.csv,aggregate,info,Verarbeitung gestartet,,2,2025-07-21 08:06:53,,
+1151,TICKET_VERKAEUFE_TV1_2025_05_korrigiert.csv,validate,warning,Verarbeitung mit Warnungen,,53,2024-11-24 01:27:02,,2024-06-09 11:45:15
+1152,SONSTIGE_ANGEBOTE_TV10_2024_09.csv,export,info,Verarbeitung gestartet,,,2024-11-26 03:42:49,31,2024-09-07 09:09:58
+1153,SONSTIGE_ANGEBOTE_TV9_2025_11_final.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,38,2025-06-24 21:23:10,49,2024-05-29 15:19:29
+1154,PLAN_UMSATZ_TV18_2025_05.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,44,2024-02-27 03:39:24,48,2025-05-21 09:19:50
+1155,TICKET_VERKAEUFE_TV3_2025_04.csv,ingest,success,Verarbeitung erfolgreich,,52,2025-06-13 17:01:04,,
+1156,PLAN_UMSATZ_TV3_2024_12_v1.csv,export,warning,Verarbeitung mit Warnungen,,25,2025-11-16 13:57:07,,2024-09-27 01:38:31
+1157,PLAN_UMSATZ_TV6_2024_01.csv,export,info,Verarbeitung gestartet,,48,2025-09-29 09:12:41,,2024-07-13 14:25:10
+1158,SONSTIGE_ANGEBOTE_TV14_2024_12_v1.csv,validate,info,Verarbeitung gestartet,,,2024-02-11 05:05:16,,2024-05-21 09:45:18
+1159,SONSTIGE_ANGEBOTE_TV9_2025_11_v1.csv,export,info,Verarbeitung gestartet,,52,2024-09-26 01:05:43,75,
+1160,TICKET_VERKAEUFE_TV13_2025_08_v1.csv,aggregate,info,Verarbeitung gestartet,,67,2025-11-02 00:44:32,,
+1161,SONSTIGE_ANGEBOTE_TV5_2025_05_v1.csv,ingest,info,Verarbeitung gestartet,,,2024-04-23 05:50:58,50,2024-12-29 13:34:02
+1162,SONSTIGE_ANGEBOTE_TV16_2025_11_testlauf.csv,validate,info,Verarbeitung gestartet,,63,2025-12-23 07:59:13,,2024-04-09 17:59:38
+1163,SONSTIGE_ANGEBOTE_TV4_2024_07.csv,ingest,info,Verarbeitung gestartet,,26,2025-04-15 22:22:41,75,2024-11-09 16:39:08
+1164,TICKET_VERKAEUFE_TV9_2025_07.csv,export,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,75,2025-12-17 04:51:36,,
+1165,TICKET_VERKAEUFE_TV3_2025_04.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,5,2025-09-21 17:09:32,,
+1166,TICKET_VERKAEUFE_TV19_2024_12.csv,aggregate,info,Verarbeitung gestartet,,55,2025-11-01 07:34:19,,
+1167,SONSTIGE_ANGEBOTE_TV4_2024_10_final.csv,ingest,info,Verarbeitung gestartet,,,2025-04-01 14:10:09,,2025-01-30 16:17:54
+1168,TICKET_VERKAEUFE_TV6_2025_07_final.csv,export,success,Verarbeitung erfolgreich,,76,2025-08-03 21:34:50,49,
+1169,TICKET_VERKAEUFE_TV4_2024_08_v1.csv,validate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,,2024-06-21 12:18:16,,
+1170,SONSTIGE_ANGEBOTE_TV5_2025_07.csv,export,info,Verarbeitung gestartet,,,2025-09-13 21:53:51,,
+1171,PLAN_UMSATZ_TV18_2024_06.csv,aggregate,info,Verarbeitung gestartet,,10,2024-03-20 14:48:16,79,2025-09-17 16:18:30
+1172,TICKET_VERKAEUFE_TV6_2025_03.csv,export,info,Verarbeitung gestartet,,,2024-01-02 15:43:23,44,
+1173,PLAN_UMSATZ_TV1_2024_04.csv,validate,info,Verarbeitung gestartet,,,2024-03-31 20:34:12,69,2024-10-06 21:13:49
+1174,SONSTIGE_ANGEBOTE_TV4_2025_02_v1.csv,ingest,info,Verarbeitung gestartet,,62,2025-12-14 18:17:32,,2025-10-19 17:17:59
+1175,SONSTIGE_ANGEBOTE_TV9_2024_01_final.csv,export,info,Verarbeitung gestartet,,6,2025-04-02 20:22:40,,
+1176,SONSTIGE_ANGEBOTE_TV11_2025_04_final.csv,aggregate,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,53,2024-03-10 18:01:51,38,2024-11-13 12:32:01
+1177,TICKET_VERKAEUFE_TV7_2024_01.csv,ingest,success,Verarbeitung erfolgreich,,19,2025-11-06 07:09:43,73,2025-06-14 19:13:28
+1178,SONSTIGE_ANGEBOTE_TV11_2025_04_final.csv,export,warning,Verarbeitung mit Warnungen,,,2025-09-18 12:46:00,,2025-02-20 21:13:44
+1179,SONSTIGE_ANGEBOTE_TV15_2025_03_v1.csv,validate,error,Verarbeitung fehlgeschlagen,Pflichtfeld fehlt,37,2025-08-12 20:13:34,63,2025-10-27 03:11:35
+1180,SONSTIGE_ANGEBOTE_TV8_2025_02.csv,ingest,info,Verarbeitung gestartet,,12,2025-04-04 04:45:49,,2024-11-12 01:00:27
+1181,TICKET_VERKAEUFE_TV9_2025_10_final.csv,aggregate,info,Verarbeitung gestartet,,65,2024-11-15 01:10:55,18,
+1182,SONSTIGE_ANGEBOTE_TV13_2024_05.csv,aggregate,success,Verarbeitung erfolgreich,,14,2025-12-20 02:55:09,,
+1183,SONSTIGE_ANGEBOTE_TV13_2024_05.csv,export,info,Verarbeitung gestartet,,32,2025-03-11 06:37:41,56,
+1184,TICKET_VERKAEUFE_TV16_2024_05_v1.csv,export,info,Verarbeitung gestartet,,46,2024-04-30 20:48:25,3,2024-02-01 04:43:04
+1185,TICKET_VERKAEUFE_TV7_2024_01.csv,ingest,info,Verarbeitung gestartet,,,2025-11-19 17:03:20,11,2024-11-25 08:22:18
+1186,PLAN_UMSATZ_TV17_2025_05.csv,aggregate,info,Verarbeitung gestartet,,,2024-03-28 11:08:18,44,
+1187,PLAN_UMSATZ_TV18_2024_08_korrigiert.csv,aggregate,info,Verarbeitung gestartet,,,2024-09-26 20:18:09,2,2025-07-17 00:30:53
+1188,TICKET_VERKAEUFE_TV13_2024_12_final.csv,ingest,info,Verarbeitung gestartet,,40,2024-10-19 19:29:30,,
+1189,SONSTIGE_ANGEBOTE_TV1_2025_05.csv,aggregate,info,Verarbeitung gestartet,,,2025-10-20 00:06:09,,2024-04-18 02:59:36
+1190,SONSTIGE_ANGEBOTE_TV4_2025_10.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,31,2024-06-02 15:49:28,,2025-08-03 19:35:54
+1191,PLAN_UMSATZ_TV1_2024_04.csv,ingest,warning,Verarbeitung mit Warnungen,Einige Zeilen wurden übersprungen,72,2025-01-27 16:46:22,39,
+1192,TICKET_VERKAEUFE_TV12_2024_03_testlauf.csv,export,info,Verarbeitung gestartet,,75,2024-10-11 02:05:46,,
+1193,SONSTIGE_ANGEBOTE_TV4_2025_06.csv,ingest,success,Verarbeitung erfolgreich,,52,2025-09-13 13:07:47,,
+1194,TICKET_VERKAEUFE_TV14_2024_10.csv,validate,info,Verarbeitung gestartet,,8,2024-06-18 16:57:52,71,2024-07-15 11:41:08
+1195,PLAN_UMSATZ_TV19_2025_08.csv,ingest,info,Verarbeitung gestartet,,53,2025-03-01 23:25:41,24,2024-08-27 22:42:13
+1196,SONSTIGE_ANGEBOTE_TV13_2025_01.csv,export,success,Verarbeitung erfolgreich,,37,2024-03-03 22:58:19,,
+1197,PLAN_UMSATZ_TV9_2024_07.csv,validate,info,Verarbeitung gestartet,,,2025-12-20 05:28:09,,
+1198,SONSTIGE_ANGEBOTE_TV7_2025_02_final.csv,validate,warning,Verarbeitung mit Warnungen,,9,2024-04-13 01:51:28,32,
+1199,TICKET_VERKAEUFE_TV6_2025_10_korrigiert.csv,export,info,Verarbeitung gestartet,,53,2024-10-17 22:57:41,25,
+1200,PLAN_UMSATZ_TV6_2025_07.csv,export,info,Verarbeitung gestartet,,13,2024-02-06 19:10:48,,2025-09-16 03:50:02

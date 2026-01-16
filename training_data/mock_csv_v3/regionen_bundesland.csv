@@ -1,0 +1,17 @@
+﻿bundesland_id,bundesland_name,iso_code,bundesland_code2,erstellt_von_user_id,erstellt_am,geaendert_von_user_id,geaendert_am
+1,Schleswig-Holstein,DE-SH,01,15,2025-01-27 12:30:19,,
+2,Hamburg,DE-HH,02,4,2025-04-12 14:26:33,55,2025-08-22 17:48:25
+3,Niedersachsen,DE-NI,03,36,2024-01-21 14:39:58,,
+4,Bremen,DE-HB,04,32,2025-03-11 22:21:58,,
+5,Nordrhein-Westfalen,DE-NW,05,29,2024-06-03 10:36:08,14,2024-08-14 11:30:36
+6,Hessen,DE-HE,06,18,2025-07-10 03:34:22,,
+7,Rheinland-Pfalz,DE-RP,07,14,2025-05-19 18:43:26,,
+8,Baden-Württemberg,DE-BW,08,70,2025-06-28 17:38:42,,
+9,Bayern,DE-BY,09,12,2025-02-27 06:26:43,,
+10,Saarland,DE-SL,10,76,2024-11-21 20:24:58,,
+11,Berlin,DE-BE,11,55,2024-06-20 05:18:39,16,2025-04-10 05:42:11
+12,Brandenburg,DE-BB,12,5,2024-12-14 21:51:48,,
+13,Mecklenburg-Vorpommern,DE-MV,13,4,2025-04-02 16:42:30,,
+14,Sachsen,DE-SN,14,12,2024-08-04 01:51:02,47,2025-10-26 12:28:28
+15,Sachsen-Anhalt,DE-ST,15,28,2025-09-20 16:52:38,,
+16,Thüringen,DE-TH,16,30,2025-11-06 04:55:57,,
