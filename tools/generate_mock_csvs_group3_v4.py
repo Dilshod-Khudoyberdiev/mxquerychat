@@ -1,25 +1,23 @@
 """
-generate_mock_csvs_group3_v3.py
+generate_mock_csvs_group3_v4.py
 
-Group 3 (distribution tables) with friendly naming.
+Group 3 = Distribution / allocation tables (shares)
+Creates these CSVs in training_data/mock_csv_v3/:
 
-Reads from: training_data/mock_csv_v3/
-- ticket_verkaeufe.csv
-- sonstige_angebote.csv
-- plan_umsatz.csv
-- regionen_bundesland.csv
-
-Writes:
 - ticket_verteilung_bundesland.csv
 - angebot_verteilung_bundesland.csv
 - plan_verteilung_bundesland.csv
 - verteilung_kopf.csv
 - verteilung_positionen.csv
+
+Depends on Group 1 + 2 CSVs.
+Run:
+  python tools/generate_mock_csvs_group3_v4.py
 """
 
 import random
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import date
 
 import pandas as pd
 
@@ -29,119 +27,145 @@ INPUT_DIR = Path("training_data/mock_csv_v3")
 OUTPUT_DIR = Path("training_data/mock_csv_v3")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-AUDIT_START = datetime(2024, 1, 1)
-AUDIT_END = datetime(2026, 1, 1)
-
 def write_csv_for_excel(df: pd.DataFrame, path: Path) -> None:
     df.to_csv(path, index=False, encoding="utf-8-sig")
 
-def random_datetime(start: datetime, end: datetime) -> str:
-    delta = end - start
-    seconds = random.randint(0, int(delta.total_seconds()))
-    return (start + timedelta(seconds=seconds)).strftime("%Y-%m-%d %H:%M:%S")
+# Load references
+bundesland_df = pd.read_csv(INPUT_DIR / "regionen_bundesland.csv")
+ticket_produkte_df = pd.read_csv(INPUT_DIR / "ticket_produkte.csv")
+tarifverbuende_df = pd.read_csv(INPUT_DIR / "tarifverbuende.csv")
 
-def add_audit_columns(df: pd.DataFrame) -> pd.DataFrame:
-    df["erstellt_von_user_id"] = [random.randint(1, 80) for _ in range(len(df))]
-    df["erstellt_am"] = [random_datetime(AUDIT_START, AUDIT_END) for _ in range(len(df))]
-    df["geaendert_von_user_id"] = [pd.NA if random.random() < 0.45 else random.randint(1, 80) for _ in range(len(df))]
-    df["geaendert_am"] = [pd.NA if random.random() < 0.45 else random_datetime(AUDIT_START, AUDIT_END) for _ in range(len(df))]
-    return df
+bundesland_codes2 = bundesland_df["bundesland_code2"].tolist()
+bundesland_ids = bundesland_df["bundesland_id"].astype(int).tolist()
+ticket_codes = ticket_produkte_df["ticket_code"].astype(int).tolist()
+tarif_ids = tarifverbuende_df["tarifverbund_id"].astype(int).tolist()
 
-def random_shares(total_items: int):
-    raw = [random.random() for _ in range(total_items)]
-    s = sum(raw)
-    shares = [x / s for x in raw]
-    shares = [round(x, 4) for x in shares]
+years = [2024, 2025]
+months = list(range(1, 13))
+
+def random_shares(n: int):
+    """Create n shares that sum to 1.0."""
+    values = [random.random() for _ in range(n)]
+    total = sum(values)
+    shares = [v / total for v in values]
+    # Round nicely but keep sum ~1 (good enough for mock data)
+    shares = [round(s, 4) for s in shares]
     diff = round(1.0 - sum(shares), 4)
-    shares[0] = round(shares[0] + diff, 4)
+    shares[-1] = round(shares[-1] + diff, 4)
     return shares
 
-regionen = pd.read_csv(INPUT_DIR / "regionen_bundesland.csv")
-ticket_verkaeufe = pd.read_csv(INPUT_DIR / "ticket_verkaeufe.csv")
-sonstige_angebote = pd.read_csv(INPUT_DIR / "sonstige_angebote.csv")
-plan_umsatz = pd.read_csv(INPUT_DIR / "plan_umsatz.csv")
+# -----------------------
+# 1) ticket_verteilung_bundesland.csv
+# keys: jahr, monat, tarifverbund_id, ticket_code + bundesland_code2 + anteil
+# -----------------------
+ticket_rows = []
+for jahr in years:
+    for monat in months:
+        for tarifverbund_id in random.sample(tarif_ids, k=min(8, len(tarif_ids))):
+            for ticket_code in random.sample(ticket_codes, k=min(5, len(ticket_codes))):
+                selected_states = random.sample(bundesland_codes2, k=random.randint(3, 7))
+                shares = random_shares(len(selected_states))
+                for bl_code2, anteil in zip(selected_states, shares):
+                    ticket_rows.append((jahr, monat, tarifverbund_id, ticket_code, bl_code2, anteil))
 
-bundesland_codes = regionen["bundesland_code2"].astype(str).tolist()
-bundesland_ids = regionen["bundesland_id"].astype(int).tolist()
-
-# 1) ticket_verteilung_bundesland
-ticket_context = (
-    ticket_verkaeufe[["jahr", "monat", "tarifverbund_id", "ticket_code"]]
-    .drop_duplicates()
-    .sample(n=min(2000, len(ticket_verkaeufe)), random_state=42)
+ticket_verteilung_df = pd.DataFrame(
+    ticket_rows,
+    columns=["jahr", "monat", "tarifverbund_id", "ticket_code", "bundesland_code2", "anteil"],
 )
+write_csv_for_excel(ticket_verteilung_df, OUTPUT_DIR / "ticket_verteilung_bundesland.csv")
 
-rows = []
-for _, ctx in ticket_context.iterrows():
-    chosen = random.sample(bundesland_codes, k=random.randint(3, 8))
-    shares = random_shares(len(chosen))
-    for code, share in zip(chosen, shares):
-        rows.append((int(ctx["jahr"]), int(ctx["monat"]), int(ctx["tarifverbund_id"]), int(ctx["ticket_code"]), code, float(share)))
+# -----------------------
+# 2) angebot_verteilung_bundesland.csv
+# keys: jahr, monat, tarifverbund_id, angebot_gruppe + bundesland_code2 + anteil
+# -----------------------
+angebot_gruppen = [100, 101, 102, 200, 201]
+angebot_rows = []
 
-ticket_verteilung = pd.DataFrame(rows, columns=["jahr", "monat", "tarifverbund_id", "ticket_code", "bundesland_code2", "anteil"])
-write_csv_for_excel(ticket_verteilung, OUTPUT_DIR / "ticket_verteilung_bundesland.csv")
+for jahr in years:
+    for monat in months:
+        for tarifverbund_id in random.sample(tarif_ids, k=min(8, len(tarif_ids))):
+            for angebot_gruppe in random.sample(angebot_gruppen, k=3):
+                selected_states = random.sample(bundesland_codes2, k=random.randint(3, 7))
+                shares = random_shares(len(selected_states))
+                for bl_code2, anteil in zip(selected_states, shares):
+                    angebot_rows.append((jahr, monat, tarifverbund_id, angebot_gruppe, bl_code2, anteil))
 
-# 2) angebot_verteilung_bundesland
-angebot_context = (
-    sonstige_angebote[["jahr", "monat", "tarifverbund_id", "angebot_gruppe"]]
-    .drop_duplicates()
-    .sample(n=min(1500, len(sonstige_angebote)), random_state=42)
+angebot_verteilung_df = pd.DataFrame(
+    angebot_rows,
+    columns=["jahr", "monat", "tarifverbund_id", "angebot_gruppe", "bundesland_code2", "anteil"],
 )
+write_csv_for_excel(angebot_verteilung_df, OUTPUT_DIR / "angebot_verteilung_bundesland.csv")
 
-rows = []
-for _, ctx in angebot_context.iterrows():
-    chosen = random.sample(bundesland_codes, k=random.randint(3, 8))
-    shares = random_shares(len(chosen))
-    for code, share in zip(chosen, shares):
-        rows.append((int(ctx["jahr"]), int(ctx["monat"]), int(ctx["tarifverbund_id"]), int(ctx["angebot_gruppe"]), code, float(share)))
+# -----------------------
+# 3) plan_verteilung_bundesland.csv
+# keys: jahr, monat, tarifverbund_id + bundesland_code2 + anteil
+# -----------------------
+plan_rows = []
+for jahr in years:
+    for monat in months:
+        for tarifverbund_id in random.sample(tarif_ids, k=min(8, len(tarif_ids))):
+            selected_states = random.sample(bundesland_codes2, k=random.randint(3, 7))
+            shares = random_shares(len(selected_states))
+            for bl_code2, anteil in zip(selected_states, shares):
+                plan_rows.append((jahr, monat, tarifverbund_id, bl_code2, anteil))
 
-angebot_verteilung = pd.DataFrame(rows, columns=["jahr", "monat", "tarifverbund_id", "angebot_gruppe", "bundesland_code2", "anteil"])
-write_csv_for_excel(angebot_verteilung, OUTPUT_DIR / "angebot_verteilung_bundesland.csv")
-
-# 3) plan_verteilung_bundesland
-plan_context = (
-    plan_umsatz[["jahr", "monat", "tarifverbund_id"]]
-    .drop_duplicates()
-    .sample(n=min(1200, len(plan_umsatz)), random_state=42)
+plan_verteilung_df = pd.DataFrame(
+    plan_rows,
+    columns=["jahr", "monat", "tarifverbund_id", "bundesland_code2", "anteil"],
 )
+write_csv_for_excel(plan_verteilung_df, OUTPUT_DIR / "plan_verteilung_bundesland.csv")
 
-rows = []
-for _, ctx in plan_context.iterrows():
-    chosen = random.sample(bundesland_codes, k=random.randint(3, 8))
-    shares = random_shares(len(chosen))
-    for code, share in zip(chosen, shares):
-        rows.append((int(ctx["jahr"]), int(ctx["monat"]), int(ctx["tarifverbund_id"]), code, float(share)))
-
-plan_verteilung = pd.DataFrame(rows, columns=["jahr", "monat", "tarifverbund_id", "bundesland_code2", "anteil"])
-write_csv_for_excel(plan_verteilung, OUTPUT_DIR / "plan_verteilung_bundesland.csv")
-
-# 4) verteilung_kopf (header)
-organisation_ids = list(range(1, 51))
-KOPF_COUNT = 120
+# -----------------------
+# 4) verteilung_kopf.csv and 5) verteilung_positionen.csv
+# Generic header/detail distribution model
+# -----------------------
 kopf_rows = []
-for verteilung_id in range(1, KOPF_COUNT + 1):
-    organisation_id = random.choice(organisation_ids)
-    typ_code = random.choice([1, 2, 3])
-    start_datum = datetime(2024, random.randint(1, 12), 1)
-    end_datum = start_datum + timedelta(days=random.randint(60, 365))
-    kopf_rows.append((verteilung_id, organisation_id, typ_code, start_datum.strftime("%Y-%m-%d"), end_datum.strftime("%Y-%m-%d")))
-
-verteilung_kopf = pd.DataFrame(kopf_rows, columns=["verteilung_id", "organisation_id", "typ_code", "start_datum", "end_datum"])
-verteilung_kopf = add_audit_columns(verteilung_kopf)
-write_csv_for_excel(verteilung_kopf, OUTPUT_DIR / "verteilung_kopf.csv")
-
-# 5) verteilung_positionen (detail)
 pos_rows = []
+
+verteilung_id = 1
 pos_id = 1
-for verteilung_id in verteilung_kopf["verteilung_id"].astype(int).tolist():
-    chosen_ids = random.sample(bundesland_ids, k=random.randint(3, 8))
-    shares = random_shares(len(chosen_ids))
-    for bl_id, share in zip(chosen_ids, shares):
-        pos_rows.append((pos_id, verteilung_id, bl_id, float(share)))
+
+verteilung_typen = ["ticket", "angebot", "plan"]
+
+for _ in range(80):  # 80 distribution rules
+    typ = random.choice(verteilung_typen)
+    tarifverbund_id = random.choice(tarif_ids)
+
+    start_year = random.choice(years)
+    start_month = random.randint(1, 12)
+    end_year = start_year
+    end_month = min(12, start_month + random.randint(0, 5))
+
+    start_date = date(start_year, start_month, 1).strftime("%Y-%m-%d")
+    end_date = date(end_year, end_month, 28).strftime("%Y-%m-%d")
+
+    kopf_rows.append((verteilung_id, typ, tarifverbund_id, start_date, end_date))
+
+    # positions: which states + shares
+    selected_ids = random.sample(bundesland_ids, k=random.randint(3, 7))
+    shares = random_shares(len(selected_ids))
+
+    for bl_id, anteil in zip(selected_ids, shares):
+        pos_rows.append((pos_id, verteilung_id, bl_id, anteil))
         pos_id += 1
 
-verteilung_positionen = pd.DataFrame(pos_rows, columns=["position_id", "verteilung_id", "bundesland_id", "anteil"])
-verteilung_positionen = add_audit_columns(verteilung_positionen)
-write_csv_for_excel(verteilung_positionen, OUTPUT_DIR / "verteilung_positionen.csv")
+    verteilung_id += 1
 
-print("Group 3 done. Output folder:", OUTPUT_DIR)
+verteilung_kopf_df = pd.DataFrame(
+    kopf_rows,
+    columns=["verteilung_id", "typ", "tarifverbund_id", "start_datum", "end_datum"],
+)
+verteilung_positionen_df = pd.DataFrame(
+    pos_rows,
+    columns=["position_id", "verteilung_id", "bundesland_id", "anteil"],
+)
+
+write_csv_for_excel(verteilung_kopf_df, OUTPUT_DIR / "verteilung_kopf.csv")
+write_csv_for_excel(verteilung_positionen_df, OUTPUT_DIR / "verteilung_positionen.csv")
+
+print("✅ Group 3 done. Generated distribution tables in:", OUTPUT_DIR)
+print(" - ticket_verteilung_bundesland.csv")
+print(" - angebot_verteilung_bundesland.csv")
+print(" - plan_verteilung_bundesland.csv")
+print(" - verteilung_kopf.csv")
+print(" - verteilung_positionen.csv")
