@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+
+  <rect x="20" y="40" width="400" height="280" fill="#f6f6f6" stroke="#333" stroke-dasharray="6 4"/>
+  <text x="30" y="30" font-family="Arial" font-size="16" fill="#333">Train</text>
+
+  <rect x="50" y="70" width="340" height="32" fill="#fff" stroke="#333"/>
+  <text x="60" y="91" font-family="Arial" font-size="12" fill="#333">DuckDB DDL + docs</text>
+
+  <rect x="50" y="120" width="340" height="32" fill="#fff" stroke="#333"/>
+  <text x="60" y="141" font-family="Arial" font-size="12" fill="#333">Schema plan (information_schema)</text>
+
+  <rect x="50" y="170" width="340" height="32" fill="#fff" stroke="#333"/>
+  <text x="60" y="191" font-family="Arial" font-size="12" fill="#333">Q -> SQL examples</text>
+
+  <rect x="50" y="220" width="340" height="32" fill="#fff" stroke="#333"/>
+  <text x="60" y="241" font-family="Arial" font-size="12" fill="#333">Chroma vector store</text>
+
+  <line x1="220" y1="102" x2="220" y2="120" stroke="#333" marker-end="url(#arrow)"/>
+  <line x1="220" y1="152" x2="220" y2="170" stroke="#333" marker-end="url(#arrow)"/>
+  <line x1="220" y1="202" x2="220" y2="220" stroke="#333" marker-end="url(#arrow)"/>
+
+  <rect x="480" y="40" width="400" height="280" fill="#f6f6f6" stroke="#333" stroke-dasharray="6 4"/>
+  <text x="490" y="30" font-family="Arial" font-size="16" fill="#333">Ask</text>
+
+  <rect x="510" y="70" width="340" height="32" fill="#fff" stroke="#333"/>
+  <text x="520" y="91" font-family="Arial" font-size="12" fill="#333">User question</text>
+
+  <rect x="510" y="120" width="340" height="32" fill="#fff" stroke="#333"/>
+  <text x="520" y="141" font-family="Arial" font-size="12" fill="#333">Prompt + retrieval</text>
+
+  <rect x="510" y="170" width="340" height="32" fill="#fff" stroke="#333"/>
+  <text x="520" y="191" font-family="Arial" font-size="12" fill="#333">LLM (Ollama)</text>
+
+  <rect x="510" y="220" width="340" height="32" fill="#fff" stroke="#333"/>
+  <text x="520" y="241" font-family="Arial" font-size="12" fill="#333">SQL -> DuckDB -> results</text>
+
+  <line x1="680" y1="102" x2="680" y2="120" stroke="#333" marker-end="url(#arrow)"/>
+  <line x1="680" y1="152" x2="680" y2="170" stroke="#333" marker-end="url(#arrow)"/>
+  <line x1="680" y1="202" x2="680" y2="220" stroke="#333" marker-end="url(#arrow)"/>
+
+  <line x1="390" y1="236" x2="510" y2="136" stroke="#333" marker-end="url(#arrow)"/>
+  <text x="400" y="210" font-family="Arial" font-size="11" fill="#333">context</text>
+</svg>

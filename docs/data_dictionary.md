@@ -2,7 +2,7 @@
 
 This document describes the **synthetic (mock) dataset** used in **mxQueryChat**.
 
-The dataset is designed for a Bachelor thesis demo where users can:
+The dataset is designed for a demo where users can:
 - ask questions in natural language (DE/EN),
 - get SQL generated automatically,
 - run the SQL in **read-only** mode on **DuckDB**,
@@ -11,19 +11,6 @@ The dataset is designed for a Bachelor thesis demo where users can:
 **Important:**  
 All data is **synthetic**. There is **no customer schema** and **no real personal data**.  
 Any emails use `example.org`.
-
----
-
-## How to use this document
-
-For each table you will find:
-1. **What the table represents** (in plain language)
-2. **Typical use cases** (what questions it helps answer)
-3. **Important columns** (only the columns you’ll actually use often)
-4. **How to join it** to other tables (the “path” for joins)
-5. **Example user questions** (German + English)
-
----
 
 # Overview: What types of tables exist?
 

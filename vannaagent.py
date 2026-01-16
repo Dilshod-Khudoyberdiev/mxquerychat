@@ -11,6 +11,7 @@ This file exposes helper functions the Streamlit app can call.
 """
 
 from pathlib import Path
+import os
 import pandas as pd
 
 try:
@@ -39,11 +40,14 @@ def get_vanna() -> MXQueryVanna:
     """
     vn = MXQueryVanna(
         config={
-            "model": "mistral",        # must match: `ollama pull mistral`
-            "path": CHROMA_PATH,       # where embeddings are stored
+            "model": os.getenv("OLLAMA_MODEL", "phi3"),
+            "path": CHROMA_PATH,
         }
     )
-    vn.connect_to_duckdb(path=DUCKDB_PATH)
+    try:
+        vn.connect_to_duckdb(path=DUCKDB_PATH, read_only=True)
+    except TypeError:
+        vn.connect_to_duckdb(url=DUCKDB_PATH, read_only=True)
     return vn
 
 

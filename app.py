@@ -1,4 +1,4 @@
-"""
+﻿"""
 app.py
 
 mxQueryChat MVP (Streamlit)
@@ -30,6 +30,21 @@ DUCKDB_PATH = "mxquerychat.duckdb"
 # -----------------------------
 # Helpers
 # -----------------------------
+@st.cache_resource(show_spinner=False)
+def get_vanna_cached():
+    return get_vanna()
+
+
+def is_greeting_or_too_short(text: str) -> bool:
+    cleaned = text.strip().lower()
+    if not cleaned:
+        return True
+    if len(cleaned.split()) < 2:
+        return True
+    greetings = {"hi", "hello", "hey", "hallo", "hola", "bonjour", "ciao"}
+    return cleaned in greetings
+
+
 def get_schema_tree() -> dict:
     """
     Read DuckDB schema info and return:
@@ -108,7 +123,7 @@ if "last_result_df" not in st.session_state:
 # Top-right: New Chat (reset question flow, keep training data)
 col_left, col_right = st.columns([0.85, 0.15])
 with col_right:
-    if st.button("🧹 New Chat", use_container_width=True):
+    if st.button("New Chat", use_container_width=True):
         st.session_state.question = ""
         st.session_state.generated_sql = ""
         st.session_state.explanation = ""
@@ -136,19 +151,27 @@ except Exception as e:
 if view == "New Question":
     st.subheader("Ask a question")
 
-    st.session_state.question = st.text_area(
-        "Your question (German or English)",
-        value=st.session_state.question,
-        height=80,
-        placeholder="z.B. Zeige den Umsatz nach Bundesland für 2025.",
-    )
+    with st.form("question_form", clear_on_submit=False):
+        st.session_state.question = st.text_input(
+            "Your question (German or English)",
+            value=st.session_state.question,
+            placeholder="e.g. Show revenue by state for 2025.",
+        )
+        submit_question = st.form_submit_button("Generate SQL")
 
-    col_a, col_b = st.columns([0.2, 0.8])
-
-    with col_a:
-        if st.button("⚡ Generate SQL", use_container_width=True):
+    if submit_question:
+        if not st.session_state.question.strip():
+            st.warning("Please enter a question before generating SQL.")
+        elif is_greeting_or_too_short(st.session_state.question):
+            st.info(
+                "This app generates SQL from data questions. "
+                "Try something like: 'Show total revenue by state for 2025.'"
+            )
+            st.session_state.generated_sql = ""
+            st.session_state.explanation = ""
+        else:
             with st.spinner("Generating SQL with Vanna..."):
-                vn = get_vanna()
+                vn = get_vanna_cached()
 
                 # Generate SQL
                 sql = vn.generate_sql(st.session_state.question)
@@ -180,7 +203,7 @@ if view == "New Question":
         else:
             st.error(f"SQL guard blocked this query: {message}")
 
-        if st.button("▶ Run Query", disabled=not is_ok):
+        if st.button("Run Query", disabled=not is_ok):
             with st.spinner("Running query on DuckDB..."):
                 df, elapsed = run_read_only_query(st.session_state.generated_sql)
                 st.session_state.last_result_df = df
@@ -211,13 +234,14 @@ if view == "Training Data":
     col1, col2 = st.columns([0.2, 0.8])
 
     with col1:
-        if st.button("💾 Save Examples", use_container_width=True):
+        if st.button("Save Examples", use_container_width=True):
             save_training_examples(edited_df)
             st.success("Saved training examples.")
 
     st.markdown("---")
-    if st.button("🧠 Train Model (Update Vanna)"):
+    if st.button("Train Model (Update Vanna)"):
         with st.spinner("Training Vanna (synchronous)..."):
             vn = get_vanna()
             train_from_examples(vn, edited_df)
             st.success("Training completed. New generations should improve.")
+
