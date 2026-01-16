@@ -44,20 +44,23 @@ The server starts on `http://localhost:8084`.
 ## Workflow Diagrams
 
 ### 1) Training vs. Question Flow
-![Training and question flow](docs/images/workflow_train_ask.svg)
+![vanna1](https://github.com/user-attachments/assets/525060e3-9310-4415-82eb-ab15de0733ab)
+
 
 This diagram shows the two lanes:
 - Training: schema DDL + examples + question docs feed the Chroma vector store.
 - Asking: the user question is paired with retrieved context, sent to the LLM, and executed on DuckDB.
 
 ### 2) Vanna Feedback Loop
-![Vanna feedback loop](docs/images/vanna_loop.svg)
+<img width="261" height="193" alt="vanna2" src="https://github.com/user-attachments/assets/f9cf9997-0d43-4857-813f-657d14d30180" />
+
 
 This loop highlights how questions become SQL, results are validated, and corrections can be added
 as new training data to improve future answers.
 
 ### 3) Vanna AI Ecosystem View
-![Vanna AI ecosystem](docs/images/vanna_ecosystem.svg)
+
+<img width="224" height="225" alt="vanna3" src="https://github.com/user-attachments/assets/810ed3cb-ea44-4548-a9ea-2e3d7028a728" />
 
 The project stays modular: Vanna sits in the middle and connects a SQL database, a vector store,
 an LLM, and a web front end (Flask in this demo).
