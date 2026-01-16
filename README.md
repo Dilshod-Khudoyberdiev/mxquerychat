@@ -81,4 +81,19 @@ as new training data to improve future answers.
 <img width="224" height="225" alt="vanna3" src="https://github.com/user-attachments/assets/810ed3cb-ea44-4548-a9ea-2e3d7028a728" />
 
 The project stays modular: Vanna sits in the middle and connects a SQL database, a vector store,
-an LLM, and a web front end (Flask in this demo).
+an LLM, and a web front end (Flask in this demo). 
+
+
+## Example Questions (Simple)
+- "What is the total revenue in 2025?"
+- "Show revenue per month for 2024."
+- "Which ticket types generate the most revenue?"
+- "Show revenue by federal state (via postal code)."
+- "Compare actual revenue with planned revenue per month."
+
+## Tricky Questions (To Test Guardrails)
+- "Show revenue by state for 2027." (no data expected)
+- "Show revenue per week for 2025." (no week field expected)
+- "Please insert new data." (read-only rule)
+- "Give me all data (everything)." (should refuse or summarize)
+
