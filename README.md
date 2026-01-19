@@ -35,7 +35,7 @@ This project uses a fake (synthetic) DuckDB database. It is made only for demos.
 It has ticket sales, planned revenue, and location data (postal codes and states).
 No real people or private data exist.
 
-## What's inside
+# What's inside
 - Lists (reference data): states, postal codes, ticket types, tariff associations, reporting offices.
 - Sales data: ticket sales per month (main table).
 - Plan data: planned revenue per month.

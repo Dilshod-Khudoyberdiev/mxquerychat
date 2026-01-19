@@ -34,6 +34,7 @@ INITIAL_PROMPT = (
     "Do not answer with natural language. "
     "If the question is out of scope, return a SQL SELECT with a short message."
 )
+GUARDRAIL_PREFIX = "GUARDRAIL:"
 
 DOMAIN_HINTS = {
     "ticket",
@@ -86,6 +87,30 @@ OUT_OF_SCOPE_RESPONSE = (
     "I can only answer questions about the mxquerychat DuckDB dataset "
     "(ticket sales, revenue, tariff associations, states, postal codes, plans)."
 )
+READ_ONLY_PATTERNS = [
+    r"\binsert\b",
+    r"\bupdate\b",
+    r"\bdelete\b",
+    r"\btruncate\b",
+    r"\bdrop\b",
+    r"\balter\b",
+    r"\bmerge\b",
+    r"\bcreate\b",
+    r"\bgrant\b",
+    r"\brevoke\b",
+]
+READ_ONLY_RESPONSE = "This demo is read-only. I cannot modify data or schema."
+NON_DATA_PATTERNS = [
+    r"\bpoem\b",
+    r"\bsong\b",
+    r"\blyrics\b",
+    r"\bjoke\b",
+    r"\bstory\b",
+    r"\bemail\b",
+    r"\bessay\b",
+    r"\bcover letter\b",
+    r"\bresume\b",
+]
 
 
 class VannaAgent(ChromaDB_VectorStore, Ollama):
@@ -101,14 +126,9 @@ class VannaAgent(ChromaDB_VectorStore, Ollama):
         self.demo_sql_lookup = {}
 
     def generate_sql(self, question: str, allow_llm_to_see_data=False, **kwargs) -> str:
-        if is_small_talk(question):
-            return guardrail_sql_message(SMALL_TALK_RESPONSE)
-        if is_out_of_scope_question(question):
-            return guardrail_sql_message(OUT_OF_SCOPE_RESPONSE)
-        if self.domain_terms and not is_subject_related_question(question, self.domain_terms):
-            return guardrail_sql_message(
-                OUT_OF_SCOPE_RESPONSE + " Please ask a data question about those topics."
-            )
+        guardrail = get_guardrail_message(question, self.domain_terms)
+        if guardrail:
+            return format_guardrail_message(guardrail)
         normalized = normalize_question(question)
         if normalized and normalized in self.demo_sql_lookup:
             return self.demo_sql_lookup[normalized]
@@ -123,9 +143,20 @@ class VannaAgent(ChromaDB_VectorStore, Ollama):
                     return item["sql"]
         return sql
 
-def guardrail_sql_message(message: str) -> str:
-    safe_message = message.replace("'", "''")
-    return f"SELECT '{safe_message}' AS message"
+    def run_sql(self, sql: str, **kwargs):
+        if isinstance(sql, str) and sql.startswith(GUARDRAIL_PREFIX):
+            message = sql[len(GUARDRAIL_PREFIX):].strip()
+            return pd.DataFrame({"warning": [message]})
+        return super().run_sql(sql, **kwargs)
+
+    def generate_rewritten_question(self, last_question: str, new_question: str) -> str:
+        guardrail = get_guardrail_message(new_question, self.domain_terms)
+        if guardrail:
+            return new_question
+        return super().generate_rewritten_question(last_question, new_question)
+
+def format_guardrail_message(message: str) -> str:
+    return f"{GUARDRAIL_PREFIX} {message}"
 
 
 def normalize_question(question: str) -> str:
@@ -154,12 +185,37 @@ def is_out_of_scope_question(question: str) -> bool:
     q_lower = question.lower()
     return any(re.search(pattern, q_lower) for pattern in OUT_OF_SCOPE_PATTERNS)
 
+def is_read_only_violation(question: str) -> bool:
+    if not question:
+        return False
+    q_lower = question.lower()
+    return any(re.search(pattern, q_lower) for pattern in READ_ONLY_PATTERNS)
+
+def is_non_data_request(question: str) -> bool:
+    if not question:
+        return False
+    q_lower = question.lower()
+    return any(re.search(pattern, q_lower) for pattern in NON_DATA_PATTERNS)
+
 
 def is_subject_related_question(question: str, domain_terms: set[str]) -> bool:
     if not question:
         return False
     q_lower = question.lower()
     return any(term in q_lower for term in domain_terms)
+
+def get_guardrail_message(question: str, domain_terms: set[str]) -> str:
+    if is_small_talk(question):
+        return SMALL_TALK_RESPONSE
+    if is_read_only_violation(question):
+        return READ_ONLY_RESPONSE
+    if is_non_data_request(question):
+        return OUT_OF_SCOPE_RESPONSE
+    if is_out_of_scope_question(question):
+        return OUT_OF_SCOPE_RESPONSE
+    if domain_terms and not is_subject_related_question(question, domain_terms):
+        return OUT_OF_SCOPE_RESPONSE + " Please ask a data question about those topics."
+    return ""
 
 
 def build_domain_terms(vn: VannaAgent) -> set[str]:
