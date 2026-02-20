@@ -1,229 +1,308 @@
-﻿"""
-app.py
+"""
+Beginner-friendly Streamlit UI for mxquerychat.
 
-mxQueryChat MVP (Streamlit)
-- DuckDB schema tree (sidebar)
-- New Question view:
-  - ask question
-  - generate SQL + explanation
-  - user reviews/edits SQL
-  - read-only guard
-  - run query
-  - show table + simple bar chart (if possible)
-- Training Data view:
-  - edit examples (question/sql/description)
-  - save
-  - train model
+Flow:
+1) Ask a question
+2) Generate SQL
+3) Review / edit SQL
+4) Validate read-only safety
+5) Run query and view results
 """
 
+import re
 import time
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
+from pathlib import Path
+
 import duckdb
 import pandas as pd
 import streamlit as st
 
 from sql_guard import validate_read_only_sql
-from vannaagent import get_vanna, load_training_examples, save_training_examples, train_from_examples
+from vannaagent import (
+    get_vanna,
+    get_exact_training_sql,
+    load_training_examples,
+    save_training_examples,
+    train_from_examples,
+)
 
 DUCKDB_PATH = "mxquerychat.duckdb"
+ICON_PATH = Path("docs/images/icon.png")
+LOGO_PATH = Path("docs/images/logo.png")
+MODEL_TIMEOUT_SECONDS = 65
+
+EXAMPLE_QUESTIONS = [
+    "What is the total revenue in 2025?",
+    "Show revenue per month for 2024.",
+    "Which ticket types generate the most revenue?",
+    "Show revenue by federal state for 2025.",
+]
+
+OFF_TOPIC_PATTERNS = [
+    r"\bpoem\b",
+    r"\bsong\b",
+    r"\blyrics\b",
+    r"\bjoke\b",
+    r"\bweather\b",
+    r"\bhomework\b",
+    r"\bessay\b",
+]
+
+WRITE_PATTERNS = [
+    r"\binsert\b",
+    r"\bupdate\b",
+    r"\bdelete\b",
+    r"\bdrop\b",
+    r"\balter\b",
+    r"\btruncate\b",
+]
 
 
-# -----------------------------
-# Helpers
-# -----------------------------
 @st.cache_resource(show_spinner=False)
 def get_vanna_cached():
     return get_vanna()
 
 
-def is_greeting_or_too_short(text: str) -> bool:
-    cleaned = text.strip().lower()
-    if not cleaned:
-        return True
-    if len(cleaned.split()) < 2:
-        return True
-    greetings = {"hi", "hello", "hey", "hallo", "hola", "bonjour", "ciao"}
-    return cleaned in greetings
-
-
+@st.cache_data(show_spinner=False)
 def get_schema_tree() -> dict:
-    """
-    Read DuckDB schema info and return:
-    {table_name: [(col_name, col_type), ...], ...}
-    """
+    """Return schema as: {table_name: [(column_name, data_type), ...]}."""
     con = duckdb.connect(DUCKDB_PATH, read_only=True)
+    try:
+        tables = con.execute(
+            """
+            SELECT table_name
+            FROM information_schema.tables
+            WHERE table_schema = 'main'
+            ORDER BY table_name
+            """
+        ).fetchall()
 
-    tables = con.execute("""
-        SELECT table_name
-        FROM information_schema.tables
-        WHERE table_schema = 'main'
-        ORDER BY table_name
-    """).fetchall()
+        schema = {}
+        for (table_name,) in tables:
+            cols = con.execute(
+                f"""
+                SELECT column_name, data_type
+                FROM information_schema.columns
+                WHERE table_name = '{table_name}'
+                ORDER BY ordinal_position
+                """
+            ).fetchall()
+            schema[table_name] = cols
+        return schema
+    finally:
+        con.close()
 
-    schema = {}
-    for (table_name,) in tables:
-        cols = con.execute(f"""
-            SELECT column_name, data_type
-            FROM information_schema.columns
-            WHERE table_name = '{table_name}'
-            ORDER BY ordinal_position
-        """).fetchall()
-        schema[table_name] = cols
 
-    con.close()
-    return schema
+def run_with_timeout(fn, timeout_seconds: int):
+    """Run function with timeout so UI does not hang forever."""
+    executor = ThreadPoolExecutor(max_workers=1)
+    future = executor.submit(fn)
+    try:
+        return future.result(timeout=timeout_seconds), None
+    except FutureTimeoutError:
+        future.cancel()
+        return None, f"Model timeout after {timeout_seconds} seconds."
+    except Exception as exc:
+        return None, str(exc)
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
+
+
+def get_local_guardrail_message(question: str) -> str:
+    """Fast local checks before calling the model."""
+    if not question or not question.strip():
+        return "Please enter a question."
+
+    q = question.lower()
+    if len(q.split()) < 2:
+        return "Please write a fuller data question."
+
+    if any(re.search(p, q) for p in WRITE_PATTERNS):
+        return "Read-only mode: write operations are not allowed."
+
+    if any(re.search(p, q) for p in OFF_TOPIC_PATTERNS):
+        return "Off-topic request. Please ask about the mxquerychat dataset."
+
+    return ""
 
 
 def run_read_only_query(sql: str) -> tuple[pd.DataFrame, float]:
-    """
-    Execute SQL on DuckDB in read-only mode and return (df, elapsed_seconds).
-    """
     con = duckdb.connect(DUCKDB_PATH, read_only=True)
-    start = time.time()
-    df = con.execute(sql).df()
-    elapsed = time.time() - start
-    con.close()
-    return df, elapsed
+    try:
+        start = time.time()
+        df = con.execute(sql).df()
+        elapsed = time.time() - start
+        return df, elapsed
+    finally:
+        con.close()
 
 
 def try_show_bar_chart(df: pd.DataFrame) -> None:
-    """
-    Simple chart rule for MVP:
-    If df has at least 2 columns and the 2nd is numeric, chart it.
-    """
+    """Show a simple chart when first column is x and second is numeric."""
     if df.shape[1] < 2:
+        st.info("Chart skipped: result needs at least 2 columns.")
         return
 
     x_col = df.columns[0]
     y_col = df.columns[1]
+    if not pd.api.types.is_numeric_dtype(df[y_col]):
+        st.info("Chart skipped: second column is not numeric.")
+        return
 
-    if pd.api.types.is_numeric_dtype(df[y_col]):
-        chart_df = df[[x_col, y_col]].copy()
-        st.bar_chart(chart_df.set_index(x_col))
-    else:
-        st.info("No bar chart shown (2nd column is not numeric).")
+    st.bar_chart(df[[x_col, y_col]].set_index(x_col))
 
 
-# -----------------------------
-# Streamlit UI
-# -----------------------------
-st.set_page_config(page_title="mxQueryChat", layout="wide")
+def init_state():
+    defaults = {
+        "question": "",
+        "generated_sql": "",
+        "last_result_df": None,
+        "sql_cache": {},
+    }
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
 
-st.title("mxQueryChat")
 
-# Session state init
-if "question" not in st.session_state:
+def reset_question_flow():
     st.session_state.question = ""
-if "generated_sql" not in st.session_state:
     st.session_state.generated_sql = ""
-if "explanation" not in st.session_state:
-    st.session_state.explanation = ""
-if "last_result_df" not in st.session_state:
     st.session_state.last_result_df = None
 
-# Top-right: New Chat (reset question flow, keep training data)
-col_left, col_right = st.columns([0.85, 0.15])
-with col_right:
+
+page_icon = str(ICON_PATH) if ICON_PATH.exists() else ":mag:"
+st.set_page_config(page_title="mxquerychat", page_icon=page_icon, layout="wide")
+init_state()
+
+st.markdown(
+    """
+    <style>
+      .block-container {padding-top: 1.5rem;}
+      .mx-card {
+        padding: 12px 14px;
+        border: 1px solid #d9d9d9;
+        border-radius: 10px;
+        background: #fafafa;
+      }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+top_left, top_right = st.columns([0.8, 0.2])
+with top_left:
+    st.title("mxquerychat")
+    st.caption("Ask questions in plain language, get SQL query and results. Built with Vanna agent and DuckDB")
+with top_right:
+    st.markdown("<div style='height: 34px;'></div>", unsafe_allow_html=True)
     if st.button("New Chat", use_container_width=True):
-        st.session_state.question = ""
-        st.session_state.generated_sql = ""
-        st.session_state.explanation = ""
-        st.session_state.last_result_df = None
+        reset_question_flow()
         st.rerun()
 
-# Sidebar navigation + schema
-view = st.sidebar.radio("Navigation", ["New Question", "Training Data"])
+if LOGO_PATH.exists():
+    st.sidebar.image(str(LOGO_PATH), use_container_width=True)
+st.sidebar.header("Navigation")
+view = st.sidebar.radio("Choose page", ["Ask", "Training Data", "Schema"])
 
-st.sidebar.markdown("---")
-st.sidebar.subheader("DuckDB Schema")
 
-try:
-    schema_tree = get_schema_tree()
-    for table_name, cols in schema_tree.items():
-        with st.sidebar.expander(table_name):
-            for col_name, col_type in cols:
-                st.sidebar.write(f"- `{col_name}` ({col_type})")
-except Exception as e:
-    st.sidebar.error(f"Schema load failed: {e}")
+if view == "Ask":
+    st.markdown("### Step 1: Ask a data question")
+    st.markdown('<div class="mx-card">Try one of these examples first.</div>', unsafe_allow_html=True)
 
-# -----------------------------
-# View: New Question
-# -----------------------------
-if view == "New Question":
-    st.subheader("Ask a question")
+    ex_cols = st.columns(len(EXAMPLE_QUESTIONS))
+    for idx, ex_question in enumerate(EXAMPLE_QUESTIONS):
+        with ex_cols[idx]:
+            if st.button(f"Example {idx + 1}", use_container_width=True):
+                st.session_state.question = ex_question
 
-    with st.form("question_form", clear_on_submit=False):
-        st.session_state.question = st.text_input(
-            "Your question (German or English)",
-            value=st.session_state.question,
-            placeholder="e.g. Show revenue by state for 2025.",
-        )
-        submit_question = st.form_submit_button("Generate SQL")
+    st.session_state.question = st.text_input(
+        "Question",
+        value=st.session_state.question,
+        placeholder="Example: Show revenue by state for 2025.",
+    )
 
-    if submit_question:
-        if not st.session_state.question.strip():
-            st.warning("Please enter a question before generating SQL.")
-        elif is_greeting_or_too_short(st.session_state.question):
-            st.info(
-                "This app generates SQL from data questions. "
-                "Try something like: 'Show total revenue by state for 2025.'"
-            )
+    if st.button("Generate SQL", type="primary"):
+        local_block = get_local_guardrail_message(st.session_state.question)
+        if local_block:
             st.session_state.generated_sql = ""
-            st.session_state.explanation = ""
+            st.warning(local_block)
         else:
-            with st.spinner("Generating SQL with Vanna..."):
-                vn = get_vanna_cached()
+            question_text = st.session_state.question.strip()
+            cache_key = question_text.lower()
+            handled_fast_path = False
 
-                # Generate SQL
-                sql = vn.generate_sql(st.session_state.question)
+            # 1) Session cache (fastest)
+            cached_sql = st.session_state.sql_cache.get(cache_key)
+            if cached_sql:
+                st.session_state.generated_sql = cached_sql
+                st.success("Used cached SQL (instant).")
+                handled_fast_path = True
 
-                # Generate explanation (best effort)
-                try:
-                    explanation = vn.generate_explanation(sql)
-                except Exception:
-                    explanation = "Explanation not available (model/config)."
+            # 2) Exact match in training examples (fast, no LLM)
+            if not handled_fast_path:
+                examples_df = load_training_examples()
+                direct_sql = get_exact_training_sql(question_text, examples_df)
+                if direct_sql:
+                    st.session_state.generated_sql = direct_sql
+                    st.session_state.sql_cache[cache_key] = direct_sql
+                    st.success("Used training example SQL (instant).")
+                    handled_fast_path = True
 
-                st.session_state.generated_sql = sql
-                st.session_state.explanation = explanation
+            if not handled_fast_path:
+                with st.spinner("Generating SQL..."):
+                    vn = get_vanna_cached()
+                    sql, sql_error = run_with_timeout(
+                        lambda: vn.generate_sql(question_text),
+                        MODEL_TIMEOUT_SECONDS,
+                    )
+
+                    if sql_error:
+                        st.session_state.generated_sql = ""
+                        st.error(
+                            "Could not generate SQL right now. "
+                            f"Reason: {sql_error}. "
+                            "Tip: first call can be slow (model cold start). Try once more."
+                        )
+                    else:
+                        st.session_state.generated_sql = sql
+                        st.session_state.sql_cache[cache_key] = sql
 
     if st.session_state.generated_sql:
-        st.markdown("### Generated SQL (editable)")
+        st.markdown("### Step 2: Review SQL")
         st.session_state.generated_sql = st.text_area(
-            "SQL",
+            "Generated SQL (editable)",
             value=st.session_state.generated_sql,
-            height=180,
+            height=170,
         )
 
-        st.markdown("### Explanation")
-        st.write(st.session_state.explanation)
-
-        st.markdown("### Run query (read-only)")
-        is_ok, message = validate_read_only_sql(st.session_state.generated_sql)
+    if st.session_state.generated_sql:
+        st.markdown("### Step 3: Safety check")
+        is_ok, guard_message = validate_read_only_sql(st.session_state.generated_sql)
         if is_ok:
-            st.success("SQL guard: OK (read-only)")
+            st.success("Read-only check passed.")
         else:
-            st.error(f"SQL guard blocked this query: {message}")
+            st.error(guard_message)
 
         if st.button("Run Query", disabled=not is_ok):
-            with st.spinner("Running query on DuckDB..."):
-                df, elapsed = run_read_only_query(st.session_state.generated_sql)
-                st.session_state.last_result_df = df
-
-                st.write(f"Rows: {len(df)} | Execution time: {elapsed:.3f}s")
+            try:
+                with st.spinner("Running query..."):
+                    df, elapsed = run_read_only_query(st.session_state.generated_sql)
+                    st.session_state.last_result_df = df
+                st.markdown("### Step 4: Results")
+                st.write(f"Rows: {len(df)} | Time: {elapsed:.3f}s")
                 st.dataframe(df, use_container_width=True)
-
-                st.markdown("### Chart (optional)")
+                st.markdown("### Chart")
                 try_show_bar_chart(df)
+            except Exception as exc:
+                st.error(f"Query failed: {exc}")
 
-# -----------------------------
-# View: Training Data
-# -----------------------------
-if view == "Training Data":
-    st.subheader("Training Data (Vanna)")
 
-    st.caption("Edit examples below. Use realistic questions + correct SQL. No sensitive data.")
+elif view == "Training Data":
+    st.subheader("Training Data")
+    st.caption("Edit examples, save them, then train Vanna.")
 
     examples_df = load_training_examples()
-
     edited_df = st.data_editor(
         examples_df,
         num_rows="dynamic",
@@ -231,17 +310,27 @@ if view == "Training Data":
         key="training_editor",
     )
 
-    col1, col2 = st.columns([0.2, 0.8])
-
-    with col1:
+    col_save, col_train = st.columns([0.25, 0.75])
+    with col_save:
         if st.button("Save Examples", use_container_width=True):
             save_training_examples(edited_df)
-            st.success("Saved training examples.")
+            st.success("Saved.")
+    with col_train:
+        if st.button("Train Model", use_container_width=True):
+            with st.spinner("Training model..."):
+                vn = get_vanna()
+                train_from_examples(vn, edited_df)
+            st.success("Training complete.")
 
-    st.markdown("---")
-    if st.button("Train Model (Update Vanna)"):
-        with st.spinner("Training Vanna (synchronous)..."):
-            vn = get_vanna()
-            train_from_examples(vn, edited_df)
-            st.success("Training completed. New generations should improve.")
 
+else:
+    st.subheader("Database Schema")
+    try:
+        schema_tree = get_schema_tree()
+        table_names = list(schema_tree.keys())
+        selected = st.selectbox("Choose a table", table_names)
+        rows = schema_tree[selected]
+        schema_df = pd.DataFrame(rows, columns=["column_name", "data_type"])
+        st.dataframe(schema_df, use_container_width=True)
+    except Exception as exc:
+        st.error(f"Could not load schema: {exc}")

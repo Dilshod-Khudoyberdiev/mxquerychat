@@ -1,5 +1,6 @@
 import logging
 import re
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from pathlib import Path
 
 import pandas as pd
@@ -28,6 +29,8 @@ TRAINING_EXAMPLES_CSV = Path("training_data/training_examples.csv")
 DEMO_QUESTIONS_PATH = Path("docs/demo_questions.md")
 EXTRA_QUESTIONS_PATH = Path("docs/tricky_questions.md")
 MAX_PROMPT_TOKENS = 3500
+MAX_GENERATE_SQL_SECONDS = 30
+MAX_REWRITE_SECONDS = 8
 INITIAL_PROMPT = (
     "You are a SQL expert for the mxquerychat DuckDB. "
     "Only answer with SQL using the provided schema. "
@@ -100,6 +103,14 @@ READ_ONLY_PATTERNS = [
     r"\brevoke\b",
 ]
 READ_ONLY_RESPONSE = "This demo is read-only. I cannot modify data or schema."
+SLOW_MODEL_RESPONSE = (
+    "The model took too long to answer. "
+    "Please try a shorter data question with clear filters (year, month, ticket, state)."
+)
+INVALID_SQL_RESPONSE = (
+    "I could not produce valid SQL for that question. "
+    "Please rephrase with dataset terms like revenue, month, year, ticket, state, or PLZ."
+)
 NON_DATA_PATTERNS = [
     r"\bpoem\b",
     r"\bsong\b",
@@ -133,14 +144,16 @@ class VannaAgent(ChromaDB_VectorStore, Ollama):
         if normalized and normalized in self.demo_sql_lookup:
             return self.demo_sql_lookup[normalized]
 
-        sql = super().generate_sql(
-            question, allow_llm_to_see_data=allow_llm_to_see_data, **kwargs
+        sql = run_with_timeout(
+            lambda: super(VannaAgent, self).generate_sql(
+                question, allow_llm_to_see_data=allow_llm_to_see_data, **kwargs
+            ),
+            timeout_seconds=MAX_GENERATE_SQL_SECONDS,
         )
+        if sql is None:
+            return format_guardrail_message(SLOW_MODEL_RESPONSE)
         if not looks_like_sql(sql):
-            similar = self.get_similar_question_sql(question)
-            for item in similar or []:
-                if isinstance(item, dict) and item.get("sql"):
-                    return item["sql"]
+            return format_guardrail_message(INVALID_SQL_RESPONSE)
         return sql
 
     def run_sql(self, sql: str, **kwargs):
@@ -153,10 +166,31 @@ class VannaAgent(ChromaDB_VectorStore, Ollama):
         guardrail = get_guardrail_message(new_question, self.domain_terms)
         if guardrail:
             return new_question
-        return super().generate_rewritten_question(last_question, new_question)
+        rewritten = run_with_timeout(
+            lambda: super(VannaAgent, self).generate_rewritten_question(
+                last_question, new_question
+            ),
+            timeout_seconds=MAX_REWRITE_SECONDS,
+        )
+        return rewritten if rewritten else new_question
 
 def format_guardrail_message(message: str) -> str:
     return f"{GUARDRAIL_PREFIX} {message}"
+
+def run_with_timeout(fn, timeout_seconds: int):
+    executor = ThreadPoolExecutor(max_workers=1)
+    future = executor.submit(fn)
+    try:
+        return future.result(timeout=timeout_seconds)
+    except FutureTimeoutError:
+        future.cancel()
+        logging.warning("Timed out after %ss waiting for model response.", timeout_seconds)
+        return None
+    except Exception:
+        logging.exception("Model call failed.")
+        return None
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
 
 
 def normalize_question(question: str) -> str:

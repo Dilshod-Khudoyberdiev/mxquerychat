@@ -12,6 +12,7 @@ This file exposes helper functions the Streamlit app can call.
 
 from pathlib import Path
 import os
+import re
 import pandas as pd
 
 try:
@@ -24,6 +25,13 @@ except ModuleNotFoundError:
 DUCKDB_PATH = "mxquerychat.duckdb"
 CHROMA_PATH = "vanna_chroma_store"
 TRAINING_CSV_PATH = Path("training_data/training_examples.csv")
+
+
+def normalize_question(text: str) -> str:
+    if not text:
+        return ""
+    normalized = re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
+    return " ".join(normalized.split())
 
 
 class MXQueryVanna(ChromaDB_VectorStore, Ollama):
@@ -42,6 +50,14 @@ def get_vanna() -> MXQueryVanna:
         config={
             "model": os.getenv("OLLAMA_MODEL", "mistral"),
             "path": CHROMA_PATH,
+            # Lower latency defaults for local CPU/GPU
+            "ollama_timeout": float(os.getenv("OLLAMA_TIMEOUT_SECONDS", "60")),
+            "keep_alive": os.getenv("OLLAMA_KEEP_ALIVE", "30m"),
+            "options": {
+                "num_ctx": int(os.getenv("OLLAMA_NUM_CTX", "2048")),
+                "num_predict": int(os.getenv("OLLAMA_NUM_PREDICT", "96")),
+                "temperature": float(os.getenv("OLLAMA_TEMPERATURE", "0")),
+            },
         }
     )
     try:
@@ -91,3 +107,21 @@ def train_from_examples(vn: MXQueryVanna, examples_df: pd.DataFrame) -> None:
         if question and sql:
             # Vanna supports training with question/sql and optional documentation
             vn.train(question=question, sql=sql, documentation=description if description else None)
+
+
+def get_exact_training_sql(question: str, examples_df: pd.DataFrame) -> str | None:
+    """
+    Return SQL from CSV if question matches exactly after normalization.
+    This avoids LLM latency for known demo questions.
+    """
+    target = normalize_question(question)
+    if not target or examples_df is None or examples_df.empty:
+        return None
+
+    for _, row in examples_df.iterrows():
+        q = str(row.get("question", "")).strip()
+        sql = str(row.get("sql", "")).strip()
+        if sql and normalize_question(q) == target:
+            return sql
+
+    return None
