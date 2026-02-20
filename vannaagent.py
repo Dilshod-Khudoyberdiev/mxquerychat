@@ -26,6 +26,16 @@ DUCKDB_PATH = "mxquerychat.duckdb"
 CHROMA_PATH = "vanna_chroma_store"
 TRAINING_CSV_PATH = Path("training_data/training_examples.csv")
 
+BASE_TRAINING_DOCUMENTS = [
+    "mxquerychat uses DuckDB and must stay read-only. Generate SELECT/WITH queries only.",
+    "Primary fact table: ticket_verkaeufe(monat, jahr, tarifverbund_id, ticket_code, umsatz_eur, anzahl, plz).",
+    "State join path: ticket_verkaeufe.plz -> postleitzahlen.plz -> postleitzahlen.bundesland_code2 -> regionen_bundesland.bundesland_code2.",
+    "Tariff join path: ticket_verkaeufe.tarifverbund_id -> tarifverbuende.tarifverbund_id.",
+    "Ticket product join path: ticket_verkaeufe.ticket_code -> ticket_produkte.ticket_code.",
+    "For state-level revenue, aggregate SUM(ticket_verkaeufe.umsatz_eur) grouped by regionen_bundesland.bundesland_name.",
+    "For tariff-level revenue, aggregate SUM(ticket_verkaeufe.umsatz_eur) grouped by tarifverbuende.name.",
+]
+
 
 def normalize_question(text: str) -> str:
     if not text:
@@ -96,8 +106,9 @@ def train_from_examples(vn: MXQueryVanna, examples_df: pd.DataFrame) -> None:
     """
     Train Vanna using all examples in the CSV.
     """
-    # Optional: basic dataset description helps the model
-    vn.train(documentation="This DuckDB contains synthetic German public transport ticket analytics data.")
+    # Base documentation improves schema-grounded SQL generation.
+    for doc in BASE_TRAINING_DOCUMENTS:
+        vn.train(documentation=doc)
 
     for _, row in examples_df.iterrows():
         question = str(row.get("question", "")).strip()
