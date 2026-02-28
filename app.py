@@ -12,6 +12,7 @@ Flow:
 import re
 import time
 import hashlib
+import os
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from pathlib import Path
 from typing import Optional
@@ -34,6 +35,10 @@ from src.db.execution_policy import (
     run_query_with_timeout,
     validate_sql_complexity,
 )
+from src.llm.sql_explainer import (
+    build_explanation_cache_key,
+    maybe_generate_explanation,
+)
 from src.utils.telemetry import configure_app_logging, record_metric_event
 from sql_guard import validate_read_only_sql
 from vannaagent import (
@@ -49,6 +54,11 @@ DUCKDB_PATH = "mxquerychat.duckdb"
 ICON_PATH = Path("docs/images/icon.png")
 LOGO_PATH = Path("docs/images/logo.png")
 MODEL_TIMEOUT_SECONDS = 65
+OLLAMA_BASE_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434")
+try:
+    EXPLANATION_TIMEOUT_SECONDS = int(os.getenv("EXPLANATION_TIMEOUT_SECONDS", "8"))
+except ValueError:
+    EXPLANATION_TIMEOUT_SECONDS = 8
 EXECUTION_POLICY = ExecutionPolicy()
 configure_app_logging()
 
@@ -811,6 +821,9 @@ def init_state():
         "metrics_feedback_down": 0,
         "feedback_last_rating": None,
         "feedback_last_question_hash": "no_question",
+        "generated_explanation": "",
+        "explanation_status": "idle",
+        "explanation_cache": {},
         "training_working_df": None,
     }
     for key, value in defaults.items():
@@ -1019,12 +1032,16 @@ if view == "New Question":
                 ):
                     st.session_state.question = suggestion
                     st.session_state.generated_sql = ""
+                    st.session_state.generated_explanation = ""
+                    st.session_state.explanation_status = "idle"
                     st.session_state.generation_notes = []
                     st.session_state.suggestions = []
                     st.rerun()
 
     if st.button("Send", type="primary"):
         generation_started_at = time.time()
+        st.session_state.generated_explanation = ""
+        st.session_state.explanation_status = "idle"
         st.session_state.metrics_questions_total += 1
         question_for_metrics = (st.session_state.question or "").strip()
         record_metric_event(
@@ -1234,8 +1251,76 @@ if view == "New Question":
             value=st.session_state.generated_sql,
             height=170,
         )
+        explanation_key = build_explanation_cache_key(
+            st.session_state.question,
+            st.session_state.generated_sql,
+        )
+        st.session_state.generated_explanation = st.session_state.explanation_cache.get(
+            explanation_key, ""
+        )
+        if st.session_state.generated_explanation:
+            st.session_state.explanation_status = "ready"
+        elif st.session_state.explanation_status == "ready":
+            st.session_state.explanation_status = "idle"
+
         with st.expander("Explain this SQL", expanded=False):
-            st.write(query_logic.explain_sql_brief(st.session_state.generated_sql))
+            st.caption(
+                "Optional: generate a short SQL explanation using local Ollama. "
+                "This does not affect SQL execution."
+            )
+            if st.button("Generate Explanation", key="generate_explanation"):
+                started = time.time()
+                explanation_text, explanation_status, cache_hit = (
+                    maybe_generate_explanation(
+                        triggered=True,
+                        question=st.session_state.question,
+                        sql=st.session_state.generated_sql,
+                        cache=st.session_state.explanation_cache,
+                        model=os.getenv("OLLAMA_MODEL", "mistral"),
+                        ollama_url=OLLAMA_BASE_URL,
+                        timeout_seconds=EXPLANATION_TIMEOUT_SECONDS,
+                    )
+                )
+                st.session_state.generated_explanation = explanation_text
+                st.session_state.explanation_status = explanation_status
+                duration_ms = int((time.time() - started) * 1000)
+
+                if explanation_status == "ready":
+                    record_metric_event(
+                        "sql_explanation",
+                        success=True,
+                        path="on_demand_ollama",
+                        cache_hit=cache_hit,
+                        duration_ms=duration_ms,
+                    )
+                else:
+                    failure_category = (
+                        "timeout"
+                        if explanation_status == "timeout"
+                        else "runtime_fail"
+                    )
+                    record_metric_event(
+                        "sql_explanation",
+                        success=False,
+                        path="on_demand_ollama",
+                        failure_reason=explanation_status,
+                        failure_category=failure_category,
+                        duration_ms=duration_ms,
+                    )
+
+            if st.session_state.explanation_status == "ready" and st.session_state.generated_explanation:
+                st.success("Explanation ready.")
+                st.write(st.session_state.generated_explanation)
+            elif st.session_state.explanation_status == "timeout":
+                st.info(
+                    "Explanation unavailable: local model timeout. "
+                    "You can still run the SQL query."
+                )
+            elif st.session_state.explanation_status in {"model_error", "empty_response"}:
+                st.info(
+                    "Explanation unavailable right now from local model. "
+                    "You can still run the SQL query."
+                )
 
     if st.session_state.generated_sql:
         st.markdown("### Step 3: Safety check")

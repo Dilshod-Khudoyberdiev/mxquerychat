@@ -644,6 +644,8 @@ def reset_question_flow_state(state: MutableMapping[str, Any]) -> None:
     """Reset New Question flow values without touching training data state."""
     state["question"] = ""
     state["generated_sql"] = ""
+    state["generated_explanation"] = ""
+    state["explanation_status"] = "idle"
     state["last_result_df"] = None
     state["last_result_elapsed"] = None
     state["suggestions"] = []

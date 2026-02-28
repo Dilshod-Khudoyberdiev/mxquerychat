@@ -9,6 +9,8 @@ def test_reset_question_flow_state_resets_expected_keys() -> None:
     state = {
         "question": "Show revenue by month.",
         "generated_sql": "SELECT * FROM t",
+        "generated_explanation": "old explanation",
+        "explanation_status": "ready",
         "last_result_df": {"rows": [1, 2]},
         "last_result_elapsed": 1.23,
         "suggestions": ["q1"],
@@ -22,6 +24,8 @@ def test_reset_question_flow_state_resets_expected_keys() -> None:
 
     assert state["question"] == ""
     assert state["generated_sql"] == ""
+    assert state["generated_explanation"] == ""
+    assert state["explanation_status"] == "idle"
     assert state["last_result_df"] is None
     assert state["last_result_elapsed"] is None
     assert state["suggestions"] == []

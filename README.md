@@ -27,6 +27,8 @@ mxquerychat/
   src/
     core/
       query_logic.py
+    llm/
+      sql_explainer.py
     db/
       data_source.py
       execution_policy.py
@@ -66,6 +68,8 @@ Copy `.env.example` to `.env` and set values as needed.
 
 Key variables:
 - `OLLAMA_MODEL` and related `OLLAMA_*` settings for local model behavior
+- `OLLAMA_URL` for local Ollama HTTP endpoint
+- `EXPLANATION_TIMEOUT_SECONDS` for on-demand explanation timeout
 - `APP_LOG_LEVEL` for log verbosity
 - `APP_LOG_PATH` for app logs
 - `APP_METRICS_LOG_PATH` for structured metrics events
@@ -92,6 +96,13 @@ Test coverage includes:
 - LLM retry/fallback flow (mocked)
 - local guardrails
 - read-only execution wrapper behavior
+- on-demand SQL explanation flow and telemetry
+
+## SQL Explanation (On-Demand)
+- Explanation is generated only when the user clicks `Generate Explanation`.
+- It uses local Ollama and has a strict timeout.
+- If explanation times out or fails, query execution is still available.
+- Deterministic explanation is intentionally not used in active UX.
 
 ## Logging and Basic Metrics
 The app writes:
@@ -137,6 +148,9 @@ Optional flags:
 ```bash
 streamlit run app.py --server.address=0.0.0.0 --server.port=8501
 ```
+
+For a complete step-by-step deployment and smoke-check process, see:
+- `docs/deployment_runbook.md`
 
 ## Benchmark Harness
 Run benchmark on `docs/demo_questions.md` and `docs/tricky_questions.md`:

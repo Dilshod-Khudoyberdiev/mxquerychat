@@ -16,7 +16,8 @@ This MVP is intentionally DuckDB-only. Multi-database support is future work.
    - exact training example match
    - deterministic template planner
    - LLM fallback with retry prompts
-3. User reviews/edits SQL and reads optional explanation.
+3. User reviews/edits SQL and can request optional on-demand LLM explanation.
+   - No deterministic explanation fallback is used in active UX.
 4. App enforces safety:
    - read-only SQL guard (`sql_guard.py`)
    - complexity limits and hard row cap (`src/db/execution_policy.py`)
@@ -43,6 +44,7 @@ This MVP is intentionally DuckDB-only. Multi-database support is future work.
 - `src/core/query_logic.py`: deterministic planner, retry prompts, local guardrails.
 - `src/db/data_source.py`: active DuckDB info + cache refresh/reload.
 - `src/db/execution_policy.py`: complexity checks, row limits, timeout execution.
+- `src/llm/sql_explainer.py`: on-demand explanation prompt + local Ollama call.
 - `src/utils/telemetry.py`: app logs + structured metric events.
 - `tools/run_benchmark.py`: benchmark runner for demo/tricky question sets.
 - `tools/summarize_metrics.py`: aggregate KPI summary from metrics JSONL.
@@ -51,6 +53,7 @@ This MVP is intentionally DuckDB-only. Multi-database support is future work.
 - App log: `logs/app.log`
 - Metrics log: `logs/metrics.jsonl`
 - Event coverage includes generation path/outcome, execution stats, and feedback.
+- Event coverage includes `sql_explanation` success/failure on on-demand explanation calls.
 - Standard failure categories used in telemetry:
   - `blocked_read_only`
   - `blocked_complexity`
@@ -99,3 +102,6 @@ PRD-facing summary fields include compile rate, safe-fail rate, and median laten
 # POSIX
 .venv/bin/python tools/summarize_metrics.py
 ```
+
+## Deployment Runbook
+See `docs/deployment_runbook.md` for minimal deployment and smoke-test steps.
