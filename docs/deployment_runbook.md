@@ -13,8 +13,10 @@ This runbook covers a minimal deployment baseline for mxQueryChat.
 Set these values in your environment (or Azure App Settings):
 
 - `OLLAMA_MODEL=mistral`
+- `EXPLANATION_MODEL=mistral`
 - `OLLAMA_URL=http://127.0.0.1:11434`
-- `EXPLANATION_TIMEOUT_SECONDS=8`
+- `EXPLANATION_TIMEOUT_SECONDS=35`
+- `EXPLANATION_NUM_PREDICT=32`
 - `OLLAMA_TIMEOUT_SECONDS=60`
 - `APP_LOG_LEVEL=INFO`
 - `APP_LOG_PATH=logs/app.log`

@@ -4,19 +4,31 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import socket
 from typing import Callable
 from urllib import error, request
 
 
+def _read_int_env(name: str, default: int) -> int:
+    raw = os.getenv(name, str(default))
+    try:
+        return int(raw)
+    except ValueError:
+        return default
+
+
 def build_explanation_prompt(question: str, sql: str) -> str:
     """Build a concise prompt for local LLM SQL explanation."""
     question_text = (question or "").strip()
-    sql_text = (sql or "").strip()
+    sql_text = " ".join((sql or "").strip().split())
+    if len(sql_text) > 700:
+        sql_text = sql_text[:700].rstrip() + " ..."
     return (
-        "You explain SQL to non-technical users.\n"
-        "Keep answer short (max 4 bullet points), plain business language.\n"
-        "Do not mention internal model details.\n\n"
+        "Explain SQL intent for a business user.\n"
+        "Return exactly one sentence, max 25 words.\n"
+        "Mention metric, main filter, and grouping when present.\n"
+        "No markdown.\n\n"
         f"Question:\n{question_text}\n\n"
         f"SQL:\n{sql_text}\n"
     )
@@ -56,7 +68,11 @@ def generate_sql_explanation(
         "model": model,
         "prompt": prompt,
         "stream": False,
-        "options": {"temperature": 0},
+        "keep_alive": os.getenv("OLLAMA_KEEP_ALIVE", "30m"),
+        "options": {
+            "temperature": 0,
+            "num_predict": _read_int_env("EXPLANATION_NUM_PREDICT", 32),
+        },
     }
     data = json.dumps(body).encode("utf-8")
     req = request.Request(
@@ -118,4 +134,3 @@ def maybe_generate_explanation(
 
     cache[cache_key] = text
     return text, "ready", False
-

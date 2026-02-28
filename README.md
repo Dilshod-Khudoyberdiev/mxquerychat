@@ -68,8 +68,10 @@ Copy `.env.example` to `.env` and set values as needed.
 
 Key variables:
 - `OLLAMA_MODEL` and related `OLLAMA_*` settings for local model behavior
+- `EXPLANATION_MODEL` for explanation-only model (can be smaller/faster than SQL model)
 - `OLLAMA_URL` for local Ollama HTTP endpoint
-- `EXPLANATION_TIMEOUT_SECONDS` for on-demand explanation timeout
+- `EXPLANATION_TIMEOUT_SECONDS` for on-demand explanation timeout (default `35`)
+- `EXPLANATION_NUM_PREDICT` to limit explanation response length (default `32`)
 - `APP_LOG_LEVEL` for log verbosity
 - `APP_LOG_PATH` for app logs
 - `APP_METRICS_LOG_PATH` for structured metrics events
@@ -103,6 +105,7 @@ Test coverage includes:
 - It uses local Ollama and has a strict timeout.
 - If explanation times out or fails, query execution is still available.
 - Deterministic explanation is intentionally not used in active UX.
+- If you still see timeout messages, increase `EXPLANATION_TIMEOUT_SECONDS` and verify Ollama is running.
 
 ## Logging and Basic Metrics
 The app writes:

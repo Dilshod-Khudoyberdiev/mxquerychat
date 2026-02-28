@@ -55,10 +55,11 @@ ICON_PATH = Path("docs/images/icon.png")
 LOGO_PATH = Path("docs/images/logo.png")
 MODEL_TIMEOUT_SECONDS = 65
 OLLAMA_BASE_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434")
+EXPLANATION_MODEL = os.getenv("EXPLANATION_MODEL", os.getenv("OLLAMA_MODEL", "mistral"))
 try:
-    EXPLANATION_TIMEOUT_SECONDS = int(os.getenv("EXPLANATION_TIMEOUT_SECONDS", "8"))
+    EXPLANATION_TIMEOUT_SECONDS = int(os.getenv("EXPLANATION_TIMEOUT_SECONDS", "35"))
 except ValueError:
-    EXPLANATION_TIMEOUT_SECONDS = 8
+    EXPLANATION_TIMEOUT_SECONDS = 35
 EXECUTION_POLICY = ExecutionPolicy()
 configure_app_logging()
 
@@ -944,12 +945,12 @@ with top_left:
     st.caption("Ask questions in plain language, get SQL query and results. Built with Vanna agent and DuckDB")
 with top_right:
     st.markdown("<div style='height: 34px;'></div>", unsafe_allow_html=True)
-    if st.button("New Chat", use_container_width=True):
+    if st.button("New Chat", width="stretch"):
         reset_question_flow()
         st.rerun()
 
 if LOGO_PATH.exists():
-    st.sidebar.image(str(LOGO_PATH), use_container_width=True)
+    st.sidebar.image(str(LOGO_PATH), width="stretch")
 st.sidebar.header("Navigation")
 view = st.sidebar.radio("Choose page", ["New Question", "Training Data"])
 st.sidebar.markdown("---")
@@ -973,7 +974,7 @@ if view == "New Question":
 
     ds_col1, ds_col2 = st.sidebar.columns(2)
     with ds_col1:
-        if st.button("Reload Dataset", use_container_width=True):
+        if st.button("Reload Dataset", width="stretch"):
             reload_dataset_cache()
             st.session_state.sql_cache = {}
             st.session_state.suggestions = []
@@ -982,7 +983,7 @@ if view == "New Question":
             record_metric_event("dataset_reload", success=True, source="duckdb")
             st.rerun()
     with ds_col2:
-        if st.button("Refresh Schema", use_container_width=True):
+        if st.button("Refresh Schema", width="stretch"):
             refresh_schema_cache()
             record_metric_event("schema_refresh", success=True, source="duckdb")
             st.rerun()
@@ -1004,7 +1005,7 @@ if view == "New Question":
     ex_cols = st.columns(len(EXAMPLE_QUESTIONS))
     for idx, ex_question in enumerate(EXAMPLE_QUESTIONS):
         with ex_cols[idx]:
-            if st.button(f"Example {idx + 1}", use_container_width=True):
+            if st.button(f"Example {idx + 1}", width="stretch"):
                 st.session_state.question = ex_question
 
     st.markdown(
@@ -1028,7 +1029,7 @@ if view == "New Question":
                     format_suggestion_button_text(suggestion),
                     key=f"suggestion_{idx}",
                     help=suggestion,
-                    use_container_width=True,
+                    width="stretch",
                 ):
                     st.session_state.question = suggestion
                     st.session_state.generated_sql = ""
@@ -1276,7 +1277,7 @@ if view == "New Question":
                         question=st.session_state.question,
                         sql=st.session_state.generated_sql,
                         cache=st.session_state.explanation_cache,
-                        model=os.getenv("OLLAMA_MODEL", "mistral"),
+                        model=EXPLANATION_MODEL,
                         ollama_url=OLLAMA_BASE_URL,
                         timeout_seconds=EXPLANATION_TIMEOUT_SECONDS,
                     )
@@ -1314,7 +1315,8 @@ if view == "New Question":
             elif st.session_state.explanation_status == "timeout":
                 st.info(
                     "Explanation unavailable: local model timeout. "
-                    "You can still run the SQL query."
+                    "You can still run the SQL query. "
+                    "Try again after Ollama warms up, or increase EXPLANATION_TIMEOUT_SECONDS."
                 )
             elif st.session_state.explanation_status in {"model_error", "empty_response"}:
                 st.info(
@@ -1422,7 +1424,7 @@ if view == "New Question":
         result_elapsed = st.session_state.last_result_elapsed or 0.0
         st.markdown("### Step 4: Results")
         st.write(f"Rows: {len(result_df)} | Time: {result_elapsed:.3f}s")
-        st.dataframe(result_df, use_container_width=True)
+        st.dataframe(result_df, width="stretch")
         st.markdown("### Chart")
         try_show_bar_chart(result_df)
 
@@ -1430,7 +1432,7 @@ if view == "New Question":
         feedback_cols = st.columns([0.5, 0.5])
         question_hash = build_question_hash(st.session_state.question)
         with feedback_cols[0]:
-            if st.button("Helpful", key="feedback_helpful", use_container_width=True):
+            if st.button("Helpful", key="feedback_helpful", width="stretch"):
                 st.session_state.metrics_feedback_up += 1
                 st.session_state.feedback_last_rating = "up"
                 st.session_state.feedback_last_question_hash = question_hash
@@ -1442,7 +1444,7 @@ if view == "New Question":
                 )
                 st.success("Feedback saved.")
         with feedback_cols[1]:
-            if st.button("Not Helpful", key="feedback_not_helpful", use_container_width=True):
+            if st.button("Not Helpful", key="feedback_not_helpful", width="stretch"):
                 st.session_state.metrics_feedback_down += 1
                 st.session_state.feedback_last_rating = "down"
                 st.session_state.feedback_last_question_hash = question_hash
@@ -1467,7 +1469,7 @@ elif view == "Training Data":
     edited_df = st.data_editor(
         st.session_state.training_working_df,
         num_rows="dynamic",
-        use_container_width=True,
+        width="stretch",
         key="training_editor",
         disabled=["created_at", "updated_at"],
     )
@@ -1493,7 +1495,7 @@ elif view == "Training Data":
         "I confirm permanent deletion of selected rows.",
         key="training_delete_confirm",
     )
-    if st.button("Delete Selected Rows", use_container_width=False):
+    if st.button("Delete Selected Rows", width="content"):
         if not selected_for_delete:
             st.warning("Select at least one row before deleting.")
         elif not confirm_delete:
@@ -1513,7 +1515,7 @@ elif view == "Training Data":
 
     col_save, col_train = st.columns([0.25, 0.75])
     with col_save:
-        if st.button("Save Examples", use_container_width=True):
+        if st.button("Save Examples", width="stretch"):
             cleaned_df, quality_stats = normalize_training_for_save(
                 st.session_state.training_working_df
             )
@@ -1553,7 +1555,7 @@ elif view == "Training Data":
             )
             st.success("Saved with timestamps.")
     with col_train:
-        if st.button("Train Model", use_container_width=True):
+        if st.button("Train Model", width="stretch"):
             training_df, _ = normalize_training_for_save(st.session_state.training_working_df)
             with st.spinner("Training model..."):
                 vn = get_vanna()
