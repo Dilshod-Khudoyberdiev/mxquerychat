@@ -13,6 +13,7 @@ This file exposes helper functions the Streamlit app can call.
 from pathlib import Path
 import os
 import re
+from datetime import datetime, timezone
 import pandas as pd
 
 try:
@@ -25,6 +26,7 @@ except ModuleNotFoundError:
 DUCKDB_PATH = "mxquerychat.duckdb"
 CHROMA_PATH = "vanna_chroma_store"
 TRAINING_CSV_PATH = Path("training_data/training_examples.csv")
+TRAINING_COLUMNS = ["question", "sql", "description", "created_at", "updated_at"]
 
 BASE_TRAINING_DOCUMENTS = [
     "mxquerychat uses DuckDB and must stay read-only. Generate SELECT/WITH queries only.",
@@ -42,6 +44,30 @@ def normalize_question(text: str) -> str:
         return ""
     normalized = re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
     return " ".join(normalized.split())
+
+
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
+def ensure_training_schema(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Ensure the canonical training CSV schema exists in-memory.
+    Missing columns are added with empty values.
+    """
+    if df is None:
+        df = pd.DataFrame(columns=TRAINING_COLUMNS)
+
+    result = df.copy()
+    for column in TRAINING_COLUMNS:
+        if column not in result.columns:
+            result[column] = ""
+
+    result = result[TRAINING_COLUMNS]
+    for column in TRAINING_COLUMNS:
+        result[column] = result[column].fillna("").astype(str)
+
+    return result
 
 
 class MXQueryVanna(ChromaDB_VectorStore, Ollama):
@@ -80,26 +106,92 @@ def get_vanna() -> MXQueryVanna:
 def load_training_examples() -> pd.DataFrame:
     """
     Load training examples from CSV (or create an empty file if missing).
-    Columns: question, sql, description
+    Columns: question, sql, description, created_at, updated_at
     """
     TRAINING_CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     if not TRAINING_CSV_PATH.exists():
-        df = pd.DataFrame(columns=["question", "sql", "description"])
+        df = pd.DataFrame(columns=TRAINING_COLUMNS)
         df.to_csv(TRAINING_CSV_PATH, index=False, encoding="utf-8-sig")
         return df
 
-    return pd.read_csv(TRAINING_CSV_PATH)
+    raw = pd.read_csv(TRAINING_CSV_PATH, dtype=str, keep_default_na=False)
+    normalized = ensure_training_schema(raw)
+    if list(raw.columns) != TRAINING_COLUMNS:
+        normalized.to_csv(TRAINING_CSV_PATH, index=False, encoding="utf-8-sig")
+    return normalized
 
 
 def save_training_examples(df: pd.DataFrame) -> None:
     """
     Save the training examples to CSV.
     """
-    df = df.copy()
-    # Keep only expected columns (avoid accidental extras)
-    df = df[["question", "sql", "description"]]
-    df.to_csv(TRAINING_CSV_PATH, index=False, encoding="utf-8-sig")
+    incoming = ensure_training_schema(df)
+    for col in ["question", "sql", "description", "created_at", "updated_at"]:
+        incoming[col] = incoming[col].astype(str).str.strip()
+
+    # Drop fully empty editor rows.
+    has_content = (
+        incoming[["question", "sql", "description"]]
+        .apply(lambda s: s.str.len() > 0)
+        .any(axis=1)
+    )
+    incoming = incoming[has_content].copy()
+
+    existing_lookup: dict[tuple[str, str, str], tuple[str, str]] = {}
+    existing_qs_lookup: dict[tuple[str, str], tuple[str, str]] = {}
+    if TRAINING_CSV_PATH.exists():
+        existing = ensure_training_schema(
+            pd.read_csv(TRAINING_CSV_PATH, dtype=str, keep_default_na=False)
+        )
+        for _, row in existing.iterrows():
+            key = (
+                str(row["question"]).strip(),
+                str(row["sql"]).strip(),
+                str(row["description"]).strip(),
+            )
+            existing_lookup[key] = (
+                str(row["created_at"]).strip(),
+                str(row["updated_at"]).strip(),
+            )
+            existing_qs_lookup[(key[0], key[1])] = (
+                str(row["created_at"]).strip(),
+                str(row["updated_at"]).strip(),
+            )
+
+    now_iso = _utc_now_iso()
+    rows = []
+    for _, row in incoming.iterrows():
+        question = str(row["question"]).strip()
+        sql = str(row["sql"]).strip()
+        description = str(row["description"]).strip()
+        key = (question, sql, description)
+
+        if key in existing_lookup:
+            created_at, updated_at = existing_lookup[key]
+            created_at = created_at or now_iso
+            updated_at = updated_at or created_at
+        elif (question, sql) in existing_qs_lookup:
+            # Treat changed description as an update of the same logical row.
+            created_at, _ = existing_qs_lookup[(question, sql)]
+            created_at = created_at or now_iso
+            updated_at = now_iso
+        else:
+            created_at = str(row.get("created_at", "")).strip() or now_iso
+            updated_at = now_iso
+
+        rows.append(
+            {
+                "question": question,
+                "sql": sql,
+                "description": description,
+                "created_at": created_at,
+                "updated_at": updated_at,
+            }
+        )
+
+    out = pd.DataFrame(rows, columns=TRAINING_COLUMNS)
+    out.to_csv(TRAINING_CSV_PATH, index=False, encoding="utf-8-sig")
 
 
 def train_from_examples(vn: MXQueryVanna, examples_df: pd.DataFrame) -> None:
@@ -110,6 +202,7 @@ def train_from_examples(vn: MXQueryVanna, examples_df: pd.DataFrame) -> None:
     for doc in BASE_TRAINING_DOCUMENTS:
         vn.train(documentation=doc)
 
+    examples_df = ensure_training_schema(examples_df)
     for _, row in examples_df.iterrows():
         question = str(row.get("question", "")).strip()
         sql = str(row.get("sql", "")).strip()
@@ -126,6 +219,7 @@ def get_exact_training_sql(question: str, examples_df: pd.DataFrame) -> str | No
     This avoids LLM latency for known demo questions.
     """
     target = normalize_question(question)
+    examples_df = ensure_training_schema(examples_df)
     if not target or examples_df is None or examples_df.empty:
         return None
 

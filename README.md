@@ -1,93 +1,157 @@
-﻿# MXQueryChat - Project Overview (Flask Demo)
+# mxQueryChat
 
-MXQueryChat is a company-style project demo that turns natural-language questions into SQL,
-executes them on a local DuckDB file, and returns results through a Flask UI powered by Vanna.
-This README is a short presentation of the workflow and technical design of the running Flask app.
+mxQueryChat is a local, self-hosted NL-to-SQL MVP.
+Users ask a data question in plain language, review generated SQL, run it in read-only mode on DuckDB, and see table/chart results in Streamlit.
 
-## Project Snapshot
-- Goal: ask business questions in plain language and get SQL + results.
-- UI: Flask web app via `VannaFlaskApp`.
-- Model stack: Vanna + Ollama (`mistral`) with a local Chroma vector store.
-- Data: local DuckDB file `mxquerychat.duckdb` (used as a read-only dataset).
+## Core Constraints
+- Self-hosted only (no external LLM APIs)
+- DuckDB only (`mxquerychat.duckdb`)
+- Strict read-only SQL execution
+- Multi-database connectors are future work, not part of this MVP.
 
-## End-to-End Workflow (Flask App)
-1. Load DuckDB and export full schema DDL to `docs/schema_ddl.sql`.
-2. Train Vanna on the schema plan from `information_schema`.
-3. (Optional) Train on Q-to-SQL examples from `training_data/training_examples.csv`.
-4. (Optional) Train on demo and tricky question docs from `docs/demo_questions.md` and `docs/tricky_questions.md`.
-5. User asks a question in the Flask UI.
-6. Vanna builds a prompt, uses retrieval from Chroma, and calls Ollama to generate SQL.
-7. SQL runs against DuckDB and results are returned in the UI.
+## Current App Mode
+- Primary app: Streamlit (`app.py`)
+- LLM stack: Vanna + Ollama + Chroma (`vannaagent.py`)
+- SQL safety guard: `sql_guard.py`
+- Training data: `training_data/training_examples.csv`
 
-## Technical Details (What Runs Today)
-- Entry point: `vanna_flask_demo.py`.
-- Agent: `VannaAgent` combines `ChromaDB_VectorStore` + `Ollama`.
-- Guardrails:
-  - Small-talk and out-of-scope questions return a safe `SELECT` message.
-  - Domain-term filtering nudges users toward dataset topics.
-  - If the LLM response is not SQL, similar trained SQL is used as fallback.
-- Storage:
-  - Vector store: `vanna_chroma_store_demo`.
-  - DuckDB file: `mxquerychat.duckdb`.
-
-## Simple Database Summary
-This project uses a fake (synthetic) DuckDB database. It is made only for demos.
-It has ticket sales, planned revenue, and location data (postal codes and states).
-No real people or private data exist.
-
-# What's inside
-- Lists (reference data): states, postal codes, ticket types, tariff associations, reporting offices.
-- Sales data: ticket sales per month (main table).
-- Plan data: planned revenue per month.
-- Distribution tables: rules to split values across states.
-- Demo users and permissions: just for showing how access could work.
-
-## How the tables connect
-- Sales -> State: sales table -> postal codes -> states.
-- Sales -> Ticket type: sales table -> ticket products.
-- Sales/Plan -> Tariff association: sales/plan tables -> tariff associations.
-
-## Run the Flask Demo
-```bash
-# Ensure Ollama is running and the model is available
-ollama pull mistral
-
-# Start the Flask demo
-python vanna_flask_demo.py
+## Project Layout
+```text
+mxquerychat/
+  app.py
+  vannaagent.py
+  sql_guard.py
+  mxquerychat.duckdb
+  training_data/
+    training_examples.csv
+  src/
+    core/
+      query_logic.py
+    db/
+      data_source.py
+      execution_policy.py
+    utils/
+      telemetry.py
+  requirements.txt
+  .env.example
+  tests/
+    test_sql_guard.py
+    test_query_logic_templates.py
+    test_query_logic_retry.py
+    test_query_logic_guardrails.py
+    test_query_logic_execution.py
+    test_execution_policy.py
+    test_benchmark_harness.py
 ```
 
-The server starts on `http://localhost:8084`.
+## Run Streamlit App
+```bash
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
 
-## Workflow Diagrams
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 
-### 1) Training vs. Question Flow
-![Training and question flow](docs/images/workflow_train_ask.svg)
+streamlit run app.py
+```
 
-This diagram shows the two lanes:
-- Training: schema DDL + examples + question docs feed the Chroma vector store.
-- Asking: the user question is paired with retrieved context, sent to the LLM, and executed on DuckDB.
+Optional startup flags (Azure-compatible):
+```bash
+streamlit run app.py --server.address=0.0.0.0 --server.port=8501
+```
 
-### 2) Vanna Feedback Loop
-![Vanna feedback loop](docs/images/vanna_loop.svg)
+## Environment Configuration
+Copy `.env.example` to `.env` and set values as needed.
 
-This loop highlights how questions become SQL, results are validated, and corrections can be added
-as new training data to improve future answers.
+Key variables:
+- `OLLAMA_MODEL` and related `OLLAMA_*` settings for local model behavior
+- `APP_LOG_LEVEL` for log verbosity
+- `APP_LOG_PATH` for app logs
+- `APP_METRICS_LOG_PATH` for structured metrics events
 
-### 3) Vanna AI Ecosystem View
-![Vanna AI ecosystem](docs/images/vanna_ecosystem.svg)
+## Training Workflow
+1. Open the `Training Data` page in Streamlit.
+2. Edit/save examples in `training_data/training_examples.csv`.
+3. Click `Train Model` to retrain Vanna on base docs + examples.
 
-The project stays modular: Vanna sits in the middle and connects a SQL database, a vector store,
-an LLM, and a web front end (Flask in this demo).
+## Testing
+Use the project virtual environment:
 
-## Example Questions (Simple)
-- "What is the total revenue in 2025?"
-- "Show revenue per month for 2024."
-- "Which ticket types generate the most revenue?"
-- "Show revenue by federal state (via postal code)."
-- "Compare actual revenue with planned revenue per month."
+```bash
+# Windows
+.venv\Scripts\python -m pytest
 
-## Tricky Questions (To Test Guardrails)
-- "Show revenue by state for 2027." (no data expected)
-- "Show revenue per week for 2025." (no week field expected)
-- "Please insert new data." (read-only rule)
-- "Give me all data (everything)." (should refuse or summarize)
+# POSIX
+.venv/bin/python -m pytest
+```
+
+Test coverage includes:
+- `sql_guard.py` read-only checks
+- deterministic template SQL planner
+- LLM retry/fallback flow (mocked)
+- local guardrails
+- read-only execution wrapper behavior
+
+## Logging and Basic Metrics
+The app writes:
+- human-readable logs to `logs/app.log`
+- structured metric events (JSON lines) to `logs/metrics.jsonl`
+
+Current metrics include:
+- question submissions
+- SQL generation path and outcome (`cache`, `training`, `template`, `llm`, `blocked`)
+- generation duration
+- query execution success/failure, row count, and execution time
+- user feedback (`up` / `down`) with anonymized question hash
+
+The sidebar also shows simple session counters for quick monitoring.
+
+## Azure Deployment Notes
+- Install dependencies using `requirements.txt`.
+- Set environment variables in Azure App Service (or equivalent managed runtime).
+- Use this startup command:
+
+```bash
+streamlit run app.py --server.address=0.0.0.0 --server.port=8501
+```
+
+## Benchmark Harness
+Run benchmark on `docs/demo_questions.md` and `docs/tricky_questions.md`:
+
+```bash
+# Deterministic/template-only
+.venv\Scripts\python tools/run_benchmark.py
+
+# Optional LLM fallback enabled
+.venv\Scripts\python tools/run_benchmark.py --use-llm
+```
+
+Optional flags:
+- `--output-dir reports`
+- `--max-questions 20`
+
+Outputs:
+- JSON summary report (`reports/benchmark_*.json`)
+- CSV row-level report (`reports/benchmark_*.csv`)
+
+Per-question outcomes:
+- `success`
+- `compile_fail`
+- `safe_fail`
+- `runtime_fail`
+
+## Legacy Flask Demo (Optional)
+The repository still contains `vanna_flask_demo.py` as a legacy demo script.
+The active MVP workflow is Streamlit-first, and new features should target `app.py`.
+
+## Repository Hygiene
+Runtime artifacts are generated locally and should not be committed:
+- Python cache folders
+- Chroma runtime stores
+- notebook checkpoints
+- temp files
+- logs
+- local `.env` files
+
+Use `.gitignore` in this repo to keep those artifacts out of version control.

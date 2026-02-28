@@ -1,54 +1,82 @@
-# MXQueryChat - Technical Documentation (Easy Language)
+# MXQueryChat - Technical Documentation
 
-This document explains what works now. It uses simple words and short steps.
-The focus is the Flask demo app.
+## Current MVP Scope
+- UI and app runtime: Streamlit (`app.py`)
+- Data source: DuckDB only (`mxquerychat.duckdb`)
+- SQL generation: Vanna + Ollama (`vannaagent.py`)
+- SQL safety: read-only guard + execution policy limits
+- Training data management: CSV-backed editor in Streamlit
 
-## What Works Now
-- A Flask web app that answers data questions with SQL.
-- Local LLM inference with Ollama (no external API).
-- Vanna for text-to-SQL, training, and retrieval.
-- Local DuckDB file for data queries (read-only dataset).
-- Local Chroma vector store for training data and schema context.
-- Training from schema, examples, and question lists.
-- Guardrails for small talk and out-of-scope questions.
+This MVP is intentionally DuckDB-only. Multi-database support is future work.
 
-## How the Flask App Works (Step by Step)
-1. The app connects to `mxquerychat.duckdb`.
-2. It exports table DDL into `docs/schema_ddl.sql`.
-3. Vanna trains on the schema plan from `information_schema`.
-4. Vanna also trains on:
-   - `training_data/training_examples.csv`
-   - `docs/demo_questions.md`
-   - `docs/tricky_questions.md`
-5. A user asks a question in the Flask UI.
-6. Vanna builds a prompt, adds context from Chroma, and calls Ollama.
-7. The SQL runs on DuckDB and results show in the UI.
+## Main Runtime Flow (New Question)
+1. User asks a question in `New Question`.
+2. App resolves SQL in this order:
+   - session cache
+   - exact training example match
+   - deterministic template planner
+   - LLM fallback with retry prompts
+3. User reviews/edits SQL and reads optional explanation.
+4. App enforces safety:
+   - read-only SQL guard (`sql_guard.py`)
+   - complexity limits and hard row cap (`src/db/execution_policy.py`)
+   - execution timeout (worker process)
+5. Results are shown as table + simple bar chart.
+6. User can provide feedback (thumbs up/down), logged as metrics.
 
-## Main Files (Short Map)
-- `vanna_flask_demo.py`: main Flask demo app and training flow.
-- `mxquerychat.duckdb`: local DuckDB data file.
-- `docs/schema_ddl.sql`: exported schema DDL for training and reference.
-- `training_data/training_examples.csv`: Q-to-SQL examples for training.
-- `docs/demo_questions.md`: demo questions used as training docs.
-- `docs/tricky_questions.md`: edge-case questions used as training docs.
-- `vanna_chroma_store_demo/`: vector store used by the Flask demo.
-- `docs/data_dictionary.md`: dataset description for human reference.
-- `docs/images/`: workflow diagrams used in `README.md`.
+## Training Data Flow
+1. `Training Data` view loads `training_data/training_examples.csv`.
+2. CSV schema is normalized to:
+   - `question`
+   - `sql`
+   - `description`
+   - `created_at`
+   - `updated_at`
+3. Save updates timestamps and preserves existing values for unchanged rows.
+4. Selected rows can be deleted with explicit confirmation.
+5. `Train Model` retrains Vanna from base docs + examples.
 
-## Guardrails (Simple)
-- Small talk and off-topic questions return a safe SQL message.
-- Domain terms are built from table and column names to keep questions on-topic.
-- If the model output is not SQL, similar trained SQL is used as a fallback.
+## Key Modules
+- `app.py`: Streamlit pages and interaction flow.
+- `vannaagent.py`: Vanna/Ollama setup + training example I/O helpers.
+- `sql_guard.py`: read-only SQL validation.
+- `src/core/query_logic.py`: deterministic planner, retry prompts, local guardrails.
+- `src/db/data_source.py`: active DuckDB info + cache refresh/reload.
+- `src/db/execution_policy.py`: complexity checks, row limits, timeout execution.
+- `src/utils/telemetry.py`: app logs + structured metric events.
+- `tools/run_benchmark.py`: benchmark runner for demo/tricky question sets.
 
-## How to Run (Flask Demo)
+## Metrics and Logs
+- App log: `logs/app.log`
+- Metrics log: `logs/metrics.jsonl`
+- Event coverage includes generation path/outcome, execution stats, and feedback.
+
+## Test Execution
+Use the project virtual environment:
+
 ```bash
-ollama pull mistral
-python vanna_flask_demo.py
+# Windows
+.venv\Scripts\python -m pytest
+
+# POSIX
+.venv/bin/python -m pytest
 ```
 
-The Flask UI runs at `http://localhost:8084`.
+## Benchmark Harness
+Source sets:
+- `docs/demo_questions.md`
+- `docs/tricky_questions.md`
 
-## Data and Utilities
-- Mock data CSVs are in `training_data/mock_csv_v3/`.
-- Ingest SQL scripts are in `sql/`.
-- Data generation scripts are in `tools/`.
+Command examples:
+```bash
+# Windows
+.venv\Scripts\python tools/run_benchmark.py
+.venv\Scripts\python tools/run_benchmark.py --use-llm --max-questions 20
+
+# POSIX
+.venv/bin/python tools/run_benchmark.py
+```
+
+Outputs:
+- `reports/benchmark_*.json` (summary + full records)
+- `reports/benchmark_*.csv` (row-level results)

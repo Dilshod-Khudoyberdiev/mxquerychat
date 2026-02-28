@@ -4,19 +4,33 @@ sql_guard.py
 Very simple "read-only SQL guard" for the MVP.
 Goal: block any write/DDL statements and allow only a single SELECT/WITH query.
 
-This is NOT a perfect SQL parser — it’s a safety net for the thesis MVP.
+This is NOT a perfect SQL parser. It is a practical safety net for this MVP.
 """
 
 import re
 
 BLOCKED_KEYWORDS = [
-    "insert", "update", "delete", "merge", "replace",
-    "create", "alter", "drop", "truncate",
-    "grant", "revoke",
-    "attach", "detach",
-    "copy", "export", "import",
-    "call", "execute", "pragma",
+    "insert",
+    "update",
+    "delete",
+    "merge",
+    "replace",
+    "create",
+    "alter",
+    "drop",
+    "truncate",
+    "grant",
+    "revoke",
+    "attach",
+    "detach",
+    "copy",
+    "export",
+    "import",
+    "call",
+    "execute",
+    "pragma",
 ]
+
 
 def validate_read_only_sql(sql: str) -> tuple[bool, str]:
     """
@@ -49,6 +63,10 @@ def validate_read_only_sql(sql: str) -> tuple[bool, str]:
     for kw in BLOCKED_KEYWORDS:
         # use word boundary so "dropdown" doesn't match "drop"
         if re.search(rf"\b{re.escape(kw)}\b", lowered):
-            return False, f"Blocked: keyword '{kw.upper()}' is not allowed (read-only mode)."
+            return (
+                False,
+                f"Blocked: keyword '{kw.upper()}' is not allowed (read-only mode).",
+            )
 
     return True, "OK"
+

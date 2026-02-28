@@ -90,3 +90,30 @@ There is no commit history yet, so no established message convention exists. Use
 ## Security & Configuration Tips
 
 Do not commit secrets or local configuration. If you add runtime configuration, prefer environment variables and document required keys in a `README` or `.env.example`.
+
+## 2. Agent Operating Rules (Codex) — Autonomy After Initial Approval
+
+These rules apply specifically to the **mxQueryChat** project and repository.
+
+### One-time approval, then proceed
+- Once the user has granted permission to make changes in this session, **Codex should not ask again** before editing files.
+- Codex is explicitly authorized to **create, edit, move, and delete** files in this repo to complete tasks, as long as the constraints in this document are followed.
+
+### When Codex MUST still ask (exceptions)
+Codex should request confirmation only if a change would:
+- Violate or weaken **read-only SQL execution** or the SQL safety rules in `sql_guard.py`.
+- Introduce **external LLM APIs** or otherwise break the **self-hosted only** requirement.
+- Switch away from **DuckDB** or change DB/storage approach.
+- Modify actual data assets under `data/duckdb/` (changing the DB file contents) rather than code.
+- Add/remove significant dependencies, or require non-trivial environment/setup changes beyond documenting them.
+
+Otherwise: **make the change immediately**, then summarize what was done.
+
+### Commenting & readability standard (required)
+- At the top of **every source file**, include a detailed header comment that explains:
+  - The file’s purpose
+  - What it contains (major classes/functions)
+  - Key invariants / safety guarantees (especially around read-only SQL)
+  - How it is used by other modules (briefly)
+- Do **not** write comments using “you/your”.
+- Write comments as if the author is the developer/maintainer of mxQueryChat (confident, declarative tone).

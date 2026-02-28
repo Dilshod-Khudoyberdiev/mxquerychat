@@ -11,6 +11,7 @@ Flow:
 
 import re
 import time
+import hashlib
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from pathlib import Path
 from typing import Optional
@@ -20,6 +21,19 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
+from src.core import query_logic
+from src.db.data_source import (
+    get_active_source_info,
+    refresh_schema_cache,
+    reload_dataset_cache,
+)
+from src.db.execution_policy import (
+    ExecutionPolicy,
+    apply_row_limit,
+    run_query_with_timeout,
+    validate_sql_complexity,
+)
+from src.utils.telemetry import configure_app_logging, record_metric_event
 from sql_guard import validate_read_only_sql
 from vannaagent import (
     get_vanna,
@@ -33,31 +47,14 @@ DUCKDB_PATH = "mxquerychat.duckdb"
 ICON_PATH = Path("docs/images/icon.png")
 LOGO_PATH = Path("docs/images/logo.png")
 MODEL_TIMEOUT_SECONDS = 65
+EXECUTION_POLICY = ExecutionPolicy()
+configure_app_logging()
 
 EXAMPLE_QUESTIONS = [
     "What is the total revenue in 2025?",
     "Show revenue per month for 2024.",
     "Which ticket types generate the most revenue?",
     "Show revenue by federal state for 2025.",
-]
-
-OFF_TOPIC_PATTERNS = [
-    r"\bpoem\b",
-    r"\bsong\b",
-    r"\blyrics\b",
-    r"\bjoke\b",
-    r"\bweather\b",
-    r"\bhomework\b",
-    r"\bessay\b",
-]
-
-WRITE_PATTERNS = [
-    r"\binsert\b",
-    r"\bupdate\b",
-    r"\bdelete\b",
-    r"\bdrop\b",
-    r"\balter\b",
-    r"\btruncate\b",
 ]
 
 
@@ -797,9 +794,20 @@ def init_state():
         "question": "",
         "generated_sql": "",
         "last_result_df": None,
+        "last_result_elapsed": None,
         "sql_cache": {},
         "suggestions": [],
         "generation_notes": [],
+        "metrics_questions_total": 0,
+        "metrics_generation_success": 0,
+        "metrics_generation_failed": 0,
+        "metrics_blocked_requests": 0,
+        "metrics_cache_hits": 0,
+        "metrics_query_success": 0,
+        "metrics_query_failed": 0,
+        "metrics_feedback_up": 0,
+        "metrics_feedback_down": 0,
+        "training_working_df": None,
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -810,8 +818,16 @@ def reset_question_flow():
     st.session_state.question = ""
     st.session_state.generated_sql = ""
     st.session_state.last_result_df = None
+    st.session_state.last_result_elapsed = None
     st.session_state.suggestions = []
     st.session_state.generation_notes = []
+
+
+def build_question_hash(question: str) -> str:
+    text = (question or "").strip()
+    if not text:
+        return "no_question"
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
 def inject_enter_to_send_js() -> None:
@@ -923,10 +939,53 @@ with top_right:
 if LOGO_PATH.exists():
     st.sidebar.image(str(LOGO_PATH), use_container_width=True)
 st.sidebar.header("Navigation")
-view = st.sidebar.radio("Choose page", ["Ask", "Training Data", "Schema"])
+view = st.sidebar.radio("Choose page", ["New Question", "Training Data"])
+st.sidebar.markdown("---")
+st.sidebar.subheader("Session Metrics")
+st.sidebar.metric("Questions", st.session_state.metrics_questions_total)
+st.sidebar.metric("SQL Generated", st.session_state.metrics_generation_success)
+st.sidebar.metric("Generation Failed", st.session_state.metrics_generation_failed)
+st.sidebar.metric("Blocked Requests", st.session_state.metrics_blocked_requests)
+st.sidebar.metric("Query Success", st.session_state.metrics_query_success)
+st.sidebar.metric("Query Failed", st.session_state.metrics_query_failed)
+st.sidebar.metric("Feedback 👍", st.session_state.metrics_feedback_up)
+st.sidebar.metric("Feedback 👎", st.session_state.metrics_feedback_down)
 
+if view == "New Question":
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("Data Source (DuckDB)")
+    source_info = get_active_source_info(DUCKDB_PATH)
+    st.sidebar.caption(f"Engine: {source_info['engine']}")
+    st.sidebar.caption(f"Path: `{source_info['path']}`")
+    st.sidebar.caption(f"Exists: {source_info['exists']} | Size MB: {source_info['size_mb']}")
 
-if view == "Ask":
+    ds_col1, ds_col2 = st.sidebar.columns(2)
+    with ds_col1:
+        if st.button("Reload Dataset", use_container_width=True):
+            reload_dataset_cache()
+            st.session_state.sql_cache = {}
+            st.session_state.suggestions = []
+            st.session_state.last_result_df = None
+            st.session_state.last_result_elapsed = None
+            record_metric_event("dataset_reload", success=True, source="duckdb")
+            st.rerun()
+    with ds_col2:
+        if st.button("Refresh Schema", use_container_width=True):
+            refresh_schema_cache()
+            record_metric_event("schema_refresh", success=True, source="duckdb")
+            st.rerun()
+
+    with st.sidebar.expander("Schema Tree", expanded=False):
+        try:
+            schema_tree_sidebar = get_schema_tree()
+            for table_name, cols in schema_tree_sidebar.items():
+                st.markdown(f"**{table_name}**")
+                for column_name, data_type in cols:
+                    st.caption(f"{column_name} ({data_type})")
+        except Exception as exc:
+            st.error(f"Schema load failed: {exc}")
+
+if view == "New Question":
     st.markdown("### Step 1: Ask a data question")
     st.markdown('<div class="mx-card">Try one of these examples first.</div>', unsafe_allow_html=True)
 
@@ -966,12 +1025,28 @@ if view == "Ask":
                     st.rerun()
 
     if st.button("Send", type="primary"):
+        generation_started_at = time.time()
+        st.session_state.metrics_questions_total += 1
+        question_for_metrics = (st.session_state.question or "").strip()
+        record_metric_event(
+            "question_submitted",
+            question_length=len(question_for_metrics),
+        )
         st.session_state.generation_notes = []
-        local_block = get_local_guardrail_message(st.session_state.question)
+        local_block = query_logic.get_local_guardrail_message(st.session_state.question)
         if local_block:
             st.session_state.generated_sql = ""
             st.session_state.suggestions = build_suggested_questions(st.session_state.question)
             st.session_state.generation_notes = [f"Stopped by local guardrail: {local_block}"]
+            st.session_state.metrics_blocked_requests += 1
+            st.session_state.metrics_generation_failed += 1
+            record_metric_event(
+                "sql_generation",
+                success=False,
+                path="local_guardrail",
+                failure_reason=local_block,
+                duration_ms=int((time.time() - generation_started_at) * 1000),
+            )
             st.warning(local_block)
         else:
             question_text = st.session_state.question.strip()
@@ -984,6 +1059,14 @@ if view == "Ask":
                 st.session_state.generated_sql = ""
                 st.session_state.suggestions = availability_suggestions
                 st.session_state.generation_notes = [availability_message]
+                st.session_state.metrics_generation_failed += 1
+                record_metric_event(
+                    "sql_generation",
+                    success=False,
+                    path="data_availability",
+                    failure_reason=availability_message,
+                    duration_ms=int((time.time() - generation_started_at) * 1000),
+                )
                 st.warning(availability_message)
                 handled_fast_path = True
 
@@ -994,6 +1077,14 @@ if view == "Ask":
                     st.session_state.generated_sql = cached_sql
                     st.session_state.suggestions = []
                     st.session_state.generation_notes = ["Loaded from session cache."]
+                    st.session_state.metrics_generation_success += 1
+                    st.session_state.metrics_cache_hits += 1
+                    record_metric_event(
+                        "sql_generation",
+                        success=True,
+                        path="session_cache",
+                        duration_ms=int((time.time() - generation_started_at) * 1000),
+                    )
                     st.success("Used cached SQL (instant).")
                     handled_fast_path = True
 
@@ -1008,12 +1099,19 @@ if view == "Ask":
                     st.session_state.generation_notes = [
                         "Matched directly from training examples."
                     ]
+                    st.session_state.metrics_generation_success += 1
+                    record_metric_event(
+                        "sql_generation",
+                        success=True,
+                        path="training_exact_match",
+                        duration_ms=int((time.time() - generation_started_at) * 1000),
+                    )
                     st.success("Used training example SQL (instant).")
                     handled_fast_path = True
 
             # 3) Deterministic template planner (reliable joins for common intents)
             if not handled_fast_path:
-                template_sql, template_note = build_template_sql(question_text)
+                template_sql, template_note = query_logic.build_template_sql(question_text)
                 if template_sql:
                     compile_error = validate_sql_compiles(template_sql)
                     if not compile_error:
@@ -1021,6 +1119,13 @@ if view == "Ask":
                         st.session_state.sql_cache[cache_key] = template_sql
                         st.session_state.suggestions = []
                         st.session_state.generation_notes = [template_note]
+                        st.session_state.metrics_generation_success += 1
+                        record_metric_event(
+                            "sql_generation",
+                            success=True,
+                            path="template_planner",
+                            duration_ms=int((time.time() - generation_started_at) * 1000),
+                        )
                         st.success("Used template planner.")
                         handled_fast_path = True
                     else:
@@ -1043,8 +1148,13 @@ if view == "Ask":
 
                 with st.spinner("Generating SQL..."):
                     vn = get_vanna_cached()
-                    sql, sql_error_notes, sql_error = generate_sql_with_retry(
-                        vn, question_text
+                    sql, sql_error_notes, sql_error = query_logic.generate_sql_with_retry(
+                        generate_sql_fn=lambda prompt: vn.generate_sql(prompt),
+                        question_text=question_text,
+                        schema_tree=get_schema_tree(),
+                        compile_sql_fn=validate_sql_compiles,
+                        timeout_seconds=MODEL_TIMEOUT_SECONDS,
+                        run_with_timeout_fn=run_with_timeout,
                     )
 
                     if sql_error:
@@ -1052,11 +1162,19 @@ if view == "Ask":
                         st.session_state.suggestions = build_suggested_questions(
                             question_text
                         )
+                        st.session_state.metrics_generation_failed += 1
                         existing_notes = st.session_state.generation_notes or []
                         st.session_state.generation_notes = (
                             existing_notes
                             + sql_error_notes
                             + ["Final status: no reliable SQL generated."]
+                        )
+                        record_metric_event(
+                            "sql_generation",
+                            success=False,
+                            path="llm_fallback",
+                            failure_reason=sql_error,
+                            duration_ms=int((time.time() - generation_started_at) * 1000),
                         )
 
                         if sql_error == "timeout":
@@ -1083,6 +1201,13 @@ if view == "Ask":
                             + sql_error_notes
                             + ["Final status: SQL generated successfully."]
                         )
+                        st.session_state.metrics_generation_success += 1
+                        record_metric_event(
+                            "sql_generation",
+                            success=True,
+                            path="llm_fallback",
+                            duration_ms=int((time.time() - generation_started_at) * 1000),
+                        )
 
     if st.session_state.generation_notes:
         st.markdown("### How query was built")
@@ -1096,6 +1221,8 @@ if view == "Ask":
             value=st.session_state.generated_sql,
             height=170,
         )
+        with st.expander("Explain this SQL", expanded=False):
+            st.write(query_logic.explain_sql_brief(st.session_state.generated_sql))
 
     if st.session_state.generated_sql:
         st.markdown("### Step 3: Safety check")
@@ -1108,50 +1235,184 @@ if view == "Ask":
         if st.button("Run Query", disabled=not is_ok):
             try:
                 with st.spinner("Running query..."):
-                    df, elapsed = run_read_only_query(st.session_state.generated_sql)
+                    is_allowed, _, run_message = query_logic.run_query_if_read_only(
+                        st.session_state.generated_sql,
+                        validate_read_only_sql,
+                        lambda _sql: None,
+                    )
+                    if not is_allowed:
+                        st.session_state.metrics_blocked_requests += 1
+                        st.session_state.metrics_query_failed += 1
+                        record_metric_event(
+                            "query_execution",
+                            success=False,
+                            failure_reason=run_message,
+                        )
+                        st.error(run_message)
+                        st.stop()
+
+                    complexity_ok, complexity_message = validate_sql_complexity(
+                        st.session_state.generated_sql,
+                        EXECUTION_POLICY,
+                    )
+                    if not complexity_ok:
+                        st.session_state.metrics_blocked_requests += 1
+                        st.session_state.metrics_query_failed += 1
+                        record_metric_event(
+                            "query_execution",
+                            success=False,
+                            failure_reason=complexity_message,
+                            policy="complexity",
+                        )
+                        st.error(complexity_message)
+                        st.stop()
+
+                    limited_sql = apply_row_limit(
+                        st.session_state.generated_sql,
+                        EXECUTION_POLICY.max_rows,
+                    )
+                    df, elapsed, exec_error = run_query_with_timeout(
+                        DUCKDB_PATH,
+                        limited_sql,
+                        EXECUTION_POLICY.timeout_seconds,
+                    )
+                    if exec_error:
+                        st.session_state.metrics_query_failed += 1
+                        record_metric_event(
+                            "query_execution",
+                            success=False,
+                            failure_reason=exec_error,
+                            timeout_seconds=EXECUTION_POLICY.timeout_seconds,
+                        )
+                        st.error(exec_error)
+                        st.stop()
+
+                    st.session_state.metrics_query_success += 1
+                    record_metric_event(
+                        "query_execution",
+                        success=True,
+                        row_count=len(df),
+                        execution_ms=int(elapsed * 1000),
+                        row_limit=EXECUTION_POLICY.max_rows,
+                    )
                     st.session_state.last_result_df = df
-                st.markdown("### Step 4: Results")
-                st.write(f"Rows: {len(df)} | Time: {elapsed:.3f}s")
-                st.dataframe(df, use_container_width=True)
-                st.markdown("### Chart")
-                try_show_bar_chart(df)
+                    st.session_state.last_result_elapsed = elapsed
             except Exception as exc:
+                st.session_state.metrics_query_failed += 1
+                record_metric_event(
+                    "query_execution",
+                    success=False,
+                    failure_reason=str(exc),
+                )
                 st.error(f"Query failed: {exc}")
+
+    if st.session_state.last_result_df is not None:
+        result_df = st.session_state.last_result_df
+        result_elapsed = st.session_state.last_result_elapsed or 0.0
+        st.markdown("### Step 4: Results")
+        st.write(f"Rows: {len(result_df)} | Time: {result_elapsed:.3f}s")
+        st.dataframe(result_df, use_container_width=True)
+        st.markdown("### Chart")
+        try_show_bar_chart(result_df)
+
+        st.markdown("### Was this result helpful?")
+        feedback_cols = st.columns([0.5, 0.5])
+        question_hash = build_question_hash(st.session_state.question)
+        with feedback_cols[0]:
+            if st.button("👍 Helpful", key="feedback_helpful", use_container_width=True):
+                st.session_state.metrics_feedback_up += 1
+                record_metric_event(
+                    "user_feedback",
+                    question_hash=question_hash,
+                    rating="up",
+                    has_result=True,
+                )
+                st.success("Feedback saved.")
+        with feedback_cols[1]:
+            if st.button("👎 Not Helpful", key="feedback_not_helpful", use_container_width=True):
+                st.session_state.metrics_feedback_down += 1
+                record_metric_event(
+                    "user_feedback",
+                    question_hash=question_hash,
+                    rating="down",
+                    has_result=True,
+                )
+                st.info("Feedback saved.")
 
 
 elif view == "Training Data":
     st.subheader("Training Data")
-    st.caption("Edit examples, save them, then train Vanna.")
+    st.caption(
+        "Edit examples, save changes, optionally delete selected rows with confirmation, then train Vanna."
+    )
 
-    examples_df = load_training_examples()
+    if st.session_state.training_working_df is None:
+        st.session_state.training_working_df = load_training_examples()
+
     edited_df = st.data_editor(
-        examples_df,
+        st.session_state.training_working_df,
         num_rows="dynamic",
         use_container_width=True,
         key="training_editor",
+        disabled=["created_at", "updated_at"],
     )
+    st.session_state.training_working_df = edited_df
+
+    st.markdown("#### Delete Rows")
+    row_labels: list[str] = []
+    row_map: dict[str, int] = {}
+    for idx, row in st.session_state.training_working_df.iterrows():
+        question_preview = str(row.get("question", "")).strip()
+        if len(question_preview) > 60:
+            question_preview = question_preview[:57] + "..."
+        label = f"{idx}: {question_preview if question_preview else '[empty question]'}"
+        row_labels.append(label)
+        row_map[label] = idx
+
+    selected_for_delete = st.multiselect(
+        "Select rows to delete",
+        options=row_labels,
+        key="training_delete_selection",
+    )
+    confirm_delete = st.checkbox(
+        "I confirm permanent deletion of selected rows.",
+        key="training_delete_confirm",
+    )
+    if st.button("Delete Selected Rows", use_container_width=False):
+        if not selected_for_delete:
+            st.warning("Select at least one row before deleting.")
+        elif not confirm_delete:
+            st.warning("Please confirm deletion first.")
+        else:
+            delete_indices = [row_map[label] for label in selected_for_delete]
+            st.session_state.training_working_df = (
+                st.session_state.training_working_df.drop(index=delete_indices)
+                .reset_index(drop=True)
+            )
+            record_metric_event(
+                "training_rows_deleted",
+                count=len(delete_indices),
+            )
+            st.success(f"Deleted {len(delete_indices)} row(s).")
+            st.rerun()
 
     col_save, col_train = st.columns([0.25, 0.75])
     with col_save:
         if st.button("Save Examples", use_container_width=True):
-            save_training_examples(edited_df)
-            st.success("Saved.")
+            save_training_examples(st.session_state.training_working_df)
+            st.session_state.training_working_df = load_training_examples()
+            record_metric_event(
+                "training_examples_saved",
+                row_count=len(st.session_state.training_working_df),
+            )
+            st.success("Saved with timestamps.")
     with col_train:
         if st.button("Train Model", use_container_width=True):
             with st.spinner("Training model..."):
                 vn = get_vanna()
-                train_from_examples(vn, edited_df)
+                train_from_examples(vn, st.session_state.training_working_df)
+            record_metric_event(
+                "training_triggered",
+                row_count=len(st.session_state.training_working_df),
+            )
             st.success("Training complete.")
-
-
-else:
-    st.subheader("Database Schema")
-    try:
-        schema_tree = get_schema_tree()
-        table_names = list(schema_tree.keys())
-        selected = st.selectbox("Choose a table", table_names)
-        rows = schema_tree[selected]
-        schema_df = pd.DataFrame(rows, columns=["column_name", "data_type"])
-        st.dataframe(schema_df, use_container_width=True)
-    except Exception as exc:
-        st.error(f"Could not load schema: {exc}")

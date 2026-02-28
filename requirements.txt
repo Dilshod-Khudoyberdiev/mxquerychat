@@ -1,0 +1,8 @@
+streamlit
+duckdb
+pandas
+vanna
+chromadb
+ollama
+pytest
+

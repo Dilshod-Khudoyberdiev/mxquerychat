@@ -1,0 +1,2 @@
+"""mxquerychat source package."""
+
