@@ -11,7 +11,6 @@ This file defines how humans and agentic coding tools should work in this reposi
 Build an MVP Streamlit application that demonstrates:
 - Natural language → SQL generation
 - SQL explanation
-- User review before execution
 - Safe, read-only SQL execution
 - Result display (table + simple chart)
 - Training data management for the model

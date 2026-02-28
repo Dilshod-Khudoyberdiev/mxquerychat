@@ -45,11 +45,19 @@ This MVP is intentionally DuckDB-only. Multi-database support is future work.
 - `src/db/execution_policy.py`: complexity checks, row limits, timeout execution.
 - `src/utils/telemetry.py`: app logs + structured metric events.
 - `tools/run_benchmark.py`: benchmark runner for demo/tricky question sets.
+- `tools/summarize_metrics.py`: aggregate KPI summary from metrics JSONL.
 
 ## Metrics and Logs
 - App log: `logs/app.log`
 - Metrics log: `logs/metrics.jsonl`
 - Event coverage includes generation path/outcome, execution stats, and feedback.
+- Standard failure categories used in telemetry:
+  - `blocked_read_only`
+  - `blocked_complexity`
+  - `timeout`
+  - `compile_fail`
+  - `runtime_fail`
+  - `no_match`
 
 ## Test Execution
 Use the project virtual environment:
@@ -80,3 +88,14 @@ Command examples:
 Outputs:
 - `reports/benchmark_*.json` (summary + full records)
 - `reports/benchmark_*.csv` (row-level results)
+
+PRD-facing summary fields include compile rate, safe-fail rate, and median latency.
+
+## Metrics Summary Command
+```bash
+# Windows
+.venv\Scripts\python tools/summarize_metrics.py
+
+# POSIX
+.venv/bin/python tools/summarize_metrics.py
+```

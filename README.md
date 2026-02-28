@@ -103,9 +103,31 @@ Current metrics include:
 - SQL generation path and outcome (`cache`, `training`, `template`, `llm`, `blocked`)
 - generation duration
 - query execution success/failure, row count, and execution time
+- standardized failure categories:
+  - `blocked_read_only`
+  - `blocked_complexity`
+  - `timeout`
+  - `compile_fail`
+  - `runtime_fail`
+  - `no_match`
 - user feedback (`up` / `down`) with anonymized question hash
 
 The sidebar also shows simple session counters for quick monitoring.
+
+### Metrics Summary Tool
+Aggregate `logs/metrics.jsonl` into PRD-facing KPIs:
+
+```bash
+# Windows
+.venv\Scripts\python tools/summarize_metrics.py
+
+# POSIX
+.venv/bin/python tools/summarize_metrics.py
+```
+
+Optional flags:
+- `--metrics-path logs/metrics.jsonl`
+- `--output reports/metrics_summary.json`
 
 ## Azure Deployment Notes
 - Install dependencies using `requirements.txt`.
@@ -134,6 +156,11 @@ Optional flags:
 Outputs:
 - JSON summary report (`reports/benchmark_*.json`)
 - CSV row-level report (`reports/benchmark_*.csv`)
+
+Benchmark summary includes:
+- compile rate
+- safe-fail rate
+- median latency
 
 Per-question outcomes:
 - `success`

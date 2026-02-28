@@ -33,4 +33,8 @@ def test_build_summary_calculates_counts_and_rates() -> None:
     assert summary["counts"]["safe_fail"] == 1
     assert summary["counts"]["runtime_fail"] == 1
     assert summary["rates_percent"]["success_rate"] == 25.0
-
+    assert "median_generation_ms" in summary["latency_ms"]
+    assert "median_execution_ms" in summary["latency_ms"]
+    assert "prd_kpis" in summary
+    assert "compile_rate" in summary["prd_kpis"]
+    assert "safe_fail_rate" in summary["prd_kpis"]

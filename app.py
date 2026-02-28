@@ -30,6 +30,7 @@ from src.db.data_source import (
 from src.db.execution_policy import (
     ExecutionPolicy,
     apply_row_limit,
+    extract_complexity_policy_details,
     run_query_with_timeout,
     validate_sql_complexity,
 )
@@ -39,6 +40,7 @@ from vannaagent import (
     get_vanna,
     get_exact_training_sql,
     load_training_examples,
+    normalize_training_for_save,
     save_training_examples,
     train_from_examples,
 )
@@ -807,6 +809,8 @@ def init_state():
         "metrics_query_failed": 0,
         "metrics_feedback_up": 0,
         "metrics_feedback_down": 0,
+        "feedback_last_rating": None,
+        "feedback_last_question_hash": "no_question",
         "training_working_df": None,
     }
     for key, value in defaults.items():
@@ -815,12 +819,7 @@ def init_state():
 
 
 def reset_question_flow():
-    st.session_state.question = ""
-    st.session_state.generated_sql = ""
-    st.session_state.last_result_df = None
-    st.session_state.last_result_elapsed = None
-    st.session_state.suggestions = []
-    st.session_state.generation_notes = []
+    query_logic.reset_question_flow_state(st.session_state)
 
 
 def build_question_hash(question: str) -> str:
@@ -948,8 +947,8 @@ st.sidebar.metric("Generation Failed", st.session_state.metrics_generation_faile
 st.sidebar.metric("Blocked Requests", st.session_state.metrics_blocked_requests)
 st.sidebar.metric("Query Success", st.session_state.metrics_query_success)
 st.sidebar.metric("Query Failed", st.session_state.metrics_query_failed)
-st.sidebar.metric("Feedback 👍", st.session_state.metrics_feedback_up)
-st.sidebar.metric("Feedback 👎", st.session_state.metrics_feedback_down)
+st.sidebar.metric("Feedback Up", st.session_state.metrics_feedback_up)
+st.sidebar.metric("Feedback Down", st.session_state.metrics_feedback_down)
 
 if view == "New Question":
     st.sidebar.markdown("---")
@@ -1040,13 +1039,20 @@ if view == "New Question":
             st.session_state.generation_notes = [f"Stopped by local guardrail: {local_block}"]
             st.session_state.metrics_blocked_requests += 1
             st.session_state.metrics_generation_failed += 1
+            local_failure_category = (
+                "blocked_read_only"
+                if "read-only" in local_block.lower()
+                else "no_match"
+            )
             record_metric_event(
                 "sql_generation",
                 success=False,
                 path="local_guardrail",
                 failure_reason=local_block,
+                failure_category=local_failure_category,
                 duration_ms=int((time.time() - generation_started_at) * 1000),
             )
+            st.caption(f"Failure type: {local_failure_category}")
             st.warning(local_block)
         else:
             question_text = st.session_state.question.strip()
@@ -1065,8 +1071,10 @@ if view == "New Question":
                     success=False,
                     path="data_availability",
                     failure_reason=availability_message,
+                    failure_category="no_match",
                     duration_ms=int((time.time() - generation_started_at) * 1000),
                 )
+                st.caption("Failure type: no_match")
                 st.warning(availability_message)
                 handled_fast_path = True
 
@@ -1169,13 +1177,18 @@ if view == "New Question":
                             + sql_error_notes
                             + ["Final status: no reliable SQL generated."]
                         )
+                        failure_category = query_logic.classify_generation_failure(
+                            sql_error
+                        )
                         record_metric_event(
                             "sql_generation",
                             success=False,
                             path="llm_fallback",
                             failure_reason=sql_error,
+                            failure_category=failure_category,
                             duration_ms=int((time.time() - generation_started_at) * 1000),
                         )
+                        st.caption(f"Failure type: {failure_category}")
 
                         if sql_error == "timeout":
                             st.error(
@@ -1247,8 +1260,11 @@ if view == "New Question":
                             "query_execution",
                             success=False,
                             failure_reason=run_message,
+                            failure_category="blocked_read_only",
+                            policy_reason="read_only",
+                            policy_threshold=None,
                         )
-                        st.error(run_message)
+                        st.error(f"Failure type: blocked_read_only. {run_message}")
                         st.stop()
 
                     complexity_ok, complexity_message = validate_sql_complexity(
@@ -1256,15 +1272,20 @@ if view == "New Question":
                         EXECUTION_POLICY,
                     )
                     if not complexity_ok:
+                        policy_reason, policy_threshold = (
+                            extract_complexity_policy_details(complexity_message)
+                        )
                         st.session_state.metrics_blocked_requests += 1
                         st.session_state.metrics_query_failed += 1
                         record_metric_event(
                             "query_execution",
                             success=False,
                             failure_reason=complexity_message,
-                            policy="complexity",
+                            failure_category="blocked_complexity",
+                            policy_reason=policy_reason,
+                            policy_threshold=policy_threshold,
                         )
-                        st.error(complexity_message)
+                        st.error(f"Failure type: blocked_complexity. {complexity_message}")
                         st.stop()
 
                     limited_sql = apply_row_limit(
@@ -1277,14 +1298,16 @@ if view == "New Question":
                         EXECUTION_POLICY.timeout_seconds,
                     )
                     if exec_error:
+                        exec_category = query_logic.classify_execution_failure(exec_error)
                         st.session_state.metrics_query_failed += 1
                         record_metric_event(
                             "query_execution",
                             success=False,
                             failure_reason=exec_error,
+                            failure_category=exec_category,
                             timeout_seconds=EXECUTION_POLICY.timeout_seconds,
                         )
-                        st.error(exec_error)
+                        st.error(f"Failure type: {exec_category}. {exec_error}")
                         st.stop()
 
                     st.session_state.metrics_query_success += 1
@@ -1298,13 +1321,16 @@ if view == "New Question":
                     st.session_state.last_result_df = df
                     st.session_state.last_result_elapsed = elapsed
             except Exception as exc:
+                failure_reason = str(exc)
+                failure_category = query_logic.classify_execution_failure(failure_reason)
                 st.session_state.metrics_query_failed += 1
                 record_metric_event(
                     "query_execution",
                     success=False,
-                    failure_reason=str(exc),
+                    failure_reason=failure_reason,
+                    failure_category=failure_category,
                 )
-                st.error(f"Query failed: {exc}")
+                st.error(f"Failure type: {failure_category}. Query failed: {exc}")
 
     if st.session_state.last_result_df is not None:
         result_df = st.session_state.last_result_df
@@ -1319,8 +1345,10 @@ if view == "New Question":
         feedback_cols = st.columns([0.5, 0.5])
         question_hash = build_question_hash(st.session_state.question)
         with feedback_cols[0]:
-            if st.button("👍 Helpful", key="feedback_helpful", use_container_width=True):
+            if st.button("Helpful", key="feedback_helpful", use_container_width=True):
                 st.session_state.metrics_feedback_up += 1
+                st.session_state.feedback_last_rating = "up"
+                st.session_state.feedback_last_question_hash = question_hash
                 record_metric_event(
                     "user_feedback",
                     question_hash=question_hash,
@@ -1329,8 +1357,10 @@ if view == "New Question":
                 )
                 st.success("Feedback saved.")
         with feedback_cols[1]:
-            if st.button("👎 Not Helpful", key="feedback_not_helpful", use_container_width=True):
+            if st.button("Not Helpful", key="feedback_not_helpful", use_container_width=True):
                 st.session_state.metrics_feedback_down += 1
+                st.session_state.feedback_last_rating = "down"
+                st.session_state.feedback_last_question_hash = question_hash
                 record_metric_event(
                     "user_feedback",
                     question_hash=question_hash,
@@ -1399,20 +1429,52 @@ elif view == "Training Data":
     col_save, col_train = st.columns([0.25, 0.75])
     with col_save:
         if st.button("Save Examples", use_container_width=True):
-            save_training_examples(st.session_state.training_working_df)
+            cleaned_df, quality_stats = normalize_training_for_save(
+                st.session_state.training_working_df
+            )
+            if quality_stats["dropped_missing_question_or_sql"] > 0:
+                st.warning(
+                    "Dropped "
+                    f"{quality_stats['dropped_missing_question_or_sql']} row(s) with missing question or SQL."
+                )
+            if quality_stats["duplicate_question_sql_rows"] > 0:
+                st.warning(
+                    "Detected "
+                    f"{quality_stats['duplicate_question_sql_rows']} duplicate question/SQL row(s)."
+                )
+            if (
+                quality_stats["dropped_missing_question_or_sql"] > 0
+                or quality_stats["duplicate_question_sql_rows"] > 0
+            ):
+                record_metric_event(
+                    "training_quality_warning",
+                    dropped_missing_question_or_sql=quality_stats[
+                        "dropped_missing_question_or_sql"
+                    ],
+                    duplicate_question_sql_rows=quality_stats[
+                        "duplicate_question_sql_rows"
+                    ],
+                )
+
+            save_training_examples(cleaned_df)
             st.session_state.training_working_df = load_training_examples()
             record_metric_event(
                 "training_examples_saved",
                 row_count=len(st.session_state.training_working_df),
+                dropped_missing_question_or_sql=quality_stats[
+                    "dropped_missing_question_or_sql"
+                ],
+                duplicate_question_sql_rows=quality_stats["duplicate_question_sql_rows"],
             )
             st.success("Saved with timestamps.")
     with col_train:
         if st.button("Train Model", use_container_width=True):
+            training_df, _ = normalize_training_for_save(st.session_state.training_working_df)
             with st.spinner("Training model..."):
                 vn = get_vanna()
-                train_from_examples(vn, st.session_state.training_working_df)
+                train_from_examples(vn, training_df)
             record_metric_event(
                 "training_triggered",
-                row_count=len(st.session_state.training_working_df),
+                row_count=len(training_df),
             )
             st.success("Training complete.")

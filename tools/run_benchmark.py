@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import statistics
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
@@ -279,7 +280,10 @@ def build_summary(results: list[dict]) -> dict:
         "runtime_fail": sum(1 for r in results if r["outcome"] == "runtime_fail"),
     }
     generation_ms = [r.get("generation_ms", 0) for r in results]
-    execution_ms = [r.get("execution_ms", 0) for r in results if r.get("execution_ms", 0) > 0]
+    execution_ms = [
+        r.get("execution_ms", 0) for r in results if r.get("execution_ms", 0) > 0
+    ]
+    total_ms = [r.get("total_ms", 0) for r in results if r.get("total_ms", 0) > 0]
 
     def _ratio(value: int) -> float:
         return round((value / total) * 100.0, 2) if total else 0.0
@@ -297,6 +301,22 @@ def build_summary(results: list[dict]) -> dict:
             "avg_generation_ms": round(sum(generation_ms) / total, 2) if total else 0.0,
             "avg_execution_ms": round(sum(execution_ms) / len(execution_ms), 2)
             if execution_ms
+            else 0.0,
+            "median_generation_ms": round(statistics.median(generation_ms), 2)
+            if generation_ms
+            else 0.0,
+            "median_execution_ms": round(statistics.median(execution_ms), 2)
+            if execution_ms
+            else 0.0,
+            "median_total_ms": round(statistics.median(total_ms), 2)
+            if total_ms
+            else 0.0,
+        },
+        "prd_kpis": {
+            "compile_rate": _ratio(total - counts["compile_fail"]),
+            "safe_fail_rate": _ratio(counts["safe_fail"]),
+            "median_latency_ms": round(statistics.median(total_ms), 2)
+            if total_ms
             else 0.0,
         },
     }
@@ -368,6 +388,8 @@ def main() -> None:
     print(f"Safe-fail rate: {summary['rates_percent']['safe_fail_rate']}%")
     print(f"Compile-fail rate: {summary['rates_percent']['compile_fail_rate']}%")
     print(f"Runtime-fail rate: {summary['rates_percent']['runtime_fail_rate']}%")
+    print(f"Compile rate: {summary['prd_kpis']['compile_rate']}%")
+    print(f"Median latency: {summary['prd_kpis']['median_latency_ms']} ms")
     print(f"JSON report: {json_path}")
     print(f"CSV report: {csv_path}")
 

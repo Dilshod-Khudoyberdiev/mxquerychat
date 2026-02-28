@@ -56,6 +56,8 @@ def record_metric_event(event: str, **fields: Any) -> None:
       - question_hash: short stable hash
       - rating: "up" or "down"
       - has_result: bool
+    For failure events, pass:
+      - failure_category: blocked_read_only | blocked_complexity | timeout | compile_fail | runtime_fail | no_match
     """
     logger = configure_app_logging()
     _, metrics_log_path = _build_paths()

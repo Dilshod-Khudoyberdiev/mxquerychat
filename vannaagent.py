@@ -70,6 +70,36 @@ def ensure_training_schema(df: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
+def normalize_training_for_save(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int]]:
+    """
+    Normalize/clean editor data before save.
+    - Strips text fields
+    - Drops rows missing question or sql
+    Returns: (cleaned_df, stats)
+    """
+    incoming = ensure_training_schema(df)
+    for col in TRAINING_COLUMNS:
+        incoming[col] = incoming[col].astype(str).str.strip()
+
+    before_rows = len(incoming)
+    valid_mask = (incoming["question"].str.len() > 0) & (incoming["sql"].str.len() > 0)
+    cleaned = incoming[valid_mask].copy()
+    dropped_missing_question_or_sql = before_rows - len(cleaned)
+
+    duplicate_rows = 0
+    if not cleaned.empty:
+        duplicate_counts = cleaned.groupby(["question", "sql"], dropna=False).size()
+        duplicate_rows = int((duplicate_counts[duplicate_counts > 1] - 1).sum())
+
+    stats = {
+        "rows_before": int(before_rows),
+        "rows_after": int(len(cleaned)),
+        "dropped_missing_question_or_sql": int(dropped_missing_question_or_sql),
+        "duplicate_question_sql_rows": int(duplicate_rows),
+    }
+    return cleaned, stats
+
+
 class MXQueryVanna(ChromaDB_VectorStore, Ollama):
     def __init__(self, config=None):
         # 1) Local LLM via Ollama
@@ -126,17 +156,7 @@ def save_training_examples(df: pd.DataFrame) -> None:
     """
     Save the training examples to CSV.
     """
-    incoming = ensure_training_schema(df)
-    for col in ["question", "sql", "description", "created_at", "updated_at"]:
-        incoming[col] = incoming[col].astype(str).str.strip()
-
-    # Drop fully empty editor rows.
-    has_content = (
-        incoming[["question", "sql", "description"]]
-        .apply(lambda s: s.str.len() > 0)
-        .any(axis=1)
-    )
-    incoming = incoming[has_content].copy()
+    incoming, _ = normalize_training_for_save(df)
 
     existing_lookup: dict[tuple[str, str, str], tuple[str, str]] = {}
     existing_qs_lookup: dict[tuple[str, str], tuple[str, str]] = {}

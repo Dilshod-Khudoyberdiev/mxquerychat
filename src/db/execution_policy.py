@@ -57,6 +57,26 @@ def validate_sql_complexity(sql: str, policy: ExecutionPolicy) -> tuple[bool, st
     return True, "OK"
 
 
+def extract_complexity_policy_details(message: str) -> tuple[str, int | None]:
+    """Parse complexity block message to (policy_reason, policy_threshold)."""
+    text = (message or "").lower()
+    if "sql length exceeds policy limit" in text:
+        match = re.search(r"\((\d+)\s*chars\)", text, re.IGNORECASE)
+        threshold = int(match.group(1)) if match else None
+        return "max_sql_chars", threshold
+    if "join count" in text and "policy limit" in text:
+        match = re.search(r"policy limit \((\d+)\)", text, re.IGNORECASE)
+        threshold = int(match.group(1)) if match else None
+        return "max_joins", threshold
+    if "cte count" in text and "policy limit" in text:
+        match = re.search(r"policy limit \((\d+)\)", text, re.IGNORECASE)
+        threshold = int(match.group(1)) if match else None
+        return "max_ctes", threshold
+    if "sql is empty" in text:
+        return "empty_sql", None
+    return "complexity", None
+
+
 def apply_row_limit(sql: str, max_rows: int) -> str:
     """Wrap query to enforce hard row cap."""
     cleaned = (sql or "").strip().rstrip(";")
@@ -109,4 +129,3 @@ def run_query_with_timeout(
         return pd.DataFrame(), 0.0, payload.get("error", "Unknown query error.")
 
     return payload["df"], float(payload["elapsed"]), ""
-

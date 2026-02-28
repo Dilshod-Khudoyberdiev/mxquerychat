@@ -5,6 +5,7 @@ import duckdb
 from src.db.execution_policy import (
     ExecutionPolicy,
     apply_row_limit,
+    extract_complexity_policy_details,
     run_query_with_timeout,
     validate_sql_complexity,
 )
@@ -31,6 +32,14 @@ def test_apply_row_limit_wraps_query() -> None:
     assert "LIMIT 1000" in limited
 
 
+def test_extract_complexity_policy_details_parses_threshold() -> None:
+    reason, threshold = extract_complexity_policy_details(
+        "Query blocked: JOIN count (7) exceeds policy limit (6)."
+    )
+    assert reason == "max_joins"
+    assert threshold == 6
+
+
 def test_run_query_with_timeout_success(tmp_path: Path) -> None:
     db_path = tmp_path / "test.duckdb"
     con = duckdb.connect(str(db_path))
@@ -54,4 +63,3 @@ def test_run_query_with_timeout_query_error(tmp_path: Path) -> None:
     assert len(df) == 0
     assert elapsed == 0
     assert "missing_table" in error.lower() or "not found" in error.lower()
-

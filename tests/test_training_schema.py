@@ -48,3 +48,20 @@ def test_save_training_examples_preserves_created_at_and_updates_changed_rows(
     assert loaded_3.loc[0, "created_at"] == created_1
     assert loaded_3.loc[0, "updated_at"] != updated_1
 
+
+def test_normalize_training_for_save_drops_empty_and_counts_duplicates() -> None:
+    df = pd.DataFrame(
+        [
+            {"question": "Q1", "sql": "SELECT 1", "description": "a"},
+            {"question": "Q1", "sql": "SELECT 1", "description": "b"},
+            {"question": "", "sql": "SELECT 2", "description": "missing question"},
+            {"question": "Q3", "sql": "", "description": "missing sql"},
+        ]
+    )
+
+    cleaned, stats = vannaagent.normalize_training_for_save(df)
+    assert len(cleaned) == 2
+    assert stats["rows_before"] == 4
+    assert stats["rows_after"] == 2
+    assert stats["dropped_missing_question_or_sql"] == 2
+    assert stats["duplicate_question_sql_rows"] == 1

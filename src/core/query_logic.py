@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Callable, Optional
+from typing import Any, Callable, MutableMapping, Optional
 
 OFF_TOPIC_PATTERNS = [
     r"\bpoem\b",
@@ -605,6 +605,53 @@ def explain_sql_brief(sql: str) -> str:
     return " ".join(parts)
 
 
+def classify_generation_failure(error_code: str) -> str:
+    """Map generation error codes to standardized failure categories."""
+    normalized = (error_code or "").strip().lower()
+    if normalized == "timeout":
+        return "timeout"
+    if normalized == "no_match":
+        return "no_match"
+    if normalized == "compile_fail":
+        return "compile_fail"
+    if normalized in {"model_error", "runtime_fail"}:
+        return "runtime_fail"
+    return "runtime_fail"
+
+
+def classify_execution_failure(error_text: str) -> str:
+    """Classify execution-stage failures into stable categories."""
+    lowered = (error_text or "").lower()
+    if "timeout" in lowered:
+        return "timeout"
+
+    compile_markers = [
+        "parser error",
+        "syntax error",
+        "binder error",
+        "catalog error",
+        "does not exist",
+        "no such table",
+        "no such column",
+    ]
+    if any(token in lowered for token in compile_markers):
+        return "compile_fail"
+
+    return "runtime_fail"
+
+
+def reset_question_flow_state(state: MutableMapping[str, Any]) -> None:
+    """Reset New Question flow values without touching training data state."""
+    state["question"] = ""
+    state["generated_sql"] = ""
+    state["last_result_df"] = None
+    state["last_result_elapsed"] = None
+    state["suggestions"] = []
+    state["generation_notes"] = []
+    state["feedback_last_rating"] = None
+    state["feedback_last_question_hash"] = "no_question"
+
+
 def run_query_if_read_only(
     sql: str,
     validate_fn: Callable[[str], tuple[bool, str]],
@@ -618,4 +665,3 @@ def run_query_if_read_only(
     if not is_ok:
         return False, None, message
     return True, run_fn(sql), "OK"
-
