@@ -1,6 +1,5 @@
 # tools/export_duckdb_ddl.py
-# This script reads your DuckDB database and exports CREATE TABLE statements
-# into docs/schema_ddl.sql so you can use them for training and your thesis report.
+# This script reads DuckDB database and exports CREATE TABLE statements
 
 from pathlib import Path
 import duckdb
