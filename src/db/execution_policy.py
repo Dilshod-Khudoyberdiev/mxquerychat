@@ -1,4 +1,25 @@
-"""Execution policy checks and guarded DuckDB execution."""
+﻿"""
+
+Purpose:
+This module defines execution-time protection rules for SQL that has already passed read-only checks.
+It limits complexity, enforces row caps, and ensures runtime queries cannot hang indefinitely.
+
+What This File Contains:
+- ExecutionPolicy dataclass with thresholds for rows, timeout, joins, CTE count, and SQL length.
+- Complexity validators that return clear block reasons.
+- A hard row-limit wrapper that safely nests arbitrary read-only SQL.
+- Worker-process query execution with timeout-based termination.
+
+Key Invariants and Safety Guarantees:
+- Overly complex SQL is blocked before hitting the database.
+- Every executed query can be wrapped with a deterministic LIMIT.
+- Execution is isolated in a process and terminated on timeout.
+- Caller receives a stable tuple contract with dataframe, elapsed time, and error text.
+
+How Other Modules Use This File:
+app.py, run_benchmark.py, and evaluation_runner.py call this module to apply the same execution
+constraints across interactive use and automated evaluation scenarios.
+"""
 
 from __future__ import annotations
 
@@ -129,3 +150,5 @@ def run_query_with_timeout(
         return pd.DataFrame(), 0.0, payload.get("error", "Unknown query error.")
 
     return payload["df"], float(payload["elapsed"]), ""
+
+

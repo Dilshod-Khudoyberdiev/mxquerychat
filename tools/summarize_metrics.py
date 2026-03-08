@@ -1,4 +1,24 @@
-"""Summarize mxquerychat metrics JSONL into PRD-facing KPI aggregates."""
+﻿"""
+
+Purpose:
+This script converts raw JSONL telemetry events into compact KPI summaries for reporting and decision
+support. It transforms operational logs into structured analytics.
+
+What This File Contains:
+- Loader for metrics JSONL lines with defensive parsing.
+- Aggregation logic for generation, execution, and feedback sections.
+- Failure-breakdown logic with fallback categorization.
+- Summary writer for machine-readable JSON output.
+
+Key Invariants and Safety Guarantees:
+- Missing or malformed event lines are skipped safely.
+- Percentage and median calculations are guarded against empty inputs.
+- Output schema stays predictable for dashboards or PRD-style status checks.
+
+How Other Modules Use This File:
+This file is a standalone reporting utility. It consumes logs written by src/utils/telemetry.py and
+produces summarized artifacts in reports/ for governance and presentation use.
+"""
 
 from __future__ import annotations
 
@@ -156,3 +176,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+

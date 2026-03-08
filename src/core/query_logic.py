@@ -1,4 +1,26 @@
-"""Import-safe query planning, fallback, and safety helpers."""
+﻿"""
+
+Purpose:
+This module contains the reusable decision logic that turns a plain-language question into a safe,
+compilable SQL candidate with deterministic-first behavior and controlled LLM fallback.
+
+What This File Contains:
+- Local guardrail checks for empty, off-topic, or write-intent prompts.
+- Deterministic template planner functions for common business questions.
+- Prompt builders for first-pass generation and progressively stricter retries.
+- SQL extraction, retry orchestration, and standardized failure classification helpers.
+- Session-state reset helpers and a read-only execution gate wrapper.
+
+Key Invariants and Safety Guarantees:
+- Deterministic paths are attempted before expensive model fallback.
+- Retry prompts constrain model outputs to known schema context.
+- Error categories are normalized for stable telemetry analytics.
+- Execution helper enforces read-only validation before calling runtime execution.
+
+How Other Modules Use This File:
+app.py and benchmarking/evaluation tools import this module to keep generation behavior consistent.
+This module is the central logic layer between UI input and database execution policy.
+"""
 
 from __future__ import annotations
 
@@ -667,3 +689,5 @@ def run_query_if_read_only(
     if not is_ok:
         return False, None, message
     return True, run_fn(sql), "OK"
+
+

@@ -1,10 +1,23 @@
-"""
-sql_guard.py
+﻿"""
 
-Very simple "read-only SQL guard" for the MVP.
-Goal: block any write/DDL statements and allow only a single SELECT/WITH query.
+Purpose:
+This file provides the first and most direct SQL safety gate for the MVP. The validator enforces
+read-only behavior by allowing only single SELECT/WITH statements and rejecting write or DDL patterns.
 
-This is NOT a perfect SQL parser. It is a practical safety net for this MVP.
+What This File Contains:
+- A list of blocked keywords associated with data modification, schema changes, or unsafe execution paths.
+- One public validator function that returns a boolean decision and a human-readable reason.
+- Lightweight statement-shape checks (single statement, semicolon placement, and allowed first token).
+
+Key Invariants and Safety Guarantees:
+- Empty SQL is always rejected.
+- Multi-statement SQL is rejected as an injection-resistant baseline.
+- Non-SELECT/WITH entry points are rejected immediately.
+- Known dangerous SQL verbs are blocked even if embedded in larger text.
+
+How Other Modules Use This File:
+Both the Streamlit app and evaluation scripts call validate_read_only_sql before execution. This file
+acts as a mandatory read-only guardrail that protects the DuckDB database from accidental writes.
 """
 
 import re
@@ -69,4 +82,6 @@ def validate_read_only_sql(sql: str) -> tuple[bool, str]:
             )
 
     return True, "OK"
+
+
 

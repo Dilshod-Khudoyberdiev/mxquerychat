@@ -1,3 +1,24 @@
+﻿"""
+
+Purpose:
+This test module verifies execution-policy behavior for complexity checks, row limiting, and timeout-
+protected query execution.
+
+What This File Contains:
+- Tests for complexity acceptance and complexity blocking scenarios.
+- Tests for SQL row-limit wrapper formatting.
+- Tests for policy-message parsing helper.
+- Integration-like timeout runner tests using temporary DuckDB databases.
+
+Test Guarantees:
+- Overly complex SQL is rejected with meaningful reasons.
+- Worker-based execution returns stable tuples for success and error paths.
+- Runtime query errors are surfaced as explicit error text without crashing the caller.
+
+Why This Matters:
+These tests enforce predictable runtime boundaries that protect responsiveness and resource usage.
+"""
+
 from pathlib import Path
 
 import duckdb
@@ -63,3 +84,5 @@ def test_run_query_with_timeout_query_error(tmp_path: Path) -> None:
     assert len(df) == 0
     assert elapsed == 0
     assert "missing_table" in error.lower() or "not found" in error.lower()
+
+

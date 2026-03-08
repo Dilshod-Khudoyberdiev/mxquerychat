@@ -1,3 +1,21 @@
+﻿"""
+
+Purpose:
+This test module validates the small execution gate helper in query_logic that requires read-only
+approval before delegating to a runtime execution function.
+
+What This File Contains:
+- A block-path test proving unsafe SQL never reaches the execution callback.
+- A pass-path test proving safe SQL reaches execution exactly once.
+
+Test Guarantees:
+- Guard decisions and callback invocation behavior are deterministic.
+- Return values maintain the helper contract: allowed flag, payload, and message.
+
+Why This Matters:
+This module protects the handoff boundary between safety validation and actual execution calls.
+"""
+
 from src.core.query_logic import run_query_if_read_only
 from sql_guard import validate_read_only_sql
 
@@ -38,4 +56,6 @@ def test_run_query_if_read_only_executes_safe_sql() -> None:
     assert called["count"] == 1
     assert result == {"sql": "SELECT 1", "rows": 3}
     assert message == "OK"
+
+
 

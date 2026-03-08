@@ -1,12 +1,27 @@
-"""
-Beginner-friendly Streamlit UI for mxquerychat.
+﻿"""
 
-Flow:
-1) Ask a question
-2) Generate SQL
-3) Review / edit SQL
-4) Validate read-only safety
-5) Run query and view results
+Purpose:
+This file is the main Streamlit application entry point for mxQueryChat. It defines the full
+interactive workflow from natural-language question input to SQL generation, safety checks,
+read-only execution on DuckDB, and result visualization.
+
+What This File Contains:
+- Page layout, navigation, and session-state initialization for the two pages: New Question and Training Data.
+- SQL generation orchestration with ordered strategies: session cache, training exact match,
+  deterministic template planner, and local-LLM fallback with retry.
+- Optional on-demand SQL explanation calls, result table + chart rendering, and user feedback capture.
+- Training-data editing UI, save/delete controls, and model retraining trigger.
+
+Key Invariants and Safety Guarantees:
+- Query execution is blocked unless read-only validation passes.
+- Complexity policy and hard row limits are applied before runtime execution.
+- Query execution is timeout-bounded to protect UI responsiveness.
+- Local failures are mapped into stable categories for consistent telemetry.
+
+How Other Modules Use and Support This File:
+This file imports reusable logic from src/core/query_logic.py, src/db/execution_policy.py,
+sql_guard.py, vannaagent.py, src/llm/sql_explainer.py, and src/utils/telemetry.py. In short,
+app.py orchestrates the user journey while delegating specialized responsibilities to focused modules.
 """
 
 import re
@@ -1565,3 +1580,5 @@ elif view == "Training Data":
                 row_count=len(training_df),
             )
             st.success("Training complete.")
+
+

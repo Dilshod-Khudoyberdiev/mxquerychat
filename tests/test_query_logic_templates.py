@@ -1,3 +1,22 @@
+﻿"""
+
+Purpose:
+This test module verifies deterministic template planning for common business intents such as total
+revenue, monthly trends, state-level aggregation, and ticket-type analysis.
+
+What This File Contains:
+- Positive template-match assertions for major supported question forms.
+- Assertions for expected join paths, groupings, and year filters.
+- Negative case ensuring unrelated questions return no deterministic template.
+
+Test Guarantees:
+- Template planner SQL shape remains stable for high-priority intent patterns.
+- Deterministic path quality does not regress silently during refactors.
+
+Why This Matters:
+Template reliability improves latency, predictability, and trust before LLM fallback is needed.
+"""
+
 from src.core.query_logic import build_template_sql
 
 
@@ -47,4 +66,6 @@ def test_template_no_match_for_unrelated_question() -> None:
     sql, note = build_template_sql("How many users like music?")
     assert sql == ""
     assert note == ""
+
+
 

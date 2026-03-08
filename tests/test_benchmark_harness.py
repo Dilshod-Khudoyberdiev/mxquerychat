@@ -1,3 +1,21 @@
+﻿"""
+
+Purpose:
+This test module validates parsing and summary math helpers in tools/run_benchmark.py.
+
+What This File Contains:
+- Markdown parser tests for supported EN and Q question line formats.
+- Summary-builder tests for counts, rates, latency keys, and PRD KPI fields.
+
+Test Guarantees:
+- Benchmark question ingestion remains robust to expected markdown formatting.
+- Aggregate metric calculations remain stable and interpretable.
+
+Why This Matters:
+Benchmark outputs are often used in presentations and thesis artifacts; parser and summary stability
+is therefore critical.
+"""
+
 from pathlib import Path
 
 from tools.run_benchmark import build_summary, parse_questions_from_markdown
@@ -38,3 +56,5 @@ def test_build_summary_calculates_counts_and_rates() -> None:
     assert "prd_kpis" in summary
     assert "compile_rate" in summary["prd_kpis"]
     assert "safe_fail_rate" in summary["prd_kpis"]
+
+

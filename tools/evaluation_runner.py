@@ -1,26 +1,24 @@
 ﻿"""
-tools/evaluation_runner.py
 
 Purpose:
-Run reproducible thesis evaluation for mxQueryChat directly against the local DuckDB
-and the same generation/safety/execution pipeline used by the Streamlit MVP.
+This script is the thesis-style evaluation harness for mxQueryChat. It reproduces the app pipeline
+outside the UI and exports structured evidence for dataset profiling, domain accuracy, and safety.
 
-Contains:
-- Dataset introspection helpers for table counts and key cardinalities
-- Domain evaluation runner (20 questions) with gold-SQL execution comparison
-- Safety evaluation runner (15 cases) for read-only and complexity guard behavior
-- Report writers for JSON and Markdown thesis artifacts
+What This File Contains:
+- Dataset introspection utilities for row counts and key cardinalities.
+- Domain test execution over fixed question sets with gold SQL comparison.
+- Safety-case generation and validation for read-only and complexity policies.
+- Markdown and JSON report writers for formal evaluation artifacts.
 
-Key invariants and safety guarantees:
-- SQL execution always passes through read-only validation first.
-- Complexity limits and hard row cap are enforced before execution.
-- Query execution uses the same timeout worker used by the app pipeline.
-- Only SELECT/WITH queries can execute; write/DDL attempts are blocked.
+Key Invariants and Safety Guarantees:
+- Execution follows the same validation and policy layers used by the app.
+- Only read-only SQL can pass into runtime execution.
+- Timeout and row-limit controls are applied consistently to measurement runs.
+- Output files capture both summarized metrics and per-case detail.
 
-Module integration:
-- Reuses core modules: sql_guard, src.core.query_logic,
-  src.db.execution_policy, and vannaagent training helpers.
-- Outputs artifacts consumed directly in thesis tables/figures.
+How Other Modules Use This File:
+This file is executed from the command line to produce thesis_eval_report.json,
+thesis_eval_summary.md, and safety_cases.json that document measurable system behavior.
 """
 
 from __future__ import annotations
@@ -865,3 +863,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+

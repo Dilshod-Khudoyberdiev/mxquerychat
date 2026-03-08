@@ -1,3 +1,26 @@
+﻿"""
+
+Purpose:
+This file provides a legacy Flask-based demo runtime around Vanna. It remains useful for historical
+comparison, quick experiments, and guardrail prototyping outside the Streamlit-first MVP path.
+
+What This File Contains:
+- A custom VannaAgent class that combines vector retrieval and local Ollama generation.
+- Guardrail checks for small talk, out-of-scope prompts, read-only violations, and non-data requests.
+- Timeout wrappers for model calls and rewrite calls to avoid hanging behavior.
+- Optional training loaders for schema DDL, example CSV, and question documentation files.
+- A Flask app bootstrap section that starts the demo service.
+
+Key Invariants and Safety Guarantees:
+- Guardrail messages are returned in a controlled prefix format for predictable handling.
+- Non-SQL outputs can be rejected before execution flow continues.
+- Read-only intent is enforced at question interpretation level in this demo runtime.
+
+How Other Modules Use This File:
+The active MVP is Streamlit-based, so this file is not the primary runtime path. It is retained as a
+reference implementation and fallback demo harness for local experimentation.
+"""
+
 import logging
 import re
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
@@ -456,3 +479,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+

@@ -1,3 +1,23 @@
+﻿"""
+
+Purpose:
+This test module validates multi-attempt SQL generation behavior in query_logic, including success,
+compile-retry recovery, non-SQL handling, timeout, model error, and no-match outcomes.
+
+What This File Contains:
+- Controlled fake generation functions to simulate model responses per attempt.
+- Controlled compile validators and timeout runners.
+- Assertions on final SQL, error codes, and explanatory notes.
+
+Test Guarantees:
+- Retry strategy transitions are correct and deterministic.
+- Terminal error codes are normalized and stable.
+- Recovery behavior from early attempt failures remains functional.
+
+Why This Matters:
+These tests protect the resilience of the generation pipeline under real-world model variability.
+"""
+
 from src.core.query_logic import generate_sql_with_retry
 
 
@@ -162,4 +182,6 @@ def test_retry_no_match_after_all_attempts() -> None:
     assert sql == ""
     assert error == "no_match"
     assert any("all generation strategies failed" in note.lower() for note in notes)
+
+
 

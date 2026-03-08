@@ -1,3 +1,23 @@
+﻿"""
+
+Purpose:
+This test module validates prompt construction, cache-key stability, and model-call error handling in
+src/llm/sql_explainer.py.
+
+What This File Contains:
+- Prompt-content checks for question and SQL context inclusion.
+- Cache-key determinism checks.
+- Mocked HTTP-call tests for success, timeout, and model-error outcomes.
+
+Test Guarantees:
+- Explanation prompts remain compact and structured.
+- Cache behavior is deterministic for identical inputs.
+- Timeout and connectivity failures are mapped to stable error codes.
+
+Why This Matters:
+Reliable explanation behavior improves transparency while remaining isolated from execution flow.
+"""
+
 from urllib import error
 
 from src.llm.sql_explainer import (
@@ -77,3 +97,5 @@ def test_generate_sql_explanation_model_error(monkeypatch) -> None:
     )
     assert text == ""
     assert err == "model_error"
+
+

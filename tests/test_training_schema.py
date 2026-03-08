@@ -1,3 +1,22 @@
+﻿"""
+
+Purpose:
+This test module validates training-example schema normalization and timestamp update rules in
+vannaagent.py.
+
+What This File Contains:
+- Column-normalization assertions for canonical training schema.
+- Save-cycle assertions for created_at preservation and updated_at refresh behavior.
+- Data-cleaning assertions for empty-row removal and duplicate counting.
+
+Test Guarantees:
+- Training CSV lifecycle behavior remains predictable and audit-friendly.
+- Save normalization preserves data quality invariants expected by the UI.
+
+Why This Matters:
+Stable training data management is essential for trustworthy retraining and reproducible behavior.
+"""
+
 import time
 
 import pandas as pd
@@ -65,3 +84,5 @@ def test_normalize_training_for_save_drops_empty_and_counts_duplicates() -> None
     assert stats["rows_after"] == 2
     assert stats["dropped_missing_question_or_sql"] == 2
     assert stats["duplicate_question_sql_rows"] == 1
+
+

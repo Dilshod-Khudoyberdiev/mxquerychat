@@ -1,3 +1,22 @@
+﻿"""
+
+Purpose:
+This test module verifies state reset behavior and failure-category normalization helpers in
+src/core/query_logic.py.
+
+What This File Contains:
+- Session-state reset assertions for New Question flow fields.
+- Generation failure-code mapping checks.
+- Execution failure-text mapping checks.
+
+Test Guarantees:
+- UI state reset logic clears only intended keys and preserves unrelated training state.
+- Failure categories remain stable for telemetry aggregation.
+
+Why This Matters:
+Consistent state management and category mapping are essential for reliable UX and meaningful metrics.
+"""
+
 from src.core.query_logic import (
     classify_execution_failure,
     classify_generation_failure,
@@ -47,3 +66,5 @@ def test_classify_execution_failure_mapping() -> None:
     assert classify_execution_failure("Parser Error: syntax error at or near") == "compile_fail"
     assert classify_execution_failure("Binder Error: Referenced column not found") == "compile_fail"
     assert classify_execution_failure("IO Error: disk full") == "runtime_fail"
+
+

@@ -1,4 +1,24 @@
-"""Run NL-to-SQL benchmark on docs/demo_questions.md + docs/tricky_questions.md."""
+﻿"""
+
+Purpose:
+This script runs repeatable benchmark experiments over curated markdown question sets and reports
+outcome quality plus latency metrics for the NL-to-SQL pipeline.
+
+What This File Contains:
+- Markdown question parsing and deduplication helpers.
+- Per-question execution pipeline with guardrails, template/LLM generation, validation, and execution.
+- Outcome classification utilities and aggregate summary builder.
+- Report writers that emit JSON and CSV benchmark artifacts.
+
+Key Invariants and Safety Guarantees:
+- Queries are validated through read-only and complexity checks before execution.
+- Row limits and execution timeout controls are applied consistently.
+- Outcome taxonomy remains stable across runs for comparable benchmarking.
+
+How Other Modules Use This File:
+This script is run manually from the command line. Its outputs support progress tracking, thesis tables,
+and empirical comparison between deterministic-only and LLM-enabled modes.
+"""
 
 from __future__ import annotations
 
@@ -396,3 +416,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+

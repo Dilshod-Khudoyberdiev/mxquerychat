@@ -1,3 +1,21 @@
+﻿"""
+
+Purpose:
+This test module validates aggregation and output behavior for tools/summarize_metrics.py.
+
+What This File Contains:
+- Schema-level assertions on summary object structure.
+- KPI and breakdown assertions for representative mixed event sets.
+- Roundtrip file IO test for reading metrics and writing summary JSON.
+
+Test Guarantees:
+- Metric summarization remains structurally stable for reporting consumers.
+- Core KPI calculations and failure breakdown logic remain correct.
+
+Why This Matters:
+Reliable reporting outputs are essential for thesis evidence, PRD tracking, and operational reviews.
+"""
+
 from pathlib import Path
 
 from tools.summarize_metrics import (
@@ -60,3 +78,5 @@ def test_load_and_write_summary_roundtrip(tmp_path: Path) -> None:
     written = output_path.read_text(encoding="utf-8")
     assert "generation" in written
     assert "execution" in written
+
+

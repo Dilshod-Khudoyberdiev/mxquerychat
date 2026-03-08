@@ -1,14 +1,23 @@
-"""
-generate_mock_csvs_group2_v4.py
+﻿"""
 
-Group 2 (fact tables) with friendly naming.
-Reads Group 1 from: training_data/mock_csv_v3/
-Writes into: training_data/mock_csv_v3/
+Purpose:
+This script generates Group 2 fact tables containing core business metrics such as ticket sales,
+other-offer revenue, and planned revenue.
 
-Tables:
-- ticket_verkaeufe.csv
-- sonstige_angebote.csv
-- plan_umsatz.csv
+What This File Contains:
+- Loaders for Group 1 reference CSVs.
+- Synthetic record generation for ticket_verkaeufe with period, product, location, and revenue fields.
+- Synthetic record generation for sonstige_angebote and plan_umsatz tables.
+- CSV output helpers for stable encoding and reproducible batch generation.
+
+Key Invariants and Safety Guarantees:
+- Random seed is fixed for reproducible data shape across runs.
+- Fact-table schemas are aligned with expected ingest and query logic.
+- Dataset values are synthetic and used for controlled demos and testing.
+
+How Other Modules Use This File:
+Generated CSVs feed SQL ingestion scripts and become the analytics backbone for Streamlit demos,
+benchmarking, and evaluation tools.
 """
 
 import random
@@ -104,3 +113,5 @@ plan_umsatz = pd.DataFrame(rows, columns=["monat", "jahr", "tarifverbund_id", "u
 write_csv_for_excel(plan_umsatz, OUTPUT_DIR / "plan_umsatz.csv")
 
 print("Group 2 done. Output folder:", OUTPUT_DIR)
+
+

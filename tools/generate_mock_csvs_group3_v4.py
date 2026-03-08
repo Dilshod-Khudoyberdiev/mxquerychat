@@ -1,18 +1,22 @@
-"""
-generate_mock_csvs_group3_v4.py
+﻿"""
 
-Group 3 = Distribution / allocation tables (shares)
-Creates these CSVs in training_data/mock_csv_v3/:
+Purpose:
+This script generates Group 3 allocation/distribution tables that model how revenue-like values are
+split across federal states under different business dimensions.
 
-- ticket_verteilung_bundesland.csv
-- angebot_verteilung_bundesland.csv
-- plan_verteilung_bundesland.csv
-- verteilung_kopf.csv
-- verteilung_positionen.csv
+What This File Contains:
+- Random share generation helpers that produce approximately normalized distribution weights.
+- Table builders for ticket, offer, and plan allocation by state.
+- Header/detail distribution-rule tables (verteilung_kopf and verteilung_positionen).
 
-Depends on Group 1 + 2 CSVs.
-Run:
-  python tools/generate_mock_csvs_group3_v4.py
+Key Invariants and Safety Guarantees:
+- Inputs depend on Group 1 and Group 2 schema conventions.
+- Distribution structures preserve consistent key columns for downstream joins.
+- Output remains synthetic and reproducible with fixed random seed.
+
+How Other Modules Use This File:
+These allocation tables enrich analytical question coverage, especially for joins and weighted
+interpretations showcased in demo questions and thesis evaluation narratives.
 """
 
 import random
@@ -163,9 +167,11 @@ verteilung_positionen_df = pd.DataFrame(
 write_csv_for_excel(verteilung_kopf_df, OUTPUT_DIR / "verteilung_kopf.csv")
 write_csv_for_excel(verteilung_positionen_df, OUTPUT_DIR / "verteilung_positionen.csv")
 
-print("✅ Group 3 done. Generated distribution tables in:", OUTPUT_DIR)
+print("âœ… Group 3 done. Generated distribution tables in:", OUTPUT_DIR)
 print(" - ticket_verteilung_bundesland.csv")
 print(" - angebot_verteilung_bundesland.csv")
 print(" - plan_verteilung_bundesland.csv")
 print(" - verteilung_kopf.csv")
 print(" - verteilung_positionen.csv")
+
+

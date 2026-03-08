@@ -1,3 +1,24 @@
+﻿"""
+
+Purpose:
+This script exports CREATE TABLE definitions from the local DuckDB schema into a documentation file.
+The generated DDL acts as training context and technical documentation.
+
+What This File Contains:
+- Table discovery via information_schema.
+- Preferred SHOW CREATE TABLE extraction with fallback CREATE reconstruction.
+- File writing logic for docs/schema_ddl.sql.
+
+Key Invariants and Safety Guarantees:
+- Database access is read-only.
+- Fallback logic ensures DDL export continues even if SHOW CREATE is unavailable.
+- Output is deterministic by sorted table order.
+
+How Other Modules Use This File:
+This tool supports documentation and model-context preparation workflows. Generated schema DDL can be
+fed into training or included in thesis/report artifacts.
+"""
+
 # tools/export_duckdb_ddl.py
 # This script reads DuckDB database and exports CREATE TABLE statements
 
@@ -52,3 +73,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+

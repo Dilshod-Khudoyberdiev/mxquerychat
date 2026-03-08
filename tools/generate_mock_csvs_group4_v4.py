@@ -1,18 +1,22 @@
-"""
-generate_mock_csvs_group4_v4.py
+﻿"""
 
-Group 4 = Users + permissions (optional demo domain)
-Creates these CSVs in training_data/mock_csv_v3/:
+Purpose:
+This script generates Group 4 synthetic user and permission tables used to demonstrate optional
+access-control analytics and multi-domain query examples.
 
-- nutzer.csv
-- nutzer_bundesland_rechte.csv
-- nutzer_tarifverbund_rechte.csv
-- nutzer_zast_rechte.csv
-- nutzer_zentral_zast_rechte.csv
+What This File Contains:
+- Synthetic user account generation.
+- Permission table generation across federal-state scope, tariff scope, and ZaSt scopes.
+- CSV output helpers for consistent encoding and integration with ingest tooling.
 
-Depends on Group 1 tables.
-Run:
-  python tools/generate_mock_csvs_group4_v4.py
+Key Invariants and Safety Guarantees:
+- Data is synthetic and excludes real customer identity data.
+- Referential keys align with Group 1 reference entities.
+- Randomized permissions broaden realistic query scenarios for demos and tests.
+
+How Other Modules Use This File:
+This script complements the transportation-revenue domain by adding a permissions domain that can be
+queried safely in read-only mode for teaching and thesis demonstration purposes.
 """
 
 import random
@@ -40,7 +44,7 @@ tarif_ids = tarif_df["tarifverbund_id"].astype(int).tolist()
 # 1) nutzer.csv
 # -----------------------
 first_names = ["Anna", "Ben", "Clara", "David", "Emilia", "Felix", "Greta", "Hannes", "Isabel", "Jonas"]
-last_names = ["Müller", "Schmidt", "Schneider", "Fischer", "Weber", "Meyer", "Wagner", "Becker", "Hoffmann", "Klein"]
+last_names = ["MÃ¼ller", "Schmidt", "Schneider", "Fischer", "Weber", "Meyer", "Wagner", "Becker", "Hoffmann", "Klein"]
 
 NUTZER_COUNT = 80
 nutzer_rows = []
@@ -159,9 +163,11 @@ nutzer_zentral_zast_rechte_df = pd.DataFrame(
 )
 write_csv_for_excel(nutzer_zentral_zast_rechte_df, OUTPUT_DIR / "nutzer_zentral_zast_rechte.csv")
 
-print("✅ Group 4 done. Generated user + permission tables in:", OUTPUT_DIR)
+print("âœ… Group 4 done. Generated user + permission tables in:", OUTPUT_DIR)
 print(" - nutzer.csv")
 print(" - nutzer_bundesland_rechte.csv")
 print(" - nutzer_tarifverbund_rechte.csv")
 print(" - nutzer_zast_rechte.csv")
 print(" - nutzer_zentral_zast_rechte.csv")
+
+

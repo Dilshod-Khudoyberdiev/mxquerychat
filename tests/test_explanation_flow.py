@@ -1,3 +1,23 @@
+﻿"""
+
+Purpose:
+This test module validates the end-to-end explanation interaction contract: trigger-gated execution,
+cache-hit behavior, non-blocking failure handling, and telemetry payload integrity.
+
+What This File Contains:
+- Tests proving no model call happens unless explanation is explicitly triggered.
+- Tests proving cached explanations bypass model calls.
+- Tests proving explanation failures do not block SQL execution flow.
+- Tests for explanation telemetry fields and failure category capture.
+
+Test Guarantees:
+- Explanation remains optional and side-channel to core SQL execution.
+- Cache and telemetry behavior stays consistent across refactors.
+
+Why This Matters:
+This module ensures explainability features add value without introducing operational risk.
+"""
+
 import json
 
 from src.core.query_logic import run_query_if_read_only
@@ -101,3 +121,5 @@ def test_sql_explanation_telemetry_includes_failure_category(tmp_path, monkeypat
     assert payload["event"] == "sql_explanation"
     assert payload["failure_category"] == "timeout"
     assert payload["path"] == "on_demand_ollama"
+
+

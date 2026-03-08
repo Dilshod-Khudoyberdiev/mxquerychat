@@ -1,13 +1,25 @@
-"""
-vannaagent.py
+﻿"""
 
-mxQueryChat Vanna setup for:
-- DuckDB (local file)
-- Ollama (self-hosted LLM)
-- ChromaDB (local vector store)
-- Training examples stored in a local CSV
+Purpose:
+This file centralizes local Vanna configuration and training-data helpers for mxQueryChat. It wires
+Vanna to a local Ollama model, local Chroma vector store, and local DuckDB database.
 
-This file exposes helper functions the Streamlit app can call.
+What This File Contains:
+- Model and storage constants for DuckDB path, Chroma path, and training CSV location.
+- Data-cleaning and schema-normalization helpers for training examples.
+- CSV load/save helpers with timestamp handling and quality-aware normalization.
+- A concrete Vanna class composition and factory method for creating configured local instances.
+- Training utilities for baseline documentation and question/SQL examples.
+
+Key Invariants and Safety Guarantees:
+- Connection target remains DuckDB and read-only for application query generation context.
+- Training CSV schema is normalized to a stable set of columns.
+- Created and updated timestamps are preserved predictably across saves.
+- Exact-match lookup can short-circuit generation for known questions.
+
+How Other Modules Use This File:
+app.py imports this module to load/save training data, initialize Vanna, trigger training, and resolve
+exact training matches. Evaluation tooling also reuses this module to align experiments with app behavior.
 """
 
 from pathlib import Path
@@ -250,3 +262,5 @@ def get_exact_training_sql(question: str, examples_df: pd.DataFrame) -> str | No
             return sql
 
     return None
+
+

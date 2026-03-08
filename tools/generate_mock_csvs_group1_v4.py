@@ -1,20 +1,23 @@
-"""
-generate_mock_csvs_group1_v4.py
+﻿"""
 
-Group 1 = Reference tables (foundation)
-Creates these CSVs in training_data/mock_csv_v3/:
+Purpose:
+This script generates Group 1 reference tables for the synthetic mxQueryChat dataset. These lookup
+entities form the relational backbone used by downstream fact and allocation tables.
 
-- regionen_bundesland.csv
-- postleitzahlen.csv
-- ticket_produkte.csv
-- tarifverbuende.csv
-- meldestellen.csv
+What This File Contains:
+- Deterministic random seed setup for repeatable mock generation.
+- Builders for federal states, postal-code mapping, ticket products, tariff associations,
+  and reporting-office reference datasets.
+- A CSV writer helper configured for Excel-friendly UTF-8 BOM output.
 
-These tables are "lookup" tables used by other groups.
-No customer schema. No personal data.
+Key Invariants and Safety Guarantees:
+- Generated records are synthetic and intended for demo/learning usage.
+- Output folder and naming scheme are stable for downstream ingest scripts.
+- Data generation focuses on realistic structure, not production-grade realism.
 
-Run:
-  python tools/generate_mock_csvs_group1_v4.py
+How Other Modules Use This File:
+Group 2, Group 3, and Group 4 generators depend on these reference CSVs. Rebuilding the full mock
+pipeline starts with this script.
 """
 
 import random
@@ -43,7 +46,7 @@ def write_csv_for_excel(df: pd.DataFrame, path: Path) -> None:
 # 1) regionen_bundesland.csv
 # -----------------------
 bundeslaender = [
-    (1, "Baden-Württemberg", "DE-BW", "08"),
+    (1, "Baden-WÃ¼rttemberg", "DE-BW", "08"),
     (2, "Bayern", "DE-BY", "09"),
     (3, "Berlin", "DE-BE", "11"),
     (4, "Brandenburg", "DE-BB", "12"),
@@ -58,7 +61,7 @@ bundeslaender = [
     (13, "Sachsen", "DE-SN", "14"),
     (14, "Sachsen-Anhalt", "DE-ST", "15"),
     (15, "Schleswig-Holstein", "DE-SH", "01"),
-    (16, "Thüringen", "DE-TH", "16"),
+    (16, "ThÃ¼ringen", "DE-TH", "16"),
 ]
 
 regionen_bundesland_df = pd.DataFrame(
@@ -77,24 +80,24 @@ write_csv_for_excel(regionen_bundesland_df, OUTPUT_DIR / "regionen_bundesland.cs
 cities = [
     ("10115", "Berlin", "11"),
     ("20095", "Hamburg", "02"),
-    ("80331", "München", "09"),
-    ("50667", "Köln", "05"),
+    ("80331", "MÃ¼nchen", "09"),
+    ("50667", "KÃ¶ln", "05"),
     ("60311", "Frankfurt am Main", "06"),
     ("70173", "Stuttgart", "08"),
-    ("40213", "Düsseldorf", "05"),
+    ("40213", "DÃ¼sseldorf", "05"),
     ("04109", "Leipzig", "14"),
     ("01067", "Dresden", "14"),
     ("30159", "Hannover", "03"),
     ("28195", "Bremen", "04"),
     ("24103", "Kiel", "01"),
-    ("66111", "Saarbrücken", "10"),
+    ("66111", "SaarbrÃ¼cken", "10"),
     ("99084", "Erfurt", "16"),
     ("39104", "Magdeburg", "15"),
     ("14467", "Potsdam", "12"),
     ("19053", "Schwerin", "13"),
     ("56068", "Koblenz", "07"),
     ("55116", "Mainz", "07"),
-    ("97070", "Würzburg", "09"),
+    ("97070", "WÃ¼rzburg", "09"),
 ]
 
 # Expand the list to create more PLZ rows (still synthetic).
@@ -123,7 +126,7 @@ write_csv_for_excel(postleitzahlen_df, OUTPUT_DIR / "postleitzahlen.csv")
 # -----------------------
 ticket_produkte_rows = [
     (1, "Deutschlandticket", 49, 49.00),
-    (2, "Deutschlandticket (Ermäßigt)", 48, 39.00),
+    (2, "Deutschlandticket (ErmÃ¤ÃŸigt)", 48, 39.00),
     (3, "Monatskarte", 20, 79.00),
     (4, "Wochenkarte", 21, 29.00),
     (5, "Tageskarte", 10, 9.90),
@@ -146,13 +149,13 @@ write_csv_for_excel(ticket_produkte_df, OUTPUT_DIR / "ticket_produkte.csv")
 tarif_names = [
     ("VBB", "Verkehrsverbund Berlin-Brandenburg", "aktiv"),
     ("HVV", "Hamburger Verkehrsverbund", "aktiv"),
-    ("MVV", "Münchner Verkehrs- und Tarifverbund", "aktiv"),
+    ("MVV", "MÃ¼nchner Verkehrs- und Tarifverbund", "aktiv"),
     ("VRS", "Verkehrsverbund Rhein-Sieg", "aktiv"),
     ("RMV", "Rhein-Main-Verkehrsverbund", "aktiv"),
     ("VVS", "Verkehrs- und Tarifverbund Stuttgart", "aktiv"),
     ("VRR", "Verkehrsverbund Rhein-Ruhr", "aktiv"),
-    ("GVH", "Großraum-Verkehr Hannover", "aktiv"),
-    ("VGN", "Verkehrsverbund Großraum Nürnberg", "aktiv"),
+    ("GVH", "GroÃŸraum-Verkehr Hannover", "aktiv"),
+    ("VGN", "Verkehrsverbund GroÃŸraum NÃ¼rnberg", "aktiv"),
     ("MDV", "Mitteldeutscher Verkehrsverbund", "aktiv"),
     ("VVO", "Verkehrsverbund Oberelbe", "aktiv"),
     ("SH-Tarif", "Nah.SH (Schleswig-Holstein)", "aktiv"),
@@ -208,9 +211,11 @@ meldestellen_df = pd.DataFrame(
 write_csv_for_excel(meldestellen_df, OUTPUT_DIR / "meldestellen.csv")
 
 
-print("✅ Group 1 done. Generated reference tables in:", OUTPUT_DIR)
+print("âœ… Group 1 done. Generated reference tables in:", OUTPUT_DIR)
 print(" - regionen_bundesland.csv")
 print(" - postleitzahlen.csv")
 print(" - ticket_produkte.csv")
 print(" - tarifverbuende.csv")
 print(" - meldestellen.csv")
+
+
