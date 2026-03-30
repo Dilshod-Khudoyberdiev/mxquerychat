@@ -1,0 +1,15 @@
+{
+  "operating_system": "Windows-11-10.0.26200-SP0",
+  "cpu_model": "Intel(R) Core(TM) Ultra 5 125U",
+  "cpu_cores": "not detected",
+  "cpu_threads": 14,
+  "ram_bytes": 16669302784,
+  "ram_human": "15.52 GiB",
+  "python_version": "3.13.3",
+  "streamlit_version": "1.53.0",
+  "duckdb_version": "1.4.3",
+  "vanna_version": "2.0.1",
+  "chromadb_version": "1.4.1",
+  "local_model_runtime": "ollama version is 0.17.7",
+  "model_name": "mistral:latest"
+}

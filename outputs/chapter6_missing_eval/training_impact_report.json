@@ -1,0 +1,235 @@
+{
+  "question_subset": [
+    "Per state, show top 3 ticket types by revenue.",
+    "Show postal code, city, and state for the top 20 revenues.",
+    "Which reporting offices deliver the most revenue in NRW?",
+    "Which tariff associations are especially strong in which states?",
+    "Show average price per ticket type (from sales) and compare to ticket_produkte.",
+    "Compare actual revenue (ticket_verkaeufe) with planned revenue (plan_umsatz) per month.",
+    "Show per tariff association the deviation (actual - plan) for 2025.",
+    "Show monthly deviation as a percentage."
+  ],
+  "before": {
+    "exec_acc": 0.25,
+    "exact_match": 0.25,
+    "compile_rate": 0.75,
+    "gen_median": 0.006362,
+    "total_median": 0.018133,
+    "error": null,
+    "per_question": [
+      {
+        "question": "Per state, show top 3 ticket types by revenue.",
+        "generated_sql": "SELECT\n    tv.jahr,\n    rb.bundesland_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN postleitzahlen p\n    ON CAST(tv.plz AS VARCHAR) = p.plz\nJOIN regionen_bundesland rb\n    ON p.bundesland_code2 = rb.bundesland_code2\n\nGROUP BY tv.jahr, rb.bundesland_name\nORDER BY tv.jahr, umsatz_eur DESC",
+        "gold_sql": "WITH revenue_by_state AS (SELECT r.bundesland_name, tp.ticket_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY r.bundesland_name, tp.ticket_name), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY bundesland_name ORDER BY revenue_eur DESC) AS rn FROM revenue_by_state) SELECT bundesland_name, ticket_name, revenue_eur FROM ranked WHERE rn <= 3 ORDER BY bundesland_name, revenue_eur DESC;",
+        "compiled": true,
+        "exec_correct": false,
+        "exact_match": false,
+        "gen_time_s": 0.00807,
+        "total_time_s": 0.022423,
+        "failure_category": "no_match"
+      },
+      {
+        "question": "Show postal code, city, and state for the top 20 revenues.",
+        "generated_sql": "SELECT\n    tv.jahr,\n    rb.bundesland_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN postleitzahlen p\n    ON CAST(tv.plz AS VARCHAR) = p.plz\nJOIN regionen_bundesland rb\n    ON p.bundesland_code2 = rb.bundesland_code2\n\nGROUP BY tv.jahr, rb.bundesland_name\nORDER BY tv.jahr, umsatz_eur DESC",
+        "gold_sql": "SELECT p.plz, p.ort, r.bundesland_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY p.plz, p.ort, r.bundesland_name ORDER BY revenue_eur DESC LIMIT 20;",
+        "compiled": true,
+        "exec_correct": false,
+        "exact_match": false,
+        "gen_time_s": 0.008267,
+        "total_time_s": 0.01456,
+        "failure_category": "no_match"
+      },
+      {
+        "question": "Which reporting offices deliver the most revenue in NRW?",
+        "generated_sql": "SELECT m.meldestelle_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN meldestellen m ON tv.meldestelle_code = m.meldestelle_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 WHERE r.bundesland_name = 'Nordrhein-Westfalen' GROUP BY m.meldestelle_name ORDER BY revenue_eur DESC;",
+        "gold_sql": "SELECT m.meldestelle_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN meldestellen m ON tv.meldestelle_code = m.meldestelle_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 WHERE r.bundesland_name = 'Nordrhein-Westfalen' GROUP BY m.meldestelle_name ORDER BY revenue_eur DESC;",
+        "compiled": true,
+        "exec_correct": true,
+        "exact_match": true,
+        "gen_time_s": 0.001602,
+        "total_time_s": 0.006619,
+        "failure_category": null
+      },
+      {
+        "question": "Which tariff associations are especially strong in which states?",
+        "generated_sql": "WITH revenue_by_state AS (SELECT t.name AS tarifverbund, r.bundesland_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY t.name, r.bundesland_name), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY tarifverbund ORDER BY revenue_eur DESC) AS rn FROM revenue_by_state) SELECT tarifverbund, bundesland_name, revenue_eur FROM ranked WHERE rn <= 3 ORDER BY tarifverbund, revenue_eur DESC;",
+        "gold_sql": "WITH revenue_by_state AS (SELECT t.name AS tarifverbund, r.bundesland_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY t.name, r.bundesland_name), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY tarifverbund ORDER BY revenue_eur DESC) AS rn FROM revenue_by_state) SELECT tarifverbund, bundesland_name, revenue_eur FROM ranked WHERE rn <= 3 ORDER BY tarifverbund, revenue_eur DESC;",
+        "compiled": true,
+        "exec_correct": true,
+        "exact_match": true,
+        "gen_time_s": 0.00163,
+        "total_time_s": 0.021705,
+        "failure_category": null
+      },
+      {
+        "question": "Show average price per ticket type (from sales) and compare to ticket_produkte.",
+        "generated_sql": "SELECT\n    tv.jahr,\n    tp.ticket_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN ticket_produkte tp\n    ON tv.ticket_code = tp.ticket_code\n\nGROUP BY tv.jahr, tp.ticket_name\nORDER BY tv.jahr, umsatz_eur DESC",
+        "gold_sql": "SELECT tp.ticket_name, SUM(tv.umsatz_eur) / NULLIF(SUM(tv.anzahl), 0) AS avg_sale_price_eur, tp.preis_eur AS catalog_price_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code GROUP BY tp.ticket_name, tp.preis_eur ORDER BY tp.ticket_name;",
+        "compiled": true,
+        "exec_correct": false,
+        "exact_match": false,
+        "gen_time_s": 0.004654,
+        "total_time_s": 0.011365,
+        "failure_category": "no_match"
+      },
+      {
+        "question": "Compare actual revenue (ticket_verkaeufe) with planned revenue (plan_umsatz) per month.",
+        "generated_sql": "SELECT\n    tv.jahr,\n    tv.monat,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\n\nGROUP BY tv.jahr, tv.monat\nORDER BY tv.jahr, tv.monat",
+        "gold_sql": "WITH actual AS (SELECT jahr, monat, SUM(umsatz_eur) AS actual_revenue FROM ticket_verkaeufe GROUP BY jahr, monat), plan AS (SELECT jahr, monat, SUM(umsatz_eur) AS planned_revenue FROM plan_umsatz GROUP BY jahr, monat) SELECT COALESCE(a.jahr, p.jahr) AS jahr, COALESCE(a.monat, p.monat) AS monat, a.actual_revenue, p.planned_revenue FROM actual a FULL OUTER JOIN plan p ON a.jahr = p.jahr AND a.monat = p.monat ORDER BY jahr, monat;",
+        "compiled": true,
+        "exec_correct": false,
+        "exact_match": false,
+        "gen_time_s": 0.004087,
+        "total_time_s": 0.006236,
+        "failure_category": "no_match"
+      },
+      {
+        "question": "Show per tariff association the deviation (actual - plan) for 2025.",
+        "generated_sql": "",
+        "gold_sql": "WITH actual AS (SELECT tarifverbund_id, SUM(umsatz_eur) AS actual_revenue FROM ticket_verkaeufe WHERE jahr = 2025 GROUP BY tarifverbund_id), plan AS (SELECT tarifverbund_id, SUM(umsatz_eur) AS planned_revenue FROM plan_umsatz WHERE jahr = 2025 GROUP BY tarifverbund_id) SELECT t.name AS tarifverbund, actual.actual_revenue, plan.planned_revenue, actual.actual_revenue - plan.planned_revenue AS deviation_eur FROM actual JOIN plan ON actual.tarifverbund_id = plan.tarifverbund_id JOIN tarifverbuende t ON actual.tarifverbund_id = t.tarifverbund_id ORDER BY deviation_eur DESC;",
+        "compiled": false,
+        "exec_correct": false,
+        "exact_match": false,
+        "gen_time_s": 62.869436,
+        "total_time_s": 62.869436,
+        "failure_category": "runtime_fail"
+      },
+      {
+        "question": "Show monthly deviation as a percentage.",
+        "generated_sql": "",
+        "gold_sql": "WITH actual AS (SELECT jahr, monat, SUM(umsatz_eur) AS actual_revenue FROM ticket_verkaeufe GROUP BY jahr, monat), plan AS (SELECT jahr, monat, SUM(umsatz_eur) AS planned_revenue FROM plan_umsatz GROUP BY jahr, monat) SELECT a.jahr, a.monat, (a.actual_revenue - p.planned_revenue) / NULLIF(p.planned_revenue, 0) * 100 AS deviation_pct FROM actual a JOIN plan p ON a.jahr = p.jahr AND a.monat = p.monat ORDER BY a.jahr, a.monat;",
+        "compiled": false,
+        "exec_correct": false,
+        "exact_match": false,
+        "gen_time_s": 63.068381,
+        "total_time_s": 63.068381,
+        "failure_category": "runtime_fail"
+      }
+    ]
+  },
+  "after": {
+    "exec_acc": 1.0,
+    "exact_match": 1.0,
+    "compile_rate": 1.0,
+    "gen_median": 0.004347,
+    "total_median": 0.010294,
+    "error": null,
+    "per_question": [
+      {
+        "question": "Per state, show top 3 ticket types by revenue.",
+        "generated_sql": "WITH revenue_by_state AS (SELECT r.bundesland_name, tp.ticket_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY r.bundesland_name, tp.ticket_name), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY bundesland_name ORDER BY revenue_eur DESC) AS rn FROM revenue_by_state) SELECT bundesland_name, ticket_name, revenue_eur FROM ranked WHERE rn <= 3 ORDER BY bundesland_name, revenue_eur DESC;",
+        "gold_sql": "WITH revenue_by_state AS (SELECT r.bundesland_name, tp.ticket_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY r.bundesland_name, tp.ticket_name), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY bundesland_name ORDER BY revenue_eur DESC) AS rn FROM revenue_by_state) SELECT bundesland_name, ticket_name, revenue_eur FROM ranked WHERE rn <= 3 ORDER BY bundesland_name, revenue_eur DESC;",
+        "compiled": true,
+        "exec_correct": true,
+        "exact_match": true,
+        "gen_time_s": 0.004396,
+        "total_time_s": 0.019564,
+        "failure_category": null
+      },
+      {
+        "question": "Show postal code, city, and state for the top 20 revenues.",
+        "generated_sql": "SELECT p.plz, p.ort, r.bundesland_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY p.plz, p.ort, r.bundesland_name ORDER BY revenue_eur DESC LIMIT 20;",
+        "gold_sql": "SELECT p.plz, p.ort, r.bundesland_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY p.plz, p.ort, r.bundesland_name ORDER BY revenue_eur DESC LIMIT 20;",
+        "compiled": true,
+        "exec_correct": true,
+        "exact_match": true,
+        "gen_time_s": 0.00305,
+        "total_time_s": 0.012953,
+        "failure_category": null
+      },
+      {
+        "question": "Which reporting offices deliver the most revenue in NRW?",
+        "generated_sql": "SELECT m.meldestelle_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN meldestellen m ON tv.meldestelle_code = m.meldestelle_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 WHERE r.bundesland_name = 'Nordrhein-Westfalen' GROUP BY m.meldestelle_name ORDER BY revenue_eur DESC;",
+        "gold_sql": "SELECT m.meldestelle_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN meldestellen m ON tv.meldestelle_code = m.meldestelle_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 WHERE r.bundesland_name = 'Nordrhein-Westfalen' GROUP BY m.meldestelle_name ORDER BY revenue_eur DESC;",
+        "compiled": true,
+        "exec_correct": true,
+        "exact_match": true,
+        "gen_time_s": 0.003238,
+        "total_time_s": 0.009056,
+        "failure_category": null
+      },
+      {
+        "question": "Which tariff associations are especially strong in which states?",
+        "generated_sql": "WITH revenue_by_state AS (SELECT t.name AS tarifverbund, r.bundesland_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY t.name, r.bundesland_name), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY tarifverbund ORDER BY revenue_eur DESC) AS rn FROM revenue_by_state) SELECT tarifverbund, bundesland_name, revenue_eur FROM ranked WHERE rn <= 3 ORDER BY tarifverbund, revenue_eur DESC;",
+        "gold_sql": "WITH revenue_by_state AS (SELECT t.name AS tarifverbund, r.bundesland_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY t.name, r.bundesland_name), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY tarifverbund ORDER BY revenue_eur DESC) AS rn FROM revenue_by_state) SELECT tarifverbund, bundesland_name, revenue_eur FROM ranked WHERE rn <= 3 ORDER BY tarifverbund, revenue_eur DESC;",
+        "compiled": true,
+        "exec_correct": true,
+        "exact_match": true,
+        "gen_time_s": 0.004298,
+        "total_time_s": 0.02245,
+        "failure_category": null
+      },
+      {
+        "question": "Show average price per ticket type (from sales) and compare to ticket_produkte.",
+        "generated_sql": "SELECT tp.ticket_name, SUM(tv.umsatz_eur) / NULLIF(SUM(tv.anzahl), 0) AS avg_sale_price_eur, tp.preis_eur AS catalog_price_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code GROUP BY tp.ticket_name, tp.preis_eur ORDER BY tp.ticket_name;",
+        "gold_sql": "SELECT tp.ticket_name, SUM(tv.umsatz_eur) / NULLIF(SUM(tv.anzahl), 0) AS avg_sale_price_eur, tp.preis_eur AS catalog_price_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code GROUP BY tp.ticket_name, tp.preis_eur ORDER BY tp.ticket_name;",
+        "compiled": true,
+        "exec_correct": true,
+        "exact_match": true,
+        "gen_time_s": 0.004039,
+        "total_time_s": 0.009223,
+        "failure_category": null
+      },
+      {
+        "question": "Compare actual revenue (ticket_verkaeufe) with planned revenue (plan_umsatz) per month.",
+        "generated_sql": "WITH actual AS (SELECT jahr, monat, SUM(umsatz_eur) AS actual_revenue FROM ticket_verkaeufe GROUP BY jahr, monat), plan AS (SELECT jahr, monat, SUM(umsatz_eur) AS planned_revenue FROM plan_umsatz GROUP BY jahr, monat) SELECT COALESCE(a.jahr, p.jahr) AS jahr, COALESCE(a.monat, p.monat) AS monat, a.actual_revenue, p.planned_revenue FROM actual a FULL OUTER JOIN plan p ON a.jahr = p.jahr AND a.monat = p.monat ORDER BY jahr, monat;",
+        "gold_sql": "WITH actual AS (SELECT jahr, monat, SUM(umsatz_eur) AS actual_revenue FROM ticket_verkaeufe GROUP BY jahr, monat), plan AS (SELECT jahr, monat, SUM(umsatz_eur) AS planned_revenue FROM plan_umsatz GROUP BY jahr, monat) SELECT COALESCE(a.jahr, p.jahr) AS jahr, COALESCE(a.monat, p.monat) AS monat, a.actual_revenue, p.planned_revenue FROM actual a FULL OUTER JOIN plan p ON a.jahr = p.jahr AND a.monat = p.monat ORDER BY jahr, monat;",
+        "compiled": true,
+        "exec_correct": true,
+        "exact_match": true,
+        "gen_time_s": 0.004864,
+        "total_time_s": 0.007696,
+        "failure_category": null
+      },
+      {
+        "question": "Show per tariff association the deviation (actual - plan) for 2025.",
+        "generated_sql": "WITH actual AS (SELECT tarifverbund_id, SUM(umsatz_eur) AS actual_revenue FROM ticket_verkaeufe WHERE jahr = 2025 GROUP BY tarifverbund_id), plan AS (SELECT tarifverbund_id, SUM(umsatz_eur) AS planned_revenue FROM plan_umsatz WHERE jahr = 2025 GROUP BY tarifverbund_id) SELECT t.name AS tarifverbund, actual.actual_revenue, plan.planned_revenue, actual.actual_revenue - plan.planned_revenue AS deviation_eur FROM actual JOIN plan ON actual.tarifverbund_id = plan.tarifverbund_id JOIN tarifverbuende t ON actual.tarifverbund_id = t.tarifverbund_id ORDER BY deviation_eur DESC;",
+        "gold_sql": "WITH actual AS (SELECT tarifverbund_id, SUM(umsatz_eur) AS actual_revenue FROM ticket_verkaeufe WHERE jahr = 2025 GROUP BY tarifverbund_id), plan AS (SELECT tarifverbund_id, SUM(umsatz_eur) AS planned_revenue FROM plan_umsatz WHERE jahr = 2025 GROUP BY tarifverbund_id) SELECT t.name AS tarifverbund, actual.actual_revenue, plan.planned_revenue, actual.actual_revenue - plan.planned_revenue AS deviation_eur FROM actual JOIN plan ON actual.tarifverbund_id = plan.tarifverbund_id JOIN tarifverbuende t ON actual.tarifverbund_id = t.tarifverbund_id ORDER BY deviation_eur DESC;",
+        "compiled": true,
+        "exec_correct": true,
+        "exact_match": true,
+        "gen_time_s": 0.005447,
+        "total_time_s": 0.010809,
+        "failure_category": null
+      },
+      {
+        "question": "Show monthly deviation as a percentage.",
+        "generated_sql": "WITH actual AS (SELECT jahr, monat, SUM(umsatz_eur) AS actual_revenue FROM ticket_verkaeufe GROUP BY jahr, monat), plan AS (SELECT jahr, monat, SUM(umsatz_eur) AS planned_revenue FROM plan_umsatz GROUP BY jahr, monat) SELECT a.jahr, a.monat, (a.actual_revenue - p.planned_revenue) / NULLIF(p.planned_revenue, 0) * 100 AS deviation_pct FROM actual a JOIN plan p ON a.jahr = p.jahr AND a.monat = p.monat ORDER BY a.jahr, a.monat;",
+        "gold_sql": "WITH actual AS (SELECT jahr, monat, SUM(umsatz_eur) AS actual_revenue FROM ticket_verkaeufe GROUP BY jahr, monat), plan AS (SELECT jahr, monat, SUM(umsatz_eur) AS planned_revenue FROM plan_umsatz GROUP BY jahr, monat) SELECT a.jahr, a.monat, (a.actual_revenue - p.planned_revenue) / NULLIF(p.planned_revenue, 0) * 100 AS deviation_pct FROM actual a JOIN plan p ON a.jahr = p.jahr AND a.monat = p.monat ORDER BY a.jahr, a.monat;",
+        "compiled": true,
+        "exec_correct": true,
+        "exact_match": true,
+        "gen_time_s": 0.005329,
+        "total_time_s": 0.009779,
+        "failure_category": null
+      }
+    ]
+  },
+  "training_change_description": "Before condition used a temporary copy of training_examples.csv with the subset-specific rows removed and retrained an isolated temporary Chroma store. After condition used the full current training_examples.csv and retrained a separate isolated temporary Chroma store. Temporary experiment artifacts were written under C:\\Users\\DilshodKhudoyberdiev\\Documents\\GitHub\\mxquerychat\\outputs\\chapter6_missing_eval\\_tmp\\20260313_193700.",
+  "removed_or_disabled_examples": [
+    {
+      "question": "Per state, show top 3 ticket types by revenue.",
+      "sql": "WITH revenue_by_state AS (SELECT r.bundesland_name, tp.ticket_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY r.bundesland_name, tp.ticket_name), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY bundesland_name ORDER BY revenue_eur DESC) AS rn FROM revenue_by_state) SELECT bundesland_name, ticket_name, revenue_eur FROM ranked WHERE rn <= 3 ORDER BY bundesland_name, revenue_eur DESC;"
+    },
+    {
+      "question": "Show postal code, city, and state for the top 20 revenues.",
+      "sql": "SELECT p.plz, p.ort, r.bundesland_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY p.plz, p.ort, r.bundesland_name ORDER BY revenue_eur DESC LIMIT 20;"
+    },
+    {
+      "question": "Show average price per ticket type (from sales) and compare to ticket_produkte.",
+      "sql": "SELECT tp.ticket_name, SUM(tv.umsatz_eur) / NULLIF(SUM(tv.anzahl), 0) AS avg_sale_price_eur, tp.preis_eur AS catalog_price_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code GROUP BY tp.ticket_name, tp.preis_eur ORDER BY tp.ticket_name;"
+    },
+    {
+      "question": "Compare actual revenue (ticket_verkaeufe) with planned revenue (plan_umsatz) per month.",
+      "sql": "WITH actual AS (SELECT jahr, monat, SUM(umsatz_eur) AS actual_revenue FROM ticket_verkaeufe GROUP BY jahr, monat), plan AS (SELECT jahr, monat, SUM(umsatz_eur) AS planned_revenue FROM plan_umsatz GROUP BY jahr, monat) SELECT COALESCE(a.jahr, p.jahr) AS jahr, COALESCE(a.monat, p.monat) AS monat, a.actual_revenue, p.planned_revenue FROM actual a FULL OUTER JOIN plan p ON a.jahr = p.jahr AND a.monat = p.monat ORDER BY jahr, monat;"
+    },
+    {
+      "question": "Show per tariff association the deviation (actual - plan) for 2025.",
+      "sql": "WITH actual AS (SELECT tarifverbund_id, SUM(umsatz_eur) AS actual_revenue FROM ticket_verkaeufe WHERE jahr = 2025 GROUP BY tarifverbund_id), plan AS (SELECT tarifverbund_id, SUM(umsatz_eur) AS planned_revenue FROM plan_umsatz WHERE jahr = 2025 GROUP BY tarifverbund_id) SELECT t.name AS tarifverbund, actual.actual_revenue, plan.planned_revenue, actual.actual_revenue - plan.planned_revenue AS deviation_eur FROM actual JOIN plan ON actual.tarifverbund_id = plan.tarifverbund_id JOIN tarifverbuende t ON actual.tarifverbund_id = t.tarifverbund_id ORDER BY deviation_eur DESC;"
+    },
+    {
+      "question": "Show monthly deviation as a percentage.",
+      "sql": "WITH actual AS (SELECT jahr, monat, SUM(umsatz_eur) AS actual_revenue FROM ticket_verkaeufe GROUP BY jahr, monat), plan AS (SELECT jahr, monat, SUM(umsatz_eur) AS planned_revenue FROM plan_umsatz GROUP BY jahr, monat) SELECT a.jahr, a.monat, (a.actual_revenue - p.planned_revenue) / NULLIF(p.planned_revenue, 0) * 100 AS deviation_pct FROM actual a JOIN plan p ON a.jahr = p.jahr AND a.monat = p.monat ORDER BY a.jahr, a.monat;"
+    }
+  ]
+}

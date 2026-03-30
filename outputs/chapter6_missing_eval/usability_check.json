@@ -1,0 +1,16 @@
+{
+  "status": "partially measured",
+  "reason": "telemetry logs capture events but do not include a reliable session identifier",
+  "number_of_sessions": "not measurable automatically",
+  "successful_question_run_flows": 10,
+  "feedback_signals": {
+    "up": 4,
+    "down": 0
+  },
+  "event_totals": {
+    "events": 101,
+    "generation_events": 36,
+    "execution_events": 13,
+    "feedback_events": 4
+  }
+}

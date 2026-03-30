@@ -1,0 +1,21 @@
+{
+  "available": true,
+  "reason": "local held-out benchmark CSV found",
+  "benchmark_type": "local held-out in-domain benchmark",
+  "source": "training_data\\benchmark_questions.csv",
+  "question_count": 10,
+  "metrics": {
+    "exact_match": 0.0,
+    "exec_acc": 0.0,
+    "compile_rate": 0.9,
+    "success_rate_percent": 90.0,
+    "safe_fail_rate_percent": 10.0
+  },
+  "latency_ms": {
+    "avg_generation_ms": 0.0,
+    "avg_execution_ms": 19.67,
+    "median_generation_ms": 0.0,
+    "median_execution_ms": 19,
+    "median_total_ms": 91
+  }
+}

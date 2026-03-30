@@ -1,23 +1,24 @@
 ﻿"""
 
 Purpose:
-This script runs repeatable benchmark experiments over curated markdown question sets and reports
-outcome quality plus latency metrics for the NL-to-SQL pipeline.
+This script runs repeatable benchmark experiments over local question sets and reports quality plus
+latency metrics for the NL-to-SQL pipeline.
 
 What This File Contains:
-- Markdown question parsing and deduplication helpers.
+- Markdown and CSV benchmark-question loaders.
 - Per-question execution pipeline with guardrails, template/LLM generation, validation, and execution.
-- Outcome classification utilities and aggregate summary builder.
+- Optional gold-SQL comparison helpers for Exact Match and Execution Accuracy.
 - Report writers that emit JSON and CSV benchmark artifacts.
 
 Key Invariants and Safety Guarantees:
 - Queries are validated through read-only and complexity checks before execution.
-- Row limits and execution timeout controls are applied consistently.
+- DuckDB execution remains read-only and row-limited.
 - Outcome taxonomy remains stable across runs for comparable benchmarking.
+- Gold-result comparisons are only computed when benchmark rows provide gold SQL.
 
 How Other Modules Use This File:
 This script is run manually from the command line. Its outputs support progress tracking, thesis tables,
-and empirical comparison between deterministic-only and LLM-enabled modes.
+and local held-out benchmark evaluation without requiring Spider/BIRD adapters.
 """
 
 from __future__ import annotations
@@ -44,12 +45,12 @@ from src.core import query_logic
 from src.db.execution_policy import (
     ExecutionPolicy,
     apply_row_limit,
-    run_query_with_timeout,
     validate_sql_complexity,
 )
 
 DUCKDB_PATH = "mxquerychat.duckdb"
 MODEL_TIMEOUT_SECONDS = 65
+DEFAULT_BENCHMARK_CSV = "training_data/benchmark_questions.csv"
 
 
 def run_with_timeout(fn, timeout_seconds: int):
@@ -75,6 +76,61 @@ def validate_sql_compiles(sql: str) -> str:
         return ""
     except Exception as exc:
         return str(exc)
+    finally:
+        con.close()
+
+
+def normalize_sql_for_exact_match(sql: str) -> str:
+    if not sql:
+        return ""
+    normalized = sql.strip().rstrip(";").lower()
+    normalized = normalized.replace('"', "'")
+    normalized = re.sub(r"\s+", " ", normalized)
+    return normalized
+
+
+def canonicalize_dataframe(df: pd.DataFrame) -> tuple[list[str], list[tuple]]:
+    if df is None:
+        return [], []
+    columns = sorted(list(df.columns))
+    work = df[columns].copy()
+    sort_proxy = pd.DataFrame({col: work[col].astype(str) for col in columns})
+    index_order = sort_proxy.sort_values(by=columns, kind="mergesort").index
+    work = work.loc[index_order]
+
+    rows: list[tuple] = []
+    for _, row in work.iterrows():
+        values: list[object] = []
+        for col in columns:
+            value = row[col]
+            if pd.isna(value):
+                values.append(None)
+            elif isinstance(value, float):
+                values.append(round(value, 6))
+            else:
+                values.append(value)
+        rows.append(tuple(values))
+    return columns, rows
+
+
+def compare_query_results(actual: pd.DataFrame, expected: pd.DataFrame) -> bool:
+    actual_cols, actual_rows = canonicalize_dataframe(actual)
+    expected_cols, expected_rows = canonicalize_dataframe(expected)
+    return actual_cols == expected_cols and actual_rows == expected_rows
+
+
+def execute_sql_read_only(sql: str, policy: ExecutionPolicy) -> tuple[pd.DataFrame, int, str]:
+    limited_sql = apply_row_limit(sql, policy.max_rows)
+    started = time.time()
+    con = duckdb.connect(DUCKDB_PATH, read_only=True)
+    try:
+        df = con.execute(limited_sql).fetchdf()
+        elapsed_ms = int((time.time() - started) * 1000)
+        return df, elapsed_ms, ""
+    except Exception as exc:
+        elapsed_ms = int((time.time() - started) * 1000)
+        _ = elapsed_ms
+        return pd.DataFrame(), elapsed_ms, str(exc)
     finally:
         con.close()
 
@@ -138,6 +194,30 @@ def load_benchmark_questions() -> list[str]:
     return unique
 
 
+def load_benchmark_cases(csv_path: Path | None = None) -> list[dict]:
+    if csv_path and csv_path.exists():
+        df = pd.read_csv(csv_path, dtype=str, keep_default_na=False).fillna("")
+        required = {"question"}
+        if not required.issubset(df.columns):
+            raise ValueError(f"Benchmark CSV must contain columns: {sorted(required)}")
+        cases: list[dict] = []
+        for _, row in df.iterrows():
+            question = str(row.get("question", "")).strip()
+            if not question:
+                continue
+            cases.append(
+                {
+                    "question": question,
+                    "gold_sql": str(row.get("gold_sql", "")).strip(),
+                    "difficulty": str(row.get("difficulty", "")).strip(),
+                    "category": str(row.get("category", "")).strip(),
+                }
+            )
+        return cases
+
+    return [{"question": question, "gold_sql": "", "difficulty": "", "category": ""} for question in load_benchmark_questions()]
+
+
 def classify_safe_fail(reason: str) -> bool:
     lowered = (reason or "").lower()
     tokens = [
@@ -153,12 +233,14 @@ def classify_safe_fail(reason: str) -> bool:
 
 
 def run_single_question(
-    question: str,
+    case: dict,
     schema_tree: dict,
     policy: ExecutionPolicy,
     use_llm: bool,
     vanna_instance,
 ) -> dict:
+    question = case["question"]
+    gold_sql = str(case.get("gold_sql", "")).strip()
     start_total = time.time()
     generation_start = time.time()
 
@@ -166,9 +248,15 @@ def run_single_question(
     if local_block:
         return {
             "question": question,
+            "difficulty": case.get("difficulty", ""),
+            "category": case.get("category", ""),
+            "gold_sql": gold_sql,
             "outcome": "safe_fail",
             "reason": f"guardrail:{local_block}",
             "sql": "",
+            "compiled": False,
+            "exact_match": False,
+            "exec_correct": False,
             "generation_ms": int((time.time() - generation_start) * 1000),
             "execution_ms": 0,
             "rows": 0,
@@ -197,9 +285,15 @@ def run_single_question(
         if error_code:
             return {
                 "question": question,
+                "difficulty": case.get("difficulty", ""),
+                "category": case.get("category", ""),
+                "gold_sql": gold_sql,
                 "outcome": "safe_fail",
                 "reason": f"llm_{error_code}",
                 "sql": "",
+                "compiled": False,
+                "exact_match": False,
+                "exec_correct": False,
                 "generation_ms": int((time.time() - generation_start) * 1000),
                 "execution_ms": 0,
                 "rows": 0,
@@ -208,9 +302,15 @@ def run_single_question(
     else:
         return {
             "question": question,
+            "difficulty": case.get("difficulty", ""),
+            "category": case.get("category", ""),
+            "gold_sql": gold_sql,
             "outcome": "safe_fail",
             "reason": "no_template_no_llm",
             "sql": "",
+            "compiled": False,
+            "exact_match": False,
+            "exec_correct": False,
             "generation_ms": int((time.time() - generation_start) * 1000),
             "execution_ms": 0,
             "rows": 0,
@@ -223,9 +323,15 @@ def run_single_question(
     if not is_read_only:
         return {
             "question": question,
+            "difficulty": case.get("difficulty", ""),
+            "category": case.get("category", ""),
+            "gold_sql": gold_sql,
             "outcome": "safe_fail",
             "reason": f"read_only:{read_only_message}",
             "sql": sql,
+            "compiled": False,
+            "exact_match": False,
+            "exec_correct": False,
             "generation_ms": generation_ms,
             "execution_ms": 0,
             "rows": 0,
@@ -236,9 +342,15 @@ def run_single_question(
     if not complexity_ok:
         return {
             "question": question,
+            "difficulty": case.get("difficulty", ""),
+            "category": case.get("category", ""),
+            "gold_sql": gold_sql,
             "outcome": "safe_fail",
             "reason": f"complexity:{complexity_message}",
             "sql": sql,
+            "compiled": False,
+            "exact_match": False,
+            "exec_correct": False,
             "generation_ms": generation_ms,
             "execution_ms": 0,
             "rows": 0,
@@ -249,26 +361,34 @@ def run_single_question(
     if compile_error:
         return {
             "question": question,
+            "difficulty": case.get("difficulty", ""),
+            "category": case.get("category", ""),
+            "gold_sql": gold_sql,
             "outcome": "compile_fail",
             "reason": compile_error,
             "sql": sql,
+            "compiled": False,
+            "exact_match": False,
+            "exec_correct": False,
             "generation_ms": generation_ms,
             "execution_ms": 0,
             "rows": 0,
             "total_ms": int((time.time() - start_total) * 1000),
         }
 
-    limited_sql = apply_row_limit(sql, policy.max_rows)
-    df, execution_seconds, exec_error = run_query_with_timeout(
-        DUCKDB_PATH, limited_sql, policy.timeout_seconds
-    )
-    execution_ms = int(execution_seconds * 1000)
+    df, execution_ms, exec_error = execute_sql_read_only(sql, policy)
     if exec_error:
         return {
             "question": question,
+            "difficulty": case.get("difficulty", ""),
+            "category": case.get("category", ""),
+            "gold_sql": gold_sql,
             "outcome": "safe_fail" if classify_safe_fail(exec_error) else "runtime_fail",
             "reason": exec_error,
             "sql": sql,
+            "compiled": True,
+            "exact_match": False,
+            "exec_correct": False,
             "generation_ms": generation_ms,
             "execution_ms": execution_ms,
             "rows": 0,
@@ -277,11 +397,29 @@ def run_single_question(
             "generation_detail": generation_reason,
         }
 
+    compiled = True
+    exact_match = bool(gold_sql) and (
+        normalize_sql_for_exact_match(sql) == normalize_sql_for_exact_match(gold_sql)
+    )
+    exec_correct = False
+    if gold_sql:
+        gold_compile_error = validate_sql_compiles(gold_sql)
+        if not gold_compile_error:
+            gold_df, _gold_execution_ms, gold_exec_error = execute_sql_read_only(gold_sql, policy)
+            if not gold_exec_error:
+                exec_correct = compare_query_results(df, gold_df)
+
     return {
         "question": question,
+        "difficulty": case.get("difficulty", ""),
+        "category": case.get("category", ""),
+        "gold_sql": gold_sql,
         "outcome": "success",
         "reason": "ok",
         "sql": sql,
+        "compiled": compiled,
+        "exact_match": exact_match,
+        "exec_correct": exec_correct,
         "generation_ms": generation_ms,
         "execution_ms": execution_ms,
         "rows": int(len(df)),
@@ -304,6 +442,11 @@ def build_summary(results: list[dict]) -> dict:
         r.get("execution_ms", 0) for r in results if r.get("execution_ms", 0) > 0
     ]
     total_ms = [r.get("total_ms", 0) for r in results if r.get("total_ms", 0) > 0]
+    gold_results = [r for r in results if str(r.get("gold_sql", "")).strip()]
+    gold_total = len(gold_results)
+    exact_total = sum(1 for r in gold_results if bool(r.get("exact_match")))
+    exec_total = sum(1 for r in gold_results if bool(r.get("exec_correct")))
+    compile_total = sum(1 for r in gold_results if bool(r.get("compiled")))
 
     def _ratio(value: int) -> float:
         return round((value / total) * 100.0, 2) if total else 0.0
@@ -338,6 +481,12 @@ def build_summary(results: list[dict]) -> dict:
             "median_latency_ms": round(statistics.median(total_ms), 2)
             if total_ms
             else 0.0,
+        },
+        "gold_metrics": {
+            "gold_question_count": gold_total,
+            "exact_match_rate": round(exact_total / gold_total, 4) if gold_total else None,
+            "exec_acc": round(exec_total / gold_total, 4) if gold_total else None,
+            "compile_rate": round(compile_total / gold_total, 4) if gold_total else None,
         },
     }
 
@@ -374,11 +523,17 @@ def main() -> None:
         action="store_true",
         help="Allow LLM fallback when no deterministic template matches.",
     )
+    parser.add_argument(
+        "--questions-csv",
+        default=DEFAULT_BENCHMARK_CSV,
+        help="Optional benchmark CSV with columns question,gold_sql,difficulty,category.",
+    )
     args = parser.parse_args()
 
-    questions = load_benchmark_questions()
+    csv_path = Path(args.questions_csv) if args.questions_csv else None
+    cases = load_benchmark_cases(csv_path if csv_path and csv_path.exists() else None)
     if args.max_questions and args.max_questions > 0:
-        questions = questions[: args.max_questions]
+        cases = cases[: args.max_questions]
 
     schema_tree = get_schema_tree()
     policy = ExecutionPolicy()
@@ -391,13 +546,13 @@ def main() -> None:
 
     results = [
         run_single_question(
-            question=question,
+            case=case,
             schema_tree=schema_tree,
             policy=policy,
             use_llm=args.use_llm,
             vanna_instance=vanna_instance,
         )
-        for question in questions
+        for case in cases
     ]
     summary = build_summary(results)
     json_path, csv_path = write_reports(results, summary, Path(args.output_dir))
@@ -409,6 +564,8 @@ def main() -> None:
     print(f"Compile-fail rate: {summary['rates_percent']['compile_fail_rate']}%")
     print(f"Runtime-fail rate: {summary['rates_percent']['runtime_fail_rate']}%")
     print(f"Compile rate: {summary['prd_kpis']['compile_rate']}%")
+    print(f"Gold Exact Match: {summary['gold_metrics']['exact_match_rate']}")
+    print(f"Gold ExecAcc: {summary['gold_metrics']['exec_acc']}")
     print(f"Median latency: {summary['prd_kpis']['median_latency_ms']} ms")
     print(f"JSON report: {json_path}")
     print(f"CSV report: {csv_path}")

@@ -1,0 +1,151 @@
+{
+  "tested_questions": [
+    "Show revenue by tariff association and federal state.",
+    "For each state, show top 3 ticket types by revenue.",
+    "Show revenue by state and ticket type for 2025.",
+    "Show reporting office revenue with its state and tariff association.",
+    "Compare ticket product catalog price vs average sale price per state.",
+    "Show top 5 ticket products by revenue in each state.",
+    "Show revenue by state for active tariff associations only.",
+    "Show revenue by ticket type and month for 2025.",
+    "Show revenue by tariff association and month for 2024.",
+    "Show ticket sales quantity by state and ticket type."
+  ],
+  "tested_case_count": 10,
+  "semantic_error_examples": [
+    {
+      "question": "Show revenue by tariff association and federal state.",
+      "generated_sql": "SELECT\n    tv.jahr,\n    t.name AS tarifverbund_name,\n    rb.bundesland_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN tarifverbuende t\n    ON tv.tarifverbund_id = t.tarifverbund_id\nJOIN postleitzahlen p\n    ON CAST(tv.plz AS VARCHAR) = p.plz\nJOIN regionen_bundesland rb\n    ON p.bundesland_code2 = rb.bundesland_code2\n\nGROUP BY tv.jahr, t.name, rb.bundesland_name\nORDER BY tv.jahr, t.name, umsatz_eur DESC",
+      "corrected_sql": "SELECT t.name AS tarifverbund_name, rb.bundesland_name, SUM(tv.umsatz_eur) AS umsatz_eur FROM ticket_verkaeufe tv JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2 GROUP BY t.name, rb.bundesland_name ORDER BY t.name, umsatz_eur DESC;",
+      "what_went_wrong": "The generated SQL compiled and ran, but it returned a different grouping or filter than the gold query.",
+      "category": "wrong aggregation"
+    },
+    {
+      "question": "For each state, show top 3 ticket types by revenue.",
+      "generated_sql": "SELECT\n    tv.jahr,\n    rb.bundesland_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN postleitzahlen p\n    ON CAST(tv.plz AS VARCHAR) = p.plz\nJOIN regionen_bundesland rb\n    ON p.bundesland_code2 = rb.bundesland_code2\n\nGROUP BY tv.jahr, rb.bundesland_name\nORDER BY tv.jahr, umsatz_eur DESC",
+      "corrected_sql": "WITH revenue_by_state AS (SELECT rb.bundesland_name, tp.ticket_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2 GROUP BY rb.bundesland_name, tp.ticket_name), ranked AS (SELECT bundesland_name, ticket_name, revenue_eur, ROW_NUMBER() OVER (PARTITION BY bundesland_name ORDER BY revenue_eur DESC) AS rn FROM revenue_by_state) SELECT bundesland_name, ticket_name, revenue_eur FROM ranked WHERE rn <= 3 ORDER BY bundesland_name, revenue_eur DESC;",
+      "what_went_wrong": "The generated SQL dropped the ticket-type dimension from the grouping.",
+      "category": "wrong aggregation"
+    },
+    {
+      "question": "Show revenue by state and ticket type for 2025.",
+      "generated_sql": "SELECT\n    tv.jahr,\n    rb.bundesland_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN postleitzahlen p\n    ON CAST(tv.plz AS VARCHAR) = p.plz\nJOIN regionen_bundesland rb\n    ON p.bundesland_code2 = rb.bundesland_code2\nWHERE tv.jahr = 2025\nGROUP BY tv.jahr, rb.bundesland_name\nORDER BY tv.jahr, umsatz_eur DESC",
+      "corrected_sql": "SELECT rb.bundesland_name, tp.ticket_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2 WHERE tv.jahr = 2025 GROUP BY rb.bundesland_name, tp.ticket_name ORDER BY rb.bundesland_name, revenue_eur DESC;",
+      "what_went_wrong": "The generated SQL dropped the ticket-type dimension from the grouping.",
+      "category": "wrong column"
+    }
+  ],
+  "summary": "Found `3` semantic error example(s) in `10` tested paraphrases.",
+  "tested_cases": [
+    {
+      "question": "Show revenue by tariff association and federal state.",
+      "generated_sql": "SELECT\n    tv.jahr,\n    t.name AS tarifverbund_name,\n    rb.bundesland_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN tarifverbuende t\n    ON tv.tarifverbund_id = t.tarifverbund_id\nJOIN postleitzahlen p\n    ON CAST(tv.plz AS VARCHAR) = p.plz\nJOIN regionen_bundesland rb\n    ON p.bundesland_code2 = rb.bundesland_code2\n\nGROUP BY tv.jahr, t.name, rb.bundesland_name\nORDER BY tv.jahr, t.name, umsatz_eur DESC",
+      "corrected_sql": "SELECT t.name AS tarifverbund_name, rb.bundesland_name, SUM(tv.umsatz_eur) AS umsatz_eur FROM ticket_verkaeufe tv JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2 GROUP BY t.name, rb.bundesland_name ORDER BY t.name, umsatz_eur DESC;",
+      "generation_failure": null,
+      "generated_exec_error": null,
+      "gold_exec_error": null,
+      "compiled_and_ran": true,
+      "result_matches_gold": false,
+      "gen_time_s": 0.034652
+    },
+    {
+      "question": "For each state, show top 3 ticket types by revenue.",
+      "generated_sql": "SELECT\n    tv.jahr,\n    rb.bundesland_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN postleitzahlen p\n    ON CAST(tv.plz AS VARCHAR) = p.plz\nJOIN regionen_bundesland rb\n    ON p.bundesland_code2 = rb.bundesland_code2\n\nGROUP BY tv.jahr, rb.bundesland_name\nORDER BY tv.jahr, umsatz_eur DESC",
+      "corrected_sql": "WITH revenue_by_state AS (SELECT rb.bundesland_name, tp.ticket_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2 GROUP BY rb.bundesland_name, tp.ticket_name), ranked AS (SELECT bundesland_name, ticket_name, revenue_eur, ROW_NUMBER() OVER (PARTITION BY bundesland_name ORDER BY revenue_eur DESC) AS rn FROM revenue_by_state) SELECT bundesland_name, ticket_name, revenue_eur FROM ranked WHERE rn <= 3 ORDER BY bundesland_name, revenue_eur DESC;",
+      "generation_failure": null,
+      "generated_exec_error": null,
+      "gold_exec_error": null,
+      "compiled_and_ran": true,
+      "result_matches_gold": false,
+      "gen_time_s": 0.036128
+    },
+    {
+      "question": "Show revenue by state and ticket type for 2025.",
+      "generated_sql": "SELECT\n    tv.jahr,\n    rb.bundesland_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN postleitzahlen p\n    ON CAST(tv.plz AS VARCHAR) = p.plz\nJOIN regionen_bundesland rb\n    ON p.bundesland_code2 = rb.bundesland_code2\nWHERE tv.jahr = 2025\nGROUP BY tv.jahr, rb.bundesland_name\nORDER BY tv.jahr, umsatz_eur DESC",
+      "corrected_sql": "SELECT rb.bundesland_name, tp.ticket_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2 WHERE tv.jahr = 2025 GROUP BY rb.bundesland_name, tp.ticket_name ORDER BY rb.bundesland_name, revenue_eur DESC;",
+      "generation_failure": null,
+      "generated_exec_error": null,
+      "gold_exec_error": null,
+      "compiled_and_ran": true,
+      "result_matches_gold": false,
+      "gen_time_s": 0.036065
+    },
+    {
+      "question": "Show reporting office revenue with its state and tariff association.",
+      "generated_sql": "SELECT\n    tv.jahr,\n    t.name AS tarifverbund_name,\n    rb.bundesland_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN tarifverbuende t\n    ON tv.tarifverbund_id = t.tarifverbund_id\nJOIN postleitzahlen p\n    ON CAST(tv.plz AS VARCHAR) = p.plz\nJOIN regionen_bundesland rb\n    ON p.bundesland_code2 = rb.bundesland_code2\n\nGROUP BY tv.jahr, t.name, rb.bundesland_name\nORDER BY tv.jahr, t.name, umsatz_eur DESC",
+      "corrected_sql": "SELECT m.meldestelle_name, rb.bundesland_name, t.name AS tarifverbund_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN meldestellen m ON tv.meldestelle_code = m.meldestelle_code JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2 GROUP BY m.meldestelle_name, rb.bundesland_name, t.name ORDER BY revenue_eur DESC;",
+      "generation_failure": null,
+      "generated_exec_error": null,
+      "gold_exec_error": null,
+      "compiled_and_ran": true,
+      "result_matches_gold": false,
+      "gen_time_s": 0.032552
+    },
+    {
+      "question": "Compare ticket product catalog price vs average sale price per state.",
+      "generated_sql": "",
+      "corrected_sql": "SELECT rb.bundesland_name, tp.ticket_name, SUM(tv.umsatz_eur) / NULLIF(SUM(tv.anzahl), 0) AS avg_sale_price_eur, tp.preis_eur AS catalog_price_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2 GROUP BY rb.bundesland_name, tp.ticket_name, tp.preis_eur ORDER BY rb.bundesland_name, tp.ticket_name;",
+      "generation_failure": "runtime_fail",
+      "generated_exec_error": "runtime_fail",
+      "gold_exec_error": null,
+      "compiled_and_ran": false,
+      "result_matches_gold": false,
+      "gen_time_s": 63.690311
+    },
+    {
+      "question": "Show top 5 ticket products by revenue in each state.",
+      "generated_sql": "SELECT\n    tv.jahr,\n    rb.bundesland_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN postleitzahlen p\n    ON CAST(tv.plz AS VARCHAR) = p.plz\nJOIN regionen_bundesland rb\n    ON p.bundesland_code2 = rb.bundesland_code2\n\nGROUP BY tv.jahr, rb.bundesland_name\nORDER BY tv.jahr, umsatz_eur DESC",
+      "corrected_sql": "WITH revenue_by_state AS (SELECT rb.bundesland_name, tp.ticket_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2 GROUP BY rb.bundesland_name, tp.ticket_name), ranked AS (SELECT bundesland_name, ticket_name, revenue_eur, ROW_NUMBER() OVER (PARTITION BY bundesland_name ORDER BY revenue_eur DESC) AS rn FROM revenue_by_state) SELECT bundesland_name, ticket_name, revenue_eur FROM ranked WHERE rn <= 5 ORDER BY bundesland_name, revenue_eur DESC;",
+      "generation_failure": null,
+      "generated_exec_error": null,
+      "gold_exec_error": null,
+      "compiled_and_ran": true,
+      "result_matches_gold": false,
+      "gen_time_s": 0.014667
+    },
+    {
+      "question": "Show revenue by state for active tariff associations only.",
+      "generated_sql": "SELECT\n    tv.jahr,\n    t.name AS tarifverbund_name,\n    rb.bundesland_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN tarifverbuende t\n    ON tv.tarifverbund_id = t.tarifverbund_id\nJOIN postleitzahlen p\n    ON CAST(tv.plz AS VARCHAR) = p.plz\nJOIN regionen_bundesland rb\n    ON p.bundesland_code2 = rb.bundesland_code2\n\nGROUP BY tv.jahr, t.name, rb.bundesland_name\nORDER BY tv.jahr, t.name, umsatz_eur DESC",
+      "corrected_sql": "SELECT rb.bundesland_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2 WHERE t.status = 'aktiv' GROUP BY rb.bundesland_name ORDER BY revenue_eur DESC;",
+      "generation_failure": null,
+      "generated_exec_error": null,
+      "gold_exec_error": null,
+      "compiled_and_ran": true,
+      "result_matches_gold": false,
+      "gen_time_s": 0.009254
+    },
+    {
+      "question": "Show revenue by ticket type and month for 2025.",
+      "generated_sql": "SELECT\n    tv.jahr,\n    tv.monat,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nWHERE tv.jahr = 2025\nGROUP BY tv.jahr, tv.monat\nORDER BY tv.jahr, tv.monat",
+      "corrected_sql": "SELECT tv.monat, tp.ticket_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code WHERE tv.jahr = 2025 GROUP BY tv.monat, tp.ticket_name ORDER BY tv.monat, revenue_eur DESC;",
+      "generation_failure": null,
+      "generated_exec_error": null,
+      "gold_exec_error": null,
+      "compiled_and_ran": true,
+      "result_matches_gold": false,
+      "gen_time_s": 0.007748
+    },
+    {
+      "question": "Show revenue by tariff association and month for 2024.",
+      "generated_sql": "SELECT\n    tv.jahr,\n    tv.monat,\n    t.name AS tarifverbund_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN tarifverbuende t\n    ON tv.tarifverbund_id = t.tarifverbund_id\nWHERE tv.jahr = 2024\nGROUP BY tv.jahr, tv.monat, t.name\nORDER BY tv.jahr, tv.monat, umsatz_eur DESC",
+      "corrected_sql": "SELECT tv.monat, t.name AS tarifverbund_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id WHERE tv.jahr = 2024 GROUP BY tv.monat, t.name ORDER BY tv.monat, revenue_eur DESC;",
+      "generation_failure": null,
+      "generated_exec_error": null,
+      "gold_exec_error": null,
+      "compiled_and_ran": true,
+      "result_matches_gold": false,
+      "gen_time_s": 0.013092
+    },
+    {
+      "question": "Show ticket sales quantity by state and ticket type.",
+      "generated_sql": "SELECT\n    tv.jahr,\n    rb.bundesland_name,\n    SUM(tv.umsatz_eur) AS umsatz_eur\nFROM ticket_verkaeufe tv\nJOIN postleitzahlen p\n    ON CAST(tv.plz AS VARCHAR) = p.plz\nJOIN regionen_bundesland rb\n    ON p.bundesland_code2 = rb.bundesland_code2\n\nGROUP BY tv.jahr, rb.bundesland_name\nORDER BY tv.jahr, umsatz_eur DESC",
+      "corrected_sql": "SELECT rb.bundesland_name, tp.ticket_name, SUM(tv.anzahl) AS tickets_sold FROM ticket_verkaeufe tv JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2 GROUP BY rb.bundesland_name, tp.ticket_name ORDER BY rb.bundesland_name, tickets_sold DESC;",
+      "generation_failure": null,
+      "generated_exec_error": null,
+      "gold_exec_error": null,
+      "compiled_and_ran": true,
+      "result_matches_gold": false,
+      "gen_time_s": 0.014535
+    }
+  ]
+}

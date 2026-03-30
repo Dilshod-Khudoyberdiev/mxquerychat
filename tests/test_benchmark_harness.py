@@ -16,13 +16,26 @@ Benchmark outputs are often used in presentations and thesis artifacts; parser a
 is therefore critical.
 """
 
+import shutil
+import uuid
 from pathlib import Path
 
-from tools.run_benchmark import build_summary, parse_questions_from_markdown
+from tools.run_benchmark import (
+    build_summary,
+    load_benchmark_cases,
+    parse_questions_from_markdown,
+)
 
 
-def test_parse_questions_from_markdown_supports_en_and_q(tmp_path: Path) -> None:
-    file_path = tmp_path / "questions.md"
+def _make_local_temp_dir() -> Path:
+    path = Path("outputs") / "test_tmp" / f"benchmark_{uuid.uuid4().hex}"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def test_parse_questions_from_markdown_supports_en_and_q() -> None:
+    temp_dir = _make_local_temp_dir()
+    file_path = temp_dir / "questions.md"
     file_path.write_text(
         "\n".join(
             [
@@ -33,14 +46,33 @@ def test_parse_questions_from_markdown_supports_en_and_q(tmp_path: Path) -> None
         ),
         encoding="utf-8",
     )
-    questions = parse_questions_from_markdown(file_path)
-    assert questions == ["Show revenue by month.", "Show top 10 states."]
+    try:
+        questions = parse_questions_from_markdown(file_path)
+        assert questions == ["Show revenue by month.", "Show top 10 states."]
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 def test_build_summary_calculates_counts_and_rates() -> None:
     results = [
-        {"outcome": "success", "generation_ms": 10, "execution_ms": 20},
-        {"outcome": "compile_fail", "generation_ms": 5, "execution_ms": 0},
+        {
+            "outcome": "success",
+            "generation_ms": 10,
+            "execution_ms": 20,
+            "compiled": True,
+            "exact_match": True,
+            "exec_correct": True,
+            "gold_sql": "SELECT 1",
+        },
+        {
+            "outcome": "compile_fail",
+            "generation_ms": 5,
+            "execution_ms": 0,
+            "compiled": False,
+            "exact_match": False,
+            "exec_correct": False,
+            "gold_sql": "SELECT 2",
+        },
         {"outcome": "safe_fail", "generation_ms": 7, "execution_ms": 0},
         {"outcome": "runtime_fail", "generation_ms": 8, "execution_ms": 12},
     ]
@@ -56,5 +88,31 @@ def test_build_summary_calculates_counts_and_rates() -> None:
     assert "prd_kpis" in summary
     assert "compile_rate" in summary["prd_kpis"]
     assert "safe_fail_rate" in summary["prd_kpis"]
+    assert summary["gold_metrics"]["gold_question_count"] == 2
+    assert summary["gold_metrics"]["exact_match_rate"] == 0.5
+    assert summary["gold_metrics"]["exec_acc"] == 0.5
+
+
+def test_load_benchmark_cases_from_csv() -> None:
+    temp_dir = _make_local_temp_dir()
+    csv_path = temp_dir / "benchmark.csv"
+    csv_path.write_text(
+        "\n".join(
+            [
+                "question,gold_sql,difficulty,category",
+                '"Show revenue by month.","SELECT 1",easy,time',
+                '"Show top states.","SELECT 2",hard,ranking',
+            ]
+        ),
+        encoding="utf-8",
+    )
+    try:
+        cases = load_benchmark_cases(csv_path)
+        assert len(cases) == 2
+        assert cases[0]["question"] == "Show revenue by month."
+        assert cases[0]["gold_sql"] == "SELECT 1"
+        assert cases[1]["difficulty"] == "hard"
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
 
 
