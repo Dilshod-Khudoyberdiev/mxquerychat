@@ -245,6 +245,57 @@ def train_from_examples(vn: MXQueryVanna, examples_df: pd.DataFrame) -> None:
             vn.train(question=question, sql=sql, documentation=description if description else None)
 
 
+def upsert_training_example(question: str, sql: str, description: str = "") -> None:
+    """
+    Insert or update a training example by question.
+    If a row with the same normalized question already exists, its SQL is updated.
+    Otherwise a new row is appended.
+    Preserves created_at; sets updated_at to now.
+    """
+    question = question.strip()
+    sql = sql.strip()
+    if not question or not sql:
+        return
+
+    existing = load_training_examples()
+    now_iso = _utc_now_iso()
+    target = normalize_question(question)
+
+    rows = []
+    replaced = False
+    for _, row in existing.iterrows():
+        q = str(row.get("question", "")).strip()
+        if normalize_question(q) == target:
+            rows.append({
+                "question": question,
+                "sql": sql,
+                "description": description or str(row.get("description", "")).strip(),
+                "created_at": str(row.get("created_at", "")).strip() or now_iso,
+                "updated_at": now_iso,
+            })
+            replaced = True
+        else:
+            rows.append({
+                "question": q,
+                "sql": str(row.get("sql", "")).strip(),
+                "description": str(row.get("description", "")).strip(),
+                "created_at": str(row.get("created_at", "")).strip(),
+                "updated_at": str(row.get("updated_at", "")).strip(),
+            })
+
+    if not replaced:
+        rows.append({
+            "question": question,
+            "sql": sql,
+            "description": description,
+            "created_at": now_iso,
+            "updated_at": now_iso,
+        })
+
+    out = pd.DataFrame(rows, columns=TRAINING_COLUMNS)
+    out.to_csv(TRAINING_CSV_PATH, index=False, encoding="utf-8-sig")
+
+
 def get_exact_training_sql(question: str, examples_df: pd.DataFrame) -> str | None:
     """
     Return SQL from CSV if question matches exactly after normalization.

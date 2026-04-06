@@ -63,6 +63,7 @@ from vannaagent import (
     normalize_training_for_save,
     save_training_examples,
     train_from_examples,
+    upsert_training_example,
 )
 
 DUCKDB_PATH = "mxquerychat.duckdb"
@@ -1267,6 +1268,19 @@ if view == "New Question":
             value=st.session_state.generated_sql,
             height=170,
         )
+        if st.button("Save to Training Examples", key="save_sql_to_training"):
+            q = st.session_state.question.strip()
+            s = st.session_state.generated_sql.strip()
+            upsert_training_example(q, s)
+            st.session_state.sql_cache[q.lower()] = s
+            record_metric_event(
+                "training_examples_saved",
+                row_count=1,
+                dropped_missing_question_or_sql=0,
+                duplicate_question_sql_rows=0,
+            )
+            st.success("Saved to training examples. Future queries will use this SQL.")
+
         explanation_key = build_explanation_cache_key(
             st.session_state.question,
             st.session_state.generated_sql,
