@@ -1471,7 +1471,12 @@ if view == "New Question":
                     rating="up",
                     has_result=True,
                 )
-                st.success("Feedback saved.")
+                q = st.session_state.question.strip()
+                s = st.session_state.generated_sql.strip()
+                if q and s:
+                    upsert_training_example(q, s)
+                    st.session_state.sql_cache[q.lower()] = s
+                st.success("Feedback saved and added to training examples.")
         with feedback_cols[1]:
             if st.button("Not Helpful", key="feedback_not_helpful", width="stretch"):
                 st.session_state.metrics_feedback_down += 1
