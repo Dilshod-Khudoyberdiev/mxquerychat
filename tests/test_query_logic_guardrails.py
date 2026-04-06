@@ -38,7 +38,7 @@ def test_guardrail_rejects_write_intent() -> None:
 
 def test_guardrail_rejects_off_topic_prompt() -> None:
     message = get_local_guardrail_message("Write me a poem")
-    assert "off-topic" in message.lower()
+    assert "database" in message.lower()
 
 
 def test_guardrail_allows_dataset_question() -> None:

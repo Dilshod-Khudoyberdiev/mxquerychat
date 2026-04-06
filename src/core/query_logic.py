@@ -27,16 +27,6 @@ from __future__ import annotations
 import re
 from typing import Any, Callable, MutableMapping, Optional
 
-OFF_TOPIC_PATTERNS = [
-    r"\bpoem\b",
-    r"\bsong\b",
-    r"\blyrics\b",
-    r"\bjoke\b",
-    r"\bweather\b",
-    r"\bhomework\b",
-    r"\bessay\b",
-]
-
 WRITE_PATTERNS = [
     r"\binsert\b",
     r"\bupdate\b",
@@ -44,6 +34,62 @@ WRITE_PATTERNS = [
     r"\bdrop\b",
     r"\balter\b",
     r"\btruncate\b",
+]
+
+_OUT_OF_SCOPE_MSG = (
+    "This chatbot is designed only for database and SQL-related questions. "
+    "Please ask about tables, queries, reports, filters, joins, or other database tasks."
+)
+
+# Patterns that unambiguously signal out-of-scope requests
+_OUT_OF_SCOPE_PATTERNS = [
+    # Greetings / small talk
+    r"\bhow are you\b",
+    r"^(hi+|hello|hey|sup|yo)\b",
+    r"\bgood (morning|afternoon|evening|night)\b",
+    r"^(thanks?|thank you)\b",
+    # Content creation
+    r"\b(write|compose|draft|create)\b.{0,40}\b(essay|thesis|paper|story|email|letter|poem|song|lyrics|joke|blog|article)\b",
+    r"\bessay\b",
+    r"\bthesis\b",
+    r"\bpoem\b",
+    r"\bsong\b",
+    r"\blyrics\b",
+    r"\bjoke\b",
+    r"\bstory\b",
+    # General knowledge / off-domain
+    r"\bweather\b",
+    r"\bhomework\b",
+    r"\bquantum\b",
+    r"\bimage classification\b",
+    r"\bdeep learning\b",
+    r"\bneural network\b",
+    r"\belection\b",
+    r"\brecipe\b",
+    r"\bcooking\b",
+    # Non-SQL coding
+    r"\bjavascript\b",
+    r"\bnode\.?js\b",
+    r"\bdjango\b",
+    r"\bflask\b",
+    r"\breact\b",
+    r"\bcss\b",
+    r"\bhtml\b",
+]
+
+# Positive signals that confirm the request is within DB/SQL scope
+_SCOPE_SIGNALS = [
+    "select", "from", "where", "join", "group by", "order by", "having", "with",
+    "sum(", "count(", "avg(", "min(", "max(",
+    "revenue", "umsatz", "sales", "verkauf",
+    "ticket", "tariff", "tarif", "tarifverbund",
+    "bundesland", "state", "region", "plz", "postal",
+    "month", "monat", "year", "jahr",
+    "total", "gesamt",
+    "table", "column", "schema", "query", "sql", "database", "filter",
+    "aggregate", "report", "meldestelle", "postleitzahl",
+    "how many", "how much", "ranking", "top", "bottom", "average",
+    "chart", "breakdown", "distribution",
 ]
 
 
@@ -570,21 +616,58 @@ def generate_sql_with_retry(
     return "", notes, "no_match"
 
 
+def _has_scope_signal(q: str) -> bool:
+    """Return True if the question contains at least one DB/SQL scope signal."""
+    return any(signal in q for signal in _SCOPE_SIGNALS)
+
+
 def get_local_guardrail_message(question: str) -> str:
-    """Fast local checks before calling the model."""
+    """
+    Classify the question and return a rejection/clarification message or "".
+
+    Categories (in priority order):
+    - Empty / too short     → prompt for more detail
+    - Write intent          → block with read-only message
+    - OUT_OF_SCOPE          → short rejection message
+    - UNCLEAR               → short clarification question
+    - IN_SCOPE (SQL/DB)     → "" (allow through to generation)
+    """
     if not question or not question.strip():
         return "Please enter a question."
 
-    q = question.lower()
+    q = question.strip().lower()
+
     if len(q.split()) < 2:
         return "Please write a fuller data question."
 
+    # Write intent — always block regardless of scope
     if any(re.search(pattern, q) for pattern in WRITE_PATTERNS):
         return "Read-only mode: write operations are not allowed."
 
-    if any(re.search(pattern, q) for pattern in OFF_TOPIC_PATTERNS):
-        return "Off-topic request. Please ask about the mxquerychat dataset."
+    # OUT_OF_SCOPE — unambiguous non-database request
+    if any(re.search(pattern, q) for pattern in _OUT_OF_SCOPE_PATTERNS):
+        return _OUT_OF_SCOPE_MSG
 
+    # UNCLEAR — short/vague with no scope signal
+    vague_only_phrases = [
+        "show me the data",
+        "give me the report",
+        "give me data",
+        "i need information",
+        "i need data",
+        "get me the data",
+        "i want to see",
+        "can you show",
+        "help me",
+    ]
+    is_vague = any(phrase in q for phrase in vague_only_phrases) or len(q.split()) <= 3
+    if is_vague and not _has_scope_signal(q):
+        return (
+            "Which data do you need? "
+            "Please specify the table, metric, filters, or time period you are interested in."
+        )
+
+    # IN_SCOPE — allow through
     return ""
 
 
