@@ -1,34 +1,12 @@
-﻿"""
+﻿"""Streamlit app: question input → SQL generation → safety check → DuckDB execution."""
 
-Purpose:
-This file is the main Streamlit application entry point for mxQueryChat. It defines the full
-interactive workflow from natural-language question input to SQL generation, safety checks,
-read-only execution on DuckDB, and result visualization.
-
-What This File Contains:
-- Page layout, navigation, and session-state initialization for the two pages: New Question and Training Data.
-- SQL generation orchestration with ordered strategies: session cache, training exact match,
-  deterministic template planner, and local-LLM fallback with retry.
-- Optional on-demand SQL explanation calls, result table + chart rendering, and user feedback capture.
-- Training-data editing UI, save/delete controls, and model retraining trigger.
-
-Key Invariants and Safety Guarantees:
-- Query execution is blocked unless read-only validation passes.
-- Complexity policy and hard row limits are applied before runtime execution.
-- Query execution is timeout-bounded to protect UI responsiveness.
-- Local failures are mapped into stable categories for consistent telemetry.
-
-How Other Modules Use and Support This File:
-This file imports reusable logic from src/core/query_logic.py, src/db/execution_policy.py,
-sql_guard.py, vannaagent.py, src/llm/sql_explainer.py, and src/utils/telemetry.py. In short,
-app.py orchestrates the user journey while delegating specialized responsibilities to focused modules.
-"""
-
+import json
 import re
 import time
 import hashlib
 import os
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -38,6 +16,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from src.core import query_logic
+from src.core.query_logic import extract_requested_years, nearest_year
 from src.db.data_source import (
     get_active_source_info,
     refresh_schema_cache,
@@ -49,10 +28,6 @@ from src.db.execution_policy import (
     extract_complexity_policy_details,
     run_query_with_timeout,
     validate_sql_complexity,
-)
-from src.llm.sql_explainer import (
-    build_explanation_cache_key,
-    maybe_generate_explanation,
 )
 from src.utils.telemetry import configure_app_logging, record_metric_event
 from sql_guard import validate_read_only_sql
@@ -70,13 +45,9 @@ DUCKDB_PATH = "mxquerychat.duckdb"
 ICON_PATH = Path("docs/images/icon.png")
 LOGO_PATH = Path("docs/images/logo.png")
 MODEL_TIMEOUT_SECONDS = 65
-OLLAMA_BASE_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434")
-EXPLANATION_MODEL = os.getenv("EXPLANATION_MODEL", os.getenv("OLLAMA_MODEL", "mistral"))
-try:
-    EXPLANATION_TIMEOUT_SECONDS = int(os.getenv("EXPLANATION_TIMEOUT_SECONDS", "35"))
-except ValueError:
-    EXPLANATION_TIMEOUT_SECONDS = 35
 EXECUTION_POLICY = ExecutionPolicy()
+HISTORY_FILE = "chat_history.json"
+HISTORY_MAX_ENTRIES = 25
 configure_app_logging()
 
 EXAMPLE_QUESTIONS = [
@@ -148,23 +119,14 @@ def get_available_years() -> list[int]:
         con.close()
 
 
-def extract_requested_years(question: str) -> list[int]:
-    return [int(y) for y in re.findall(r"\b(19\d{2}|20\d{2})\b", question or "")]
-
-
-def nearest_year(target_year: int, available_years: list[int]) -> Optional[int]:
-    if not available_years:
-        return None
-    return min(available_years, key=lambda value: abs(value - target_year))
-
-
 def build_suggested_questions(question: str) -> list[str]:
-    """Build 'Did you mean' prompts using available years."""
+    """Return up to 4 'Did you mean?' suggestions anchored to years available in the database."""
     suggestions: list[str] = []
     years = get_available_years()
     requested = extract_requested_years(question)
     q_lower = (question or "").lower()
 
+    # Use the latest year by default; snap to the nearest available one if the question named a year.
     default_year = max(years) if years else 2025
     if requested and years:
         default_year = nearest_year(requested[0], years) or default_year
@@ -230,36 +192,16 @@ def get_data_availability_message(question: str) -> tuple[str, list[str]]:
     return "", []
 
 
-def extract_sql_only(raw_text: str) -> str:
-    """
-    Keep only SQL from model output.
-    Returns empty string if SQL cannot be extracted.
-    """
-    if not raw_text:
-        return ""
-
-    text = raw_text.strip()
-    code_block = re.search(r"```sql\s*(.*?)```", text, re.IGNORECASE | re.DOTALL)
-    if code_block:
-        return code_block.group(1).strip().rstrip(";")
-
-    select_or_with = re.search(r"\b(select|with)\b[\s\S]*", text, re.IGNORECASE)
-    if select_or_with:
-        candidate = select_or_with.group(0).strip()
-        candidate = re.sub(r"```$", "", candidate).strip()
-        return candidate.rstrip(";")
-
-    return ""
-
-
 def validate_sql_compiles(sql: str) -> str:
     """
     Return empty string if SQL compiles against DuckDB schema, else error message.
+    Uses EXPLAIN as a dry-run parse: validates table/column names without executing the query.
     """
     if not sql:
         return "No SQL generated."
     con = duckdb.connect(DUCKDB_PATH, read_only=True)
     try:
+        # EXPLAIN parses and plans without executing — safe for compile-time validation.
         con.execute(f"EXPLAIN {sql}")
         return ""
     except Exception as exc:
@@ -268,499 +210,8 @@ def validate_sql_compiles(sql: str) -> str:
         con.close()
 
 
-def extract_requested_year(question: str) -> Optional[int]:
-    years = extract_requested_years(question)
-    if not years:
-        return None
-    return years[0]
-
-
-def contains_any(text: str, terms: list[str]) -> bool:
-    q = (text or "").lower()
-    return any(term in q for term in terms)
-
-
-def build_year_filter(question: str, alias: str = "tv") -> str:
-    requested_year = extract_requested_year(question)
-    if requested_year is None:
-        return ""
-    return f"WHERE {alias}.jahr = {requested_year}"
-
-
-def build_template_sql(question: str) -> tuple[str, str]:
-    """
-    Deterministic planner for common analytics questions.
-    Returns (sql, note). Empty sql means no template matched.
-    """
-    q = (question or "").lower()
-    wants_revenue = contains_any(q, ["revenue", "umsatz", "sales"])
-    wants_state = contains_any(q, ["state", "federal state", "bundesland", "states"])
-    wants_month = contains_any(q, ["month", "monat", "monthly"])
-    wants_ticket_type = contains_any(
-        q, ["ticket type", "ticket types", "ticketart", "ticketarten", "ticket product"]
-    )
-    wants_tariff = contains_any(
-        q,
-        [
-            "tariff",
-            "tariff association",
-            "tariff associations",
-            "tarif",
-            "tarifverbund",
-            "tarifverbunde",
-            "tarifverbuende",
-            "verbund",
-            "association",
-        ],
-    )
-    wants_total = contains_any(q, ["total", "gesamt", "overall"])
-
-    # Revenue by tariff association + state + month
-    if wants_revenue and wants_tariff and wants_state and wants_month:
-        sql = f"""
-SELECT
-    tv.jahr,
-    tv.monat,
-    t.name AS tarifverbund_name,
-    rb.bundesland_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN tarifverbuende t
-    ON tv.tarifverbund_id = t.tarifverbund_id
-JOIN postleitzahlen p
-    ON CAST(tv.plz AS VARCHAR) = p.plz
-JOIN regionen_bundesland rb
-    ON p.bundesland_code2 = rb.bundesland_code2
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, tv.monat, t.name, rb.bundesland_name
-ORDER BY tv.jahr, tv.monat, t.name, rb.bundesland_name
-""".strip()
-        return (
-            sql,
-            "Template planner used: revenue by tariff association, state, and month "
-            "(ticket_verkaeufe -> tarifverbuende + postleitzahlen -> regionen_bundesland).",
-        )
-
-    # Revenue by tariff association + state
-    if wants_revenue and wants_tariff and wants_state:
-        sql = f"""
-SELECT
-    tv.jahr,
-    t.name AS tarifverbund_name,
-    rb.bundesland_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN tarifverbuende t
-    ON tv.tarifverbund_id = t.tarifverbund_id
-JOIN postleitzahlen p
-    ON CAST(tv.plz AS VARCHAR) = p.plz
-JOIN regionen_bundesland rb
-    ON p.bundesland_code2 = rb.bundesland_code2
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, t.name, rb.bundesland_name
-ORDER BY tv.jahr, t.name, umsatz_eur DESC
-""".strip()
-        return (
-            sql,
-            "Template planner used: revenue by tariff association and state "
-            "(ticket_verkaeufe -> tarifverbuende + postleitzahlen -> regionen_bundesland).",
-        )
-
-    # Revenue by tariff association + month
-    if wants_revenue and wants_tariff and wants_month:
-        sql = f"""
-SELECT
-    tv.jahr,
-    tv.monat,
-    t.name AS tarifverbund_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN tarifverbuende t
-    ON tv.tarifverbund_id = t.tarifverbund_id
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, tv.monat, t.name
-ORDER BY tv.jahr, tv.monat, umsatz_eur DESC
-""".strip()
-        return (
-            sql,
-            "Template planner used: revenue by tariff association and month "
-            "(ticket_verkaeufe -> tarifverbuende).",
-        )
-
-    # Revenue by tariff association
-    if wants_revenue and wants_tariff:
-        sql = f"""
-SELECT
-    tv.jahr,
-    t.name AS tarifverbund_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN tarifverbuende t
-    ON tv.tarifverbund_id = t.tarifverbund_id
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, t.name
-ORDER BY tv.jahr, umsatz_eur DESC
-""".strip()
-        return (
-            sql,
-            "Template planner used: revenue by tariff association "
-            "(ticket_verkaeufe -> tarifverbuende).",
-        )
-
-    # Revenue by state + month
-    if wants_revenue and wants_state and wants_month:
-        sql = f"""
-SELECT
-    tv.jahr,
-    tv.monat,
-    rb.bundesland_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN postleitzahlen p
-    ON CAST(tv.plz AS VARCHAR) = p.plz
-JOIN regionen_bundesland rb
-    ON p.bundesland_code2 = rb.bundesland_code2
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, tv.monat, rb.bundesland_name
-ORDER BY tv.jahr, tv.monat, rb.bundesland_name
-""".strip()
-        return (
-            sql,
-            "Template planner used: revenue by state and month "
-            "(ticket_verkaeufe -> postleitzahlen -> regionen_bundesland).",
-        )
-
-    # Revenue by state
-    if wants_revenue and wants_state:
-        sql = f"""
-SELECT
-    tv.jahr,
-    rb.bundesland_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN postleitzahlen p
-    ON CAST(tv.plz AS VARCHAR) = p.plz
-JOIN regionen_bundesland rb
-    ON p.bundesland_code2 = rb.bundesland_code2
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, rb.bundesland_name
-ORDER BY tv.jahr, umsatz_eur DESC
-""".strip()
-        return (
-            sql,
-            "Template planner used: revenue by state "
-            "(ticket_verkaeufe -> postleitzahlen -> regionen_bundesland).",
-        )
-
-    # Revenue by month
-    if wants_revenue and wants_month:
-        sql = f"""
-SELECT
-    tv.jahr,
-    tv.monat,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, tv.monat
-ORDER BY tv.jahr, tv.monat
-""".strip()
-        return (
-            sql,
-            "Template planner used: revenue by month (ticket_verkaeufe).",
-        )
-
-    # Revenue by ticket type
-    if wants_revenue and wants_ticket_type:
-        sql = f"""
-SELECT
-    tv.jahr,
-    tp.ticket_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN ticket_produkte tp
-    ON tv.ticket_code = tp.ticket_code
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, tp.ticket_name
-ORDER BY tv.jahr, umsatz_eur DESC
-""".strip()
-        return (
-            sql,
-            "Template planner used: revenue by ticket type "
-            "(ticket_verkaeufe -> ticket_produkte).",
-        )
-
-    # Total revenue
-    if wants_revenue and wants_total:
-        sql = f"""
-SELECT
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-{build_year_filter(question, alias="tv")}
-""".strip()
-        return (sql, "Template planner used: total revenue (ticket_verkaeufe).")
-
-    return "", ""
-
-
-def extract_did_you_mean_candidates(error_text: str, schema_tree: dict) -> list[str]:
-    if not error_text:
-        return []
-    quoted = re.findall(r'"([^"]+)"', error_text)
-    schema_tables = set(schema_tree.keys())
-    return [item for item in quoted if item in schema_tables]
-
-
-def guess_relevant_tables(question: str, schema_tree: dict) -> list[str]:
-    q_lower = (question or "").lower()
-    candidates = []
-
-    if any(token in q_lower for token in ["revenue", "umsatz", "sales", "verkauf"]):
-        candidates.extend(["ticket_verkaeufe", "plan_umsatz", "sonstige_angebote"])
-    if any(token in q_lower for token in ["state", "bundesland", "region"]):
-        candidates.extend(["postleitzahlen", "regionen_bundesland"])
-    if any(token in q_lower for token in ["plz", "postal", "postleitzahl"]):
-        candidates.append("postleitzahlen")
-    if any(token in q_lower for token in ["ticket", "type", "produkt"]):
-        candidates.extend(["ticket_verkaeufe", "ticket_produkte"])
-    if any(token in q_lower for token in ["tariff", "tarif", "association", "verbund"]):
-        candidates.append("tarifverbuende")
-    if any(token in q_lower for token in ["meldestelle", "reporting office"]):
-        candidates.append("meldestellen")
-
-    # Keep order, remove duplicates, only existing tables.
-    result = []
-    seen = set()
-    for table in candidates:
-        if table in schema_tree and table not in seen:
-            seen.add(table)
-            result.append(table)
-
-    if not result:
-        # fallback to core fact + dimension tables
-        for table in [
-            "ticket_verkaeufe",
-            "postleitzahlen",
-            "regionen_bundesland",
-            "ticket_produkte",
-            "tarifverbuende",
-        ]:
-            if table in schema_tree and table not in seen:
-                seen.add(table)
-                result.append(table)
-
-    return result[:8]
-
-
-def build_join_hints(question: str) -> str:
-    q_lower = (question or "").lower()
-    hints = []
-
-    if any(token in q_lower for token in ["state", "bundesland", "region"]):
-        hints.append(
-            "For state-level analytics, join "
-            "ticket_verkaeufe.plz = postleitzahlen.plz, then "
-            "postleitzahlen.bundesland_code2 = regionen_bundesland.bundesland_code2."
-        )
-    if any(token in q_lower for token in ["ticket", "type", "produkt"]):
-        hints.append(
-            "For ticket type details, join "
-            "ticket_verkaeufe.ticket_code = ticket_produkte.ticket_code."
-        )
-    if any(token in q_lower for token in ["tariff", "tarif", "association", "verbund"]):
-        hints.append(
-            "For tariff association details, join "
-            "ticket_verkaeufe.tarifverbund_id = tarifverbuende.tarifverbund_id."
-        )
-    if any(token in q_lower for token in ["meldestelle", "reporting office"]):
-        hints.append(
-            "For reporting office details, join "
-            "ticket_verkaeufe.meldestelle_code = meldestellen.meldestelle_code."
-        )
-
-    return "\n".join(f"- {hint}" for hint in hints)
-
-
-def build_retry_prompt(
-    question: str, bad_sql: str, compile_error: str, schema_tree: dict
-) -> str:
-    relevant_tables = guess_relevant_tables(question, schema_tree)
-    did_you_mean_tables = extract_did_you_mean_candidates(compile_error, schema_tree)
-    for table in did_you_mean_tables:
-        if table not in relevant_tables:
-            relevant_tables.append(table)
-
-    table_context_lines = []
-    for table in relevant_tables:
-        cols = schema_tree.get(table, [])
-        col_names = ", ".join(col for col, _ in cols[:18])
-        table_context_lines.append(f"- {table}({col_names})")
-    table_context = "\n".join(table_context_lines)
-
-    join_hints = build_join_hints(question)
-
-    return (
-        "Generate DuckDB SQL for mxquerychat.\n"
-        "Use ONLY the tables and columns listed below.\n"
-        "Return ONLY SQL (no explanation, no markdown).\n"
-        "Use SELECT or WITH only.\n\n"
-        f"Original question:\n{question}\n\n"
-        f"Previous SQL failed:\n{bad_sql}\n\n"
-        f"DuckDB error:\n{compile_error}\n\n"
-        "Available relevant tables and columns:\n"
-        f"{table_context}\n\n"
-        "Join hints:\n"
-        f"{join_hints if join_hints else '- Use the most suitable joins based on common keys.'}\n"
-    )
-
-
-def build_first_pass_prompt(question: str, schema_tree: dict) -> str:
-    """First model call prompt: schema-guided from the start for higher accuracy."""
-    relevant_tables = guess_relevant_tables(question, schema_tree)
-    table_context_lines = []
-    for table in relevant_tables:
-        cols = schema_tree.get(table, [])
-        col_names = ", ".join(col for col, _ in cols[:20])
-        table_context_lines.append(f"- {table}({col_names})")
-    table_context = "\n".join(table_context_lines)
-    join_hints = build_join_hints(question)
-
-    return (
-        "Generate DuckDB SQL for mxquerychat.\n"
-        "Use ONLY the tables and columns listed below.\n"
-        "Return ONLY SQL (no explanation, no markdown).\n"
-        "Use SELECT or WITH only.\n\n"
-        f"Question:\n{question}\n\n"
-        "Available relevant tables and columns:\n"
-        f"{table_context}\n\n"
-        "Join hints:\n"
-        f"{join_hints if join_hints else '- Use the most suitable joins based on common keys.'}\n"
-    )
-
-
-def build_final_retry_prompt(
-    question: str, bad_sql: str, compile_error: str, schema_tree: dict
-) -> str:
-    """Final strict prompt: force SQL-only or explicit NO_MATCH token."""
-    relevant_tables = guess_relevant_tables(question, schema_tree)
-    table_context_lines = []
-    for table in relevant_tables:
-        cols = schema_tree.get(table, [])
-        col_names = ", ".join(col for col, _ in cols[:20])
-        table_context_lines.append(f"- {table}({col_names})")
-    table_context = "\n".join(table_context_lines)
-    join_hints = build_join_hints(question)
-
-    return (
-        "You are generating SQL for mxquerychat on DuckDB.\n"
-        "Rules:\n"
-        "1) Use ONLY the listed tables and columns.\n"
-        "2) Output ONLY one SQL query using SELECT/WITH, no markdown.\n"
-        "3) If the question cannot be answered from this schema, output exactly: NO_MATCH\n\n"
-        f"Question:\n{question}\n\n"
-        f"Previous failed SQL:\n{bad_sql if bad_sql else '-- no valid SQL produced --'}\n\n"
-        f"Compilation/validation issue:\n{compile_error}\n\n"
-        "Available tables and columns:\n"
-        f"{table_context}\n\n"
-        "Join hints:\n"
-        f"{join_hints if join_hints else '- Use the most suitable joins based on shared keys.'}\n"
-    )
-
-
-def generate_sql_with_retry(vn, question_text: str) -> tuple[str, list[str], str]:
-    """
-    Returns: (sql, notes, error_code)
-    sql is empty when no valid SQL could be generated.
-    error_code: "", "timeout", "model_error", "no_match"
-    """
-    notes: list[str] = []
-    schema_tree = get_schema_tree()
-
-    def run_attempt(prompt_text: str, attempt_name: str) -> tuple[str, str, str]:
-        """
-        Returns: (sql, status, detail)
-        status: "ok", "timeout", "model_error", "non_sql", "no_match", "compile_error"
-        """
-        raw_sql, call_error = run_with_timeout(
-            lambda: vn.generate_sql(prompt_text),
-            MODEL_TIMEOUT_SECONDS,
-        )
-        if call_error:
-            call_error_text = str(call_error)
-            if "timeout" in call_error_text.lower():
-                notes.append(f"{attempt_name}: model timeout ({call_error_text}).")
-                return "", "timeout", call_error_text
-            notes.append(f"{attempt_name}: model error ({call_error_text}).")
-            return "", "model_error", call_error_text
-
-        raw_text = (raw_sql or "").strip()
-        if raw_text.upper() == "NO_MATCH":
-            notes.append(f"{attempt_name}: model returned NO_MATCH.")
-            return "", "no_match", "NO_MATCH"
-
-        sql = extract_sql_only(raw_text)
-        if not sql:
-            notes.append(f"{attempt_name}: model returned non-SQL output.")
-            return "", "non_sql", raw_text[:120]
-
-        compile_error = validate_sql_compiles(sql)
-        if compile_error:
-            notes.append(
-                f"{attempt_name}: SQL validation failed, trying stricter prompt."
-            )
-            return sql, "compile_error", compile_error
-
-        notes.append(f"{attempt_name}: valid SQL generated.")
-        return sql, "ok", ""
-
-    first_prompt = build_first_pass_prompt(question_text, schema_tree)
-    sql_1, status_1, detail_1 = run_attempt(
-        first_prompt, "Attempt 1 (schema-guided)"
-    )
-    if status_1 == "ok":
-        return sql_1, notes, ""
-    if status_1 == "timeout":
-        return "", notes, "timeout"
-    if status_1 == "model_error":
-        return "", notes, "model_error"
-
-    retry_prompt = build_retry_prompt(
-        question_text,
-        sql_1 or "-- no valid SQL produced --",
-        detail_1 or "No compilable SQL in attempt 1.",
-        schema_tree,
-    )
-    sql_2, status_2, detail_2 = run_attempt(
-        retry_prompt, "Attempt 2 (schema-aware retry)"
-    )
-    if status_2 == "ok":
-        notes.append("Resolved using related tables and join hints.")
-        return sql_2, notes, ""
-    if status_2 == "timeout":
-        return "", notes, "timeout"
-    if status_2 == "model_error":
-        return "", notes, "model_error"
-
-    final_prompt = build_final_retry_prompt(
-        question_text,
-        sql_2 or sql_1,
-        detail_2 or detail_1 or "No compilable SQL in previous attempts.",
-        schema_tree,
-    )
-    sql_3, status_3, _ = run_attempt(final_prompt, "Attempt 3 (final strict attempt)")
-    if status_3 == "ok":
-        notes.append("Resolved on final strict attempt.")
-        return sql_3, notes, ""
-    if status_3 == "timeout":
-        return "", notes, "timeout"
-    if status_3 == "model_error":
-        return "", notes, "model_error"
-
-    notes.append("All generation strategies failed: no reliable SQL from available schema.")
-    return "", notes, "no_match"
-
-
 def run_with_timeout(fn, timeout_seconds: int):
-    """Run function with timeout so UI does not hang forever."""
+    """Run fn in a thread; return (result, None) or (None, error) on timeout/exception."""
     executor = ThreadPoolExecutor(max_workers=1)
     future = executor.submit(fn)
     try:
@@ -772,35 +223,6 @@ def run_with_timeout(fn, timeout_seconds: int):
         return None, str(exc)
     finally:
         executor.shutdown(wait=False, cancel_futures=True)
-
-
-def get_local_guardrail_message(question: str) -> str:
-    """Fast local checks before calling the model."""
-    if not question or not question.strip():
-        return "Please enter a question."
-
-    q = question.lower()
-    if len(q.split()) < 2:
-        return "Please write a fuller data question."
-
-    if any(re.search(p, q) for p in WRITE_PATTERNS):
-        return "Read-only mode: write operations are not allowed."
-
-    if any(re.search(p, q) for p in OFF_TOPIC_PATTERNS):
-        return "Off-topic request. Please ask about the mxquerychat dataset."
-
-    return ""
-
-
-def run_read_only_query(sql: str) -> tuple[pd.DataFrame, float]:
-    con = duckdb.connect(DUCKDB_PATH, read_only=True)
-    try:
-        start = time.time()
-        df = con.execute(sql).df()
-        elapsed = time.time() - start
-        return df, elapsed
-    finally:
-        con.close()
 
 
 def try_show_bar_chart(df: pd.DataFrame) -> None:
@@ -818,15 +240,83 @@ def try_show_bar_chart(df: pd.DataFrame) -> None:
     st.bar_chart(df[[x_col, y_col]].set_index(x_col))
 
 
+def load_chat_history() -> list:
+    if not os.path.exists(HISTORY_FILE):
+        return []
+    try:
+        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return []
+
+
+def _save_chat_history(history: list) -> None:
+    try:
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+
+def add_history_entry(question: str, generated_sql: str, generation_notes: list) -> str:
+    """Prepend a new entry; return its id."""
+    entry_id = f"{time.time():.6f}"
+    entry = {
+        "id": entry_id,
+        "timestamp": datetime.now().isoformat(),
+        "question": question,
+        "generated_sql": generated_sql,
+        "generation_notes": list(generation_notes),
+        "result_rows": None,
+        "result_elapsed": None,
+        "result_data": None,
+    }
+    history = load_chat_history()
+    history.insert(0, entry)
+    history = history[:HISTORY_MAX_ENTRIES]
+    _save_chat_history(history)
+    st.session_state.chat_history = history
+    return entry_id
+
+
+def update_history_with_result(entry_id: str, df: pd.DataFrame, elapsed: float) -> None:
+    """Attach query results to an existing history entry."""
+    history = load_chat_history()
+    for entry in history:
+        if entry["id"] == entry_id:
+            entry["result_rows"] = len(df)
+            entry["result_elapsed"] = elapsed
+            # to_json handles numpy/datetime types; parse back to plain Python for storage
+            entry["result_data"] = json.loads(df.head(500).to_json(orient="records"))
+            break
+    _save_chat_history(history)
+    st.session_state.chat_history = history
+
+
 def init_state():
+    """
+    Initialise all session-state keys with their defaults on first load.
+    Keys that already exist are left untouched, so partial state survives reruns.
+    """
     defaults = {
+        # Active question and its generated SQL (both editable by the user).
         "question": "",
         "generated_sql": "",
+
+        # Last successful query result and its wall-clock execution time.
         "last_result_df": None,
         "last_result_elapsed": None,
+
+        # Lowercase question → SQL; populated on every successful generation for instant re-use.
         "sql_cache": {},
+
+        # "Did you mean?" suggestions shown after a failed generation.
         "suggestions": [],
+
+        # Trace of how the current SQL was produced (cache / template / LLM).
         "generation_notes": [],
+
+        # Session-scoped counters written to the sidebar metrics panel.
         "metrics_questions_total": 0,
         "metrics_generation_success": 0,
         "metrics_generation_failed": 0,
@@ -836,12 +326,20 @@ def init_state():
         "metrics_query_failed": 0,
         "metrics_feedback_up": 0,
         "metrics_feedback_down": 0,
+
+        # Feedback deduplication: track last rating and which question it was for.
         "feedback_last_rating": None,
         "feedback_last_question_hash": "no_question",
+
         "generated_explanation": "",
-        "explanation_status": "idle",
-        "explanation_cache": {},
+
+        # Working copy of the training CSV for the editor; None until the page is opened.
         "training_working_df": None,
+
+        # Chat history loaded from disk; updated after every Send and Run Query.
+        "chat_history": load_chat_history(),
+        "history_selected_id": None,
+        "history_current_entry_id": None,
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -853,6 +351,7 @@ def reset_question_flow():
 
 
 def build_question_hash(question: str) -> str:
+    """16-char SHA-256 prefix of the question, used for feedback deduplication."""
     text = (question or "").strip()
     if not text:
         return "no_question"
@@ -968,7 +467,7 @@ with top_right:
 if LOGO_PATH.exists():
     st.sidebar.image(str(LOGO_PATH), width="stretch")
 st.sidebar.header("Navigation")
-view = st.sidebar.radio("Choose page", ["New Question", "Training Data"])
+view = st.sidebar.radio("Choose page", ["New Question", "Training Data", "Chat History"])
 st.sidebar.markdown("---")
 st.sidebar.subheader("Session Metrics")
 st.sidebar.metric("Questions", st.session_state.metrics_questions_total)
@@ -1013,6 +512,27 @@ if view == "New Question":
                     st.caption(f"{column_name} ({data_type})")
         except Exception as exc:
             st.error(f"Schema load failed: {exc}")
+
+if view == "Chat History":
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("Recent Queries")
+    _sidebar_history = st.session_state.chat_history
+    if not _sidebar_history:
+        st.sidebar.caption("No history yet.")
+    else:
+        for _h_entry in _sidebar_history:
+            _h_ts = (_h_entry.get("timestamp") or "")[:16].replace("T", " ")
+            _h_q = (_h_entry.get("question") or "")[:38]
+            _h_label = f"{_h_ts}\n{_h_q}{'…' if len(_h_entry.get('question','')) > 38 else ''}"
+            _h_active = st.session_state.history_selected_id == _h_entry["id"]
+            if st.sidebar.button(
+                _h_label,
+                key=f"sidebar_h_{_h_entry['id']}",
+                use_container_width=True,
+                type="primary" if _h_active else "secondary",
+            ):
+                st.session_state.history_selected_id = _h_entry["id"]
+                st.rerun()
 
 if view == "New Question":
     st.markdown("### Step 1: Ask a data question")
@@ -1090,8 +610,10 @@ if view == "New Question":
             st.warning(local_block)
         else:
             question_text = st.session_state.question.strip()
-            cache_key = question_text.lower()
-            handled_fast_path = False
+            cache_key = question_text.lower()  # lowercase so casing differences don't create misses
+            handled_fast_path = False  # set True by whichever generation tier succeeds first
+
+            # Early-out: reject years missing from the database before hitting the LLM.
             availability_message, availability_suggestions = get_data_availability_message(
                 question_text
             )
@@ -1256,6 +778,14 @@ if view == "New Question":
                             duration_ms=int((time.time() - generation_started_at) * 1000),
                         )
 
+        # Save this interaction to persistent chat history.
+        _hist_id = add_history_entry(
+            st.session_state.question,
+            st.session_state.generated_sql,
+            st.session_state.generation_notes,
+        )
+        st.session_state.history_current_entry_id = _hist_id
+
     if st.session_state.generation_notes:
         st.markdown("### How query was built")
         for note in st.session_state.generation_notes:
@@ -1271,7 +801,9 @@ if view == "New Question":
         if st.button("Save to Training Examples", key="save_sql_to_training"):
             q = st.session_state.question.strip()
             s = st.session_state.generated_sql.strip()
+            # Upsert by normalised question — re-saving after an edit updates the row, not duplicates.
             upsert_training_example(q, s)
+            # Refresh session cache so the corrected SQL is used on the next re-ask.
             st.session_state.sql_cache[q.lower()] = s
             record_metric_event(
                 "training_examples_saved",
@@ -1281,89 +813,28 @@ if view == "New Question":
             )
             st.success("Saved to training examples. Future queries will use this SQL.")
 
-        explanation_key = build_explanation_cache_key(
-            st.session_state.question,
-            st.session_state.generated_sql,
-        )
-        st.session_state.generated_explanation = st.session_state.explanation_cache.get(
-            explanation_key, ""
-        )
-        if st.session_state.generated_explanation:
-            st.session_state.explanation_status = "ready"
-        elif st.session_state.explanation_status == "ready":
-            st.session_state.explanation_status = "idle"
-
         with st.expander("Explain this SQL", expanded=False):
-            st.caption(
-                "Optional: generate a short SQL explanation using local Ollama. "
-                "This does not affect SQL execution."
-            )
-            if st.button("Generate Explanation", key="generate_explanation"):
-                started = time.time()
-                explanation_text, explanation_status, cache_hit = (
-                    maybe_generate_explanation(
-                        triggered=True,
-                        question=st.session_state.question,
-                        sql=st.session_state.generated_sql,
-                        cache=st.session_state.explanation_cache,
-                        model=EXPLANATION_MODEL,
-                        ollama_url=OLLAMA_BASE_URL,
-                        timeout_seconds=EXPLANATION_TIMEOUT_SECONDS,
-                    )
+            if st.button("Explain", key="explain_sql"):
+                st.session_state.generated_explanation = query_logic.explain_sql_brief(
+                    st.session_state.generated_sql
                 )
-                st.session_state.generated_explanation = explanation_text
-                st.session_state.explanation_status = explanation_status
-                duration_ms = int((time.time() - started) * 1000)
-
-                if explanation_status == "ready":
-                    record_metric_event(
-                        "sql_explanation",
-                        success=True,
-                        path="on_demand_ollama",
-                        cache_hit=cache_hit,
-                        duration_ms=duration_ms,
-                    )
-                else:
-                    failure_category = (
-                        "timeout"
-                        if explanation_status == "timeout"
-                        else "runtime_fail"
-                    )
-                    record_metric_event(
-                        "sql_explanation",
-                        success=False,
-                        path="on_demand_ollama",
-                        failure_reason=explanation_status,
-                        failure_category=failure_category,
-                        duration_ms=duration_ms,
-                    )
-
-            if st.session_state.explanation_status == "ready" and st.session_state.generated_explanation:
-                st.success("Explanation ready.")
-                st.write(st.session_state.generated_explanation)
-            elif st.session_state.explanation_status == "timeout":
-                st.info(
-                    "Explanation unavailable: local model timeout. "
-                    "You can still run the SQL query. "
-                    "Try again after Ollama warms up, or increase EXPLANATION_TIMEOUT_SECONDS."
-                )
-            elif st.session_state.explanation_status in {"model_error", "empty_response"}:
-                st.info(
-                    "Explanation unavailable right now from local model. "
-                    "You can still run the SQL query."
-                )
+            if st.session_state.get("generated_explanation"):
+                st.info(st.session_state.generated_explanation)
 
     if st.session_state.generated_sql:
         st.markdown("### Step 3: Safety check")
+        # First gate: reject any SQL that is not a plain SELECT/WITH (no writes, no DDL).
         is_ok, guard_message = validate_read_only_sql(st.session_state.generated_sql)
         if is_ok:
             st.success("Read-only check passed.")
         else:
             st.error(guard_message)
 
+        # Run Query is disabled when the read-only check fails so the button cannot be clicked.
         if st.button("Run Query", disabled=not is_ok):
             try:
                 with st.spinner("Running query..."):
+                            # Re-validate inside the handler in case session state changed between renders.
                     is_allowed, _, run_message = query_logic.run_query_if_read_only(
                         st.session_state.generated_sql,
                         validate_read_only_sql,
@@ -1383,6 +854,7 @@ if view == "New Question":
                         st.error(f"Failure type: blocked_read_only. {run_message}")
                         st.stop()
 
+                    # Complexity gate: block by join count, CTE count, and total SQL length.
                     complexity_ok, complexity_message = validate_sql_complexity(
                         st.session_state.generated_sql,
                         EXECUTION_POLICY,
@@ -1404,10 +876,13 @@ if view == "New Question":
                         st.error(f"Failure type: blocked_complexity. {complexity_message}")
                         st.stop()
 
+                    # Wrap the user's query in an outer SELECT … LIMIT to cap returned rows.
+                    # This prevents accidental full-table scans from flooding the UI.
                     limited_sql = apply_row_limit(
                         st.session_state.generated_sql,
                         EXECUTION_POLICY.max_rows,
                     )
+                    # Execute in a subprocess with a hard timeout so a slow query cannot hang the app.
                     df, elapsed, exec_error = run_query_with_timeout(
                         DUCKDB_PATH,
                         limited_sql,
@@ -1436,6 +911,10 @@ if view == "New Question":
                     )
                     st.session_state.last_result_df = df
                     st.session_state.last_result_elapsed = elapsed
+                    if st.session_state.get("history_current_entry_id"):
+                        update_history_with_result(
+                            st.session_state.history_current_entry_id, df, elapsed
+                        )
             except Exception as exc:
                 failure_reason = str(exc)
                 failure_category = query_logic.classify_execution_failure(failure_reason)
@@ -1474,6 +953,7 @@ if view == "New Question":
                 q = st.session_state.question.strip()
                 s = st.session_state.generated_sql.strip()
                 if q and s:
+                    # Good result confirmed — persist to training CSV and refresh session cache.
                     upsert_training_example(q, s)
                     st.session_state.sql_cache[q.lower()] = s
                 st.success("Feedback saved and added to training examples.")
@@ -1601,3 +1081,64 @@ elif view == "Training Data":
             st.success("Training complete.")
 
 
+elif view == "Chat History":
+    st.markdown("### Chat History")
+    history = st.session_state.chat_history
+    if not history:
+        st.info("No history yet. Ask a question on the New Question page to get started.")
+    else:
+        selected_id = st.session_state.history_selected_id
+        selected = next((e for e in history if e["id"] == selected_id), None)
+
+        if selected is None:
+            # List view — newest first (already ordered)
+            for entry in history:
+                ts = (entry.get("timestamp") or "")[:16].replace("T", " ")
+                q = entry.get("question") or ""
+                has_sql = bool(entry.get("generated_sql"))
+                has_result = entry.get("result_rows") is not None
+                with st.container(border=True):
+                    c1, c2 = st.columns([0.85, 0.15])
+                    with c1:
+                        st.write(f"**{q[:100]}{'…' if len(q) > 100 else ''}**")
+                        st.caption(
+                            f"{ts} | SQL: {'yes' if has_sql else 'no'}"
+                            + (f" | {entry['result_rows']} rows" if has_result else "")
+                        )
+                    with c2:
+                        if st.button("Open", key=f"open_{entry['id']}"):
+                            st.session_state.history_selected_id = entry["id"]
+                            st.rerun()
+        else:
+            # Detail view
+            if st.button("← Back"):
+                st.session_state.history_selected_id = None
+                st.rerun()
+
+            ts = (selected.get("timestamp") or "")[:19].replace("T", " ")
+            st.caption(f"Asked: {ts}")
+            st.markdown(f"**Question:** {selected.get('question', '')}")
+
+            notes = selected.get("generation_notes") or []
+            if notes:
+                with st.expander("Generation notes", expanded=False):
+                    for note in notes:
+                        st.info(note)
+
+            sql = selected.get("generated_sql") or ""
+            if sql:
+                st.markdown("**Generated SQL:**")
+                st.code(sql, language="sql")
+            else:
+                st.warning("No SQL was generated for this query.")
+
+            result_data = selected.get("result_data")
+            if result_data is not None:
+                result_df = pd.DataFrame(result_data)
+                rows = selected.get("result_rows", len(result_df))
+                elapsed = selected.get("result_elapsed") or 0.0
+                st.markdown(f"**Results:** {rows} rows | {elapsed:.3f}s")
+                st.dataframe(result_df, use_container_width=True)
+                try_show_bar_chart(result_df)
+            else:
+                st.info("Query was not executed or results were not available.")
