@@ -51,10 +51,10 @@ HISTORY_MAX_ENTRIES = 25
 configure_app_logging()
 
 EXAMPLE_QUESTIONS = [
-    "What is the total revenue in 2025?",
-    "Show revenue per month for 2024.",
-    "Which ticket types generate the most revenue?",
-    "Show revenue by federal state for 2025.",
+    "Which 5 federal states generated the most ticket revenue in 2025?",
+    "Compare monthly ticket revenue between 2024 and 2025 — which months grew?",
+    "Show top 5 ticket types by revenue in 2025 with exact euro amounts.",
+    "For each tariff association, show total revenue by federal state for 2025.",
 ]
 
 
@@ -120,55 +120,61 @@ def get_available_years() -> list[int]:
 
 
 def build_suggested_questions(question: str) -> list[str]:
-    """Return up to 4 'Did you mean?' suggestions anchored to years available in the database."""
-    suggestions: list[str] = []
+    """Return up to 4 specific suggestions matched to the user's intent."""
     years = get_available_years()
     requested = extract_requested_years(question)
     q_lower = (question or "").lower()
 
-    # Use the latest year by default; snap to the nearest available one if the question named a year.
-    default_year = max(years) if years else 2025
-    if requested and years:
-        default_year = nearest_year(requested[0], years) or default_year
+    latest = max(years) if years else 2025
+    prev = next((y for y in reversed(years) if y < latest), latest - 1) if years else latest - 1
+    yr = (nearest_year(requested[0], years) or latest) if requested and years else latest
 
-    # Keep suggestions relevant to the original intent.
-    if "state" in q_lower or "bundesland" in q_lower:
-        suggestions.append(f"Show revenue by federal state for {default_year}.")
-    if (
-        "tariff" in q_lower
-        or "tarif" in q_lower
-        or "association" in q_lower
-        or "verbund" in q_lower
-    ):
-        suggestions.append(
-            f"Show revenue by tariff association for {default_year}."
-        )
-        suggestions.append(
-            f"Show revenue by tariff association and federal state for {default_year}."
-        )
-    if "month" in q_lower or "monat" in q_lower:
-        suggestions.append(f"Show revenue per month for {default_year}.")
-    if ("state" in q_lower or "bundesland" in q_lower) and (
-        "month" in q_lower or "monat" in q_lower
-    ):
-        suggestions.append(
-            f"Show revenue by federal state and month for {default_year}."
-        )
-
-    if requested and years:
-        for year in requested:
-            nearest = nearest_year(year, years)
-            if nearest is not None:
-                suggestions.append(f"Show revenue per month for {nearest}.")
-        latest = max(years)
-        suggestions.append(f"What is the total revenue in {latest}?")
+    if any(k in q_lower for k in ("state", "bundesland", "region", "federal")):
+        candidates = [
+            f"Which 5 federal states had the highest ticket revenue in {yr}?",
+            f"Show revenue by federal state for {yr}, broken down by ticket type.",
+            f"How did revenue per federal state change from {prev} to {yr}?",
+            f"For each state in {yr}, which month generated the most ticket revenue?",
+        ]
+    elif any(k in q_lower for k in ("month", "monat", "trend", "quarter", "growth", "change", "compar")):
+        candidates = [
+            f"Show monthly ticket revenue for {yr} — which month peaked?",
+            f"Compare revenue per month between {prev} and {yr}.",
+            f"Show revenue per quarter for {yr} across all ticket types.",
+            f"Which federal state had the highest revenue growth from {prev} to {yr}?",
+        ]
+    elif any(k in q_lower for k in ("ticket", "type", "product", "produkt")):
+        candidates = [
+            f"Which ticket types generated the top 5 revenues in {yr}?",
+            f"Show revenue per ticket type broken down by federal state for {yr}.",
+            f"Compare ticket type revenues between {prev} and {yr}.",
+            f"Show average sale price vs. catalog price per ticket type in {yr}.",
+        ]
+    elif any(k in q_lower for k in ("tariff", "tarif", "verbund", "association")):
+        candidates = [
+            f"Show total revenue per tariff association for {yr}, ranked highest to lowest.",
+            f"For each tariff association, which federal state contributed the most revenue in {yr}?",
+            f"Show revenue by tariff association and ticket type for {yr}.",
+            f"Compare tariff association revenues between {prev} and {yr}.",
+        ]
+    elif any(k in q_lower for k in ("city", "postal", "plz", "ort", "zip", "office", "meldestelle")):
+        candidates = [
+            f"Show the top 10 cities by ticket revenue in {yr}.",
+            f"Which postal codes had the highest revenue in {yr}? Show top 10 with state.",
+            f"Which reporting offices delivered the most revenue in {yr}?",
+            f"Show top 20 postal codes by revenue with city and state for {yr}.",
+        ]
     else:
-        suggestions.extend(EXAMPLE_QUESTIONS[:3])
+        candidates = [
+            f"Which 5 federal states generated the most ticket revenue in {yr}?",
+            f"Show monthly ticket revenue for {yr} — identify the peak month.",
+            f"Which ticket types earned the most in {yr}? Show top 5 with amounts.",
+            f"For each tariff association, show total revenue by federal state for {yr}.",
+        ]
 
-    # Keep unique order and max 4
-    seen = set()
+    seen: set[str] = set()
     result = []
-    for item in suggestions:
+    for item in candidates:
         if item not in seen:
             seen.add(item)
             result.append(item)
