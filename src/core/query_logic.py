@@ -15,6 +15,9 @@ WRITE_PATTERNS = [
     r"\bdrop\b",
     r"\balter\b",
     r"\btruncate\b",
+    r"\bmerge\b",
+    r"\bgrant\b",
+    r"\brevoke\b",
 ]
 
 _OUT_OF_SCOPE_MSG = (
@@ -24,12 +27,16 @@ _OUT_OF_SCOPE_MSG = (
 
 # Patterns that unambiguously signal out-of-scope requests
 _OUT_OF_SCOPE_PATTERNS = [
-    # Greetings / small talk
+    # Greetings / small talk (English)
     r"\bhow are you\b",
     r"^(hi+|hello|hey|sup|yo)\b",
     r"\bgood (morning|afternoon|evening|night)\b",
     r"^(thanks?|thank you)\b",
-    # Content creation
+    # Greetings / small talk (German)
+    r"^(hallo|hei|moin|servus|grüß gott|guten (morgen|tag|abend|nacht))\b",
+    r"\bwie geht(s| es)\b",
+    r"^(danke|vielen dank|tschüss|auf wiedersehen)\b",
+    # Content creation (English)
     r"\b(write|compose|draft|create)\b.{0,40}\b(essay|thesis|paper|story|email|letter|poem|song|lyrics|joke|blog|article)\b",
     r"\bessay\b",
     r"\bthesis\b",
@@ -38,7 +45,11 @@ _OUT_OF_SCOPE_PATTERNS = [
     r"\blyrics\b",
     r"\bjoke\b",
     r"\bstory\b",
-    # General knowledge / off-domain
+    # Content creation (German)
+    r"\b(schreib|verfasse|erstelle)\b.{0,40}\b(aufsatz|gedicht|lied|witz|geschichte|artikel|brief|email)\b",
+    r"\bgedicht\b",
+    r"\bwitz\b",
+    # General knowledge / off-domain (English)
     r"\bweather\b",
     r"\bhomework\b",
     r"\bquantum\b",
@@ -48,6 +59,14 @@ _OUT_OF_SCOPE_PATTERNS = [
     r"\belection\b",
     r"\brecipe\b",
     r"\bcooking\b",
+    # General knowledge / off-domain (German)
+    r"\bwetter\b",
+    r"\bhausaufgaben\b",
+    r"\brezept\b",
+    r"\bkochen\b",
+    r"\bwahl\b",
+    r"\bnachrichten\b",
+    r"\bpolitik\b",
     # Non-SQL coding
     r"\bjavascript\b",
     r"\bnode\.?js\b",

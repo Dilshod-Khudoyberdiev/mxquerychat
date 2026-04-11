@@ -22,6 +22,7 @@ BLOCKED_KEYWORDS = [
     "call",
     "execute",
     "pragma",
+    "recursive",  # prevents WITH RECURSIVE runaway CTEs
 ]
 
 
