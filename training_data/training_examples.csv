@@ -89,3 +89,15 @@ Please insert new data.,SELECT 'Refused: read-only database.' AS message;,,,
 Delete all rows from ticket_verkaeufe.,SELECT 'Refused: read-only database.' AS message;,,,
 Show personal data of users.,SELECT 'Synthetic demo data only; personal data not provided.' AS message;,,,
 Explain which tables I need to join to get revenue by state.,"SELECT r.bundesland_name, SUM(tv.umsatz_eur) AS revenue_eur FROM ticket_verkaeufe tv JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz JOIN regionen_bundesland r ON p.bundesland_code2 = r.bundesland_code2 GROUP BY r.bundesland_name ORDER BY revenue_eur DESC;",,,
+which federal states have the highest ticket revenue in june 2024?,"SELECT
+    tv.monat,
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p
+    ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb
+    ON p.bundesland_code2 = rb.bundesland_code2
+WHERE tv.jahr = 2024
+GROUP BY tv.monat, rb.bundesland_name
+ORDER BY umsatz_eur DESC",,2026-04-11T12:13:22+00:00,2026-04-11T12:14:05+00:00

@@ -232,15 +232,46 @@ def run_with_timeout(fn, timeout_seconds: int):
 
 
 def try_show_bar_chart(df: pd.DataFrame) -> None:
-    """Show a simple chart when first column is x and second is numeric."""
-    if df.shape[1] < 2:
-        st.info("Chart skipped: result needs at least 2 columns.")
+    """Show a bar chart when the data is suitable; explain briefly when not."""
+    if df.shape[0] == 0 or df.shape[1] < 2:
         return
 
-    x_col = df.columns[0]
-    y_col = df.columns[1]
-    if not pd.api.types.is_numeric_dtype(df[y_col]):
-        st.info("Chart skipped: second column is not numeric.")
+    METRIC_HINTS = {"umsatz", "revenue", "anzahl", "count", "sum", "total", "amount", "betrag"}
+    DIMENSION_HINTS = {"monat", "month", "bundesland", "state", "region", "name", "tarif", "ticket", "plz", "postal"}
+
+    numeric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
+    text_cols = [c for c in df.columns if not pd.api.types.is_numeric_dtype(df[c])]
+
+    if not numeric_cols:
+        st.caption("No chart: no numeric values to plot.")
+        return
+
+    # Y: prefer a metric-named column, else last numeric (likely the aggregated value)
+    y_col = next(
+        (c for c in numeric_cols if any(h in c.lower() for h in METRIC_HINTS)),
+        numeric_cols[-1],
+    )
+
+    # X: prefer a text dimension column, then a numeric dimension (e.g. monat)
+    x_col = next(
+        (c for c in text_cols if any(h in c.lower() for h in DIMENSION_HINTS)),
+        text_cols[0] if text_cols else None,
+    )
+    if x_col is None:
+        remaining_numeric = [c for c in numeric_cols if c != y_col]
+        x_col = next(
+            (c for c in remaining_numeric if any(h in c.lower() for h in DIMENSION_HINTS)),
+            None,
+        )
+
+    if x_col is None:
+        st.caption("No chart: couldn't identify a category column.")
+        return
+    if df[x_col].nunique() < 2:
+        st.caption("No chart: only one group in results.")
+        return
+    if len(df) > 50:
+        st.caption("No chart: too many rows to display meaningfully.")
         return
 
     st.bar_chart(df[[x_col, y_col]].set_index(x_col))
@@ -330,9 +361,6 @@ def init_state():
         "metrics_cache_hits": 0,
         "metrics_query_success": 0,
         "metrics_query_failed": 0,
-        "metrics_feedback_up": 0,
-        "metrics_feedback_down": 0,
-
         # Feedback deduplication: track last rating and which question it was for.
         "feedback_last_rating": None,
         "feedback_last_question_hash": "no_question",
@@ -482,8 +510,6 @@ st.sidebar.metric("Generation Failed", st.session_state.metrics_generation_faile
 st.sidebar.metric("Blocked Requests", st.session_state.metrics_blocked_requests)
 st.sidebar.metric("Query Success", st.session_state.metrics_query_success)
 st.sidebar.metric("Query Failed", st.session_state.metrics_query_failed)
-st.sidebar.metric("Feedback Up", st.session_state.metrics_feedback_up)
-st.sidebar.metric("Feedback Down", st.session_state.metrics_feedback_down)
 
 if view == "New Question":
     st.sidebar.markdown("---")
@@ -696,7 +722,6 @@ if view == "New Question":
                             path="template_planner",
                             duration_ms=int((time.time() - generation_started_at) * 1000),
                         )
-                        st.success("Used template planner.")
                         handled_fast_path = True
                     else:
                         # Keep note but continue to LLM fallback.
@@ -942,39 +967,22 @@ if view == "New Question":
         st.markdown("### Chart")
         try_show_bar_chart(result_df)
 
-        st.markdown("### Was this result helpful?")
-        feedback_cols = st.columns([0.5, 0.5])
         question_hash = build_question_hash(st.session_state.question)
-        with feedback_cols[0]:
-            if st.button("Helpful", key="feedback_helpful", width="stretch"):
-                st.session_state.metrics_feedback_up += 1
-                st.session_state.feedback_last_rating = "up"
-                st.session_state.feedback_last_question_hash = question_hash
-                record_metric_event(
-                    "user_feedback",
-                    question_hash=question_hash,
-                    rating="up",
-                    has_result=True,
-                )
-                q = st.session_state.question.strip()
-                s = st.session_state.generated_sql.strip()
-                if q and s:
-                    # Good result confirmed — persist to training CSV and refresh session cache.
-                    upsert_training_example(q, s)
-                    st.session_state.sql_cache[q.lower()] = s
-                st.success("Feedback saved and added to training examples.")
-        with feedback_cols[1]:
-            if st.button("Not Helpful", key="feedback_not_helpful", width="stretch"):
-                st.session_state.metrics_feedback_down += 1
-                st.session_state.feedback_last_rating = "down"
-                st.session_state.feedback_last_question_hash = question_hash
-                record_metric_event(
-                    "user_feedback",
-                    question_hash=question_hash,
-                    rating="down",
-                    has_result=True,
-                )
-                st.info("Feedback saved.")
+        if st.button("SQL was correct — save as example", key="feedback_helpful", width="stretch"):
+            st.session_state.feedback_last_rating = "up"
+            st.session_state.feedback_last_question_hash = question_hash
+            record_metric_event(
+                "user_feedback",
+                question_hash=question_hash,
+                rating="up",
+                has_result=True,
+            )
+            q = st.session_state.question.strip()
+            s = st.session_state.generated_sql.strip()
+            if q and s:
+                upsert_training_example(q, s)
+                st.session_state.sql_cache[q.lower()] = s
+            st.success("Saved to training examples.")
 
 
 elif view == "Training Data":
@@ -984,7 +992,13 @@ elif view == "Training Data":
     )
 
     if st.session_state.training_working_df is None:
-        st.session_state.training_working_df = load_training_examples()
+        _df = load_training_examples()
+        _df["_ts"] = pd.to_datetime(_df["created_at"], errors="coerce", utc=True)
+        st.session_state.training_working_df = (
+            _df.sort_values("_ts", ascending=False, na_position="last")
+            .drop(columns=["_ts"])
+            .reset_index(drop=True)
+        )
 
     edited_df = st.data_editor(
         st.session_state.training_working_df,
@@ -1064,7 +1078,13 @@ elif view == "Training Data":
                 )
 
             save_training_examples(cleaned_df)
-            st.session_state.training_working_df = load_training_examples()
+            _df = load_training_examples()
+            _df["_ts"] = pd.to_datetime(_df["created_at"], errors="coerce", utc=True)
+            st.session_state.training_working_df = (
+                _df.sort_values("_ts", ascending=False, na_position="last")
+                .drop(columns=["_ts"])
+                .reset_index(drop=True)
+            )
             record_metric_event(
                 "training_examples_saved",
                 row_count=len(st.session_state.training_working_df),

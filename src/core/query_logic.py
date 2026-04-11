@@ -173,8 +173,7 @@ ORDER BY tv.jahr, tv.monat, t.name, rb.bundesland_name
 """.strip()
         return (
             sql,
-            "Template planner used: revenue by tariff association, state, and month "
-            "(ticket_verkaeufe -> tarifverbuende + postleitzahlen -> regionen_bundesland).",
+            "Tables used: ticket_verkaeufe → tarifverbuende, postleitzahlen → regionen_bundesland",
         )
 
     # Revenue by tariff association + state
@@ -198,8 +197,7 @@ ORDER BY tv.jahr, t.name, umsatz_eur DESC
 """.strip()
         return (
             sql,
-            "Template planner used: revenue by tariff association and state "
-            "(ticket_verkaeufe -> tarifverbuende + postleitzahlen -> regionen_bundesland).",
+            "Tables used: ticket_verkaeufe → tarifverbuende, postleitzahlen → regionen_bundesland",
         )
 
     # Revenue by tariff association + month
@@ -219,8 +217,7 @@ ORDER BY tv.jahr, tv.monat, umsatz_eur DESC
 """.strip()
         return (
             sql,
-            "Template planner used: revenue by tariff association and month "
-            "(ticket_verkaeufe -> tarifverbuende).",
+            "Tables used: ticket_verkaeufe → tarifverbuende",
         )
 
     # Revenue by tariff association
@@ -239,8 +236,7 @@ ORDER BY tv.jahr, umsatz_eur DESC
 """.strip()
         return (
             sql,
-            "Template planner used: revenue by tariff association "
-            "(ticket_verkaeufe -> tarifverbuende).",
+            "Tables used: ticket_verkaeufe → tarifverbuende",
         )
 
     # Revenue by state + month
@@ -262,8 +258,7 @@ ORDER BY tv.jahr, tv.monat, rb.bundesland_name
 """.strip()
         return (
             sql,
-            "Template planner used: revenue by state and month "
-            "(ticket_verkaeufe -> postleitzahlen -> regionen_bundesland).",
+            "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland",
         )
 
     # Revenue by state
@@ -284,8 +279,7 @@ ORDER BY tv.jahr, umsatz_eur DESC
 """.strip()
         return (
             sql,
-            "Template planner used: revenue by state "
-            "(ticket_verkaeufe -> postleitzahlen -> regionen_bundesland).",
+            "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland",
         )
 
     # Revenue by month
@@ -302,7 +296,7 @@ ORDER BY tv.jahr, tv.monat
 """.strip()
         return (
             sql,
-            "Template planner used: revenue by month (ticket_verkaeufe).",
+            "Tables used: ticket_verkaeufe",
         )
 
     # Revenue by ticket type
@@ -321,8 +315,7 @@ ORDER BY tv.jahr, umsatz_eur DESC
 """.strip()
         return (
             sql,
-            "Template planner used: revenue by ticket type "
-            "(ticket_verkaeufe -> ticket_produkte).",
+            "Tables used: ticket_verkaeufe → ticket_produkte",
         )
 
     # Total revenue
@@ -333,7 +326,7 @@ SELECT
 FROM ticket_verkaeufe tv
 {build_year_filter(question, alias="tv")}
 """.strip()
-        return (sql, "Template planner used: total revenue (ticket_verkaeufe).")
+        return (sql, "Tables used: ticket_verkaeufe")
 
     return "", ""
 
