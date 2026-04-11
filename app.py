@@ -742,7 +742,24 @@ if view == "New Question":
                     ]
 
                 with st.spinner("Generating SQL..."):
-                    vn = get_vanna_cached()
+                    try:
+                        vn = get_vanna_cached()
+                    except Exception as _e:
+                        st.session_state.generated_sql = ""
+                        st.session_state.metrics_generation_failed += 1
+                        st.session_state.generation_notes = (
+                            st.session_state.generation_notes
+                            + ["LLM unavailable: could not connect to Ollama. Make sure Ollama is running locally."]
+                        )
+                        record_metric_event(
+                            "sql_generation",
+                            success=False,
+                            path="llm_fallback",
+                            failure_reason=str(_e),
+                            failure_category="llm_unavailable",
+                            duration_ms=int((time.time() - generation_started_at) * 1000),
+                        )
+                        st.stop()
                     sql, sql_error_notes, sql_error = query_logic.generate_sql_with_retry(
                         generate_sql_fn=lambda prompt: vn.generate_sql(prompt),
                         question_text=question_text,
