@@ -1,5 +1,5 @@
 ﻿question,sql,description,created_at,updated_at
-What is the total revenue in 2025->,SELECT SUM(umsatz_eur) AS total_revenue_eur FROM ticket_verkaeufe WHERE jahr = 2025;,,,
+What is the total revenue in 2025?,SELECT SUM(umsatz_eur) AS total_revenue_eur FROM ticket_verkaeufe WHERE jahr = 2025;,,2026-04-09T12:33:25+00:00,2026-04-09T12:33:25+00:00
 Show revenue per month for 2024.,"SELECT monat, SUM(umsatz_eur) AS revenue_eur FROM ticket_verkaeufe WHERE jahr = 2024 GROUP BY monat ORDER BY monat;",,,
 How many tickets were sold in total->,SELECT SUM(anzahl) AS total_tickets FROM ticket_verkaeufe;,,,
 Which ticket products exist->,"SELECT ticket_code, ticket_name, preis_eur FROM ticket_produkte ORDER BY ticket_name;",,,

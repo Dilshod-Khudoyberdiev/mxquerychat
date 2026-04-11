@@ -1,25 +1,6 @@
 ﻿"""
-
-Purpose:
-This module contains the reusable decision logic that turns a plain-language question into a safe,
-compilable SQL candidate with deterministic-first behavior and controlled LLM fallback.
-
-What This File Contains:
-- Local guardrail checks for empty, off-topic, or write-intent prompts.
-- Deterministic template planner functions for common business questions.
-- Prompt builders for first-pass generation and progressively stricter retries.
-- SQL extraction, retry orchestration, and standardized failure classification helpers.
-- Session-state reset helpers and a read-only execution gate wrapper.
-
-Key Invariants and Safety Guarantees:
-- Deterministic paths are attempted before expensive model fallback.
-- Retry prompts constrain model outputs to known schema context.
-- Error categories are normalized for stable telemetry analytics.
-- Execution helper enforces read-only validation before calling runtime execution.
-
-How Other Modules Use This File:
-app.py and benchmarking/evaluation tools import this module to keep generation behavior consistent.
-This module is the central logic layer between UI input and database execution policy.
+Guardrails, deterministic template planner, LLM retry pipeline,
+and failure-classification helpers for SQL generation.
 """
 
 from __future__ import annotations
@@ -102,6 +83,13 @@ def extract_requested_year(question: str) -> Optional[int]:
     if not years:
         return None
     return years[0]
+
+
+def nearest_year(target: int, available: list[int]) -> Optional[int]:
+    """Return the year from available closest to target, or None if the list is empty."""
+    if not available:
+        return None
+    return min(available, key=lambda y: abs(y - target))
 
 
 def contains_any(text: str, terms: list[str]) -> bool:
@@ -672,40 +660,65 @@ def get_local_guardrail_message(question: str) -> str:
 
 
 def explain_sql_brief(sql: str) -> str:
-    """Return a short deterministic explanation of the SQL query intent."""
+    """Return a specific plain-language summary of what this SQL query does."""
     cleaned = (sql or "").strip()
     if not cleaned:
         return "No SQL to explain yet."
 
     lowered = cleaned.lower()
-    table_match = re.search(r"\bfrom\s+([a-zA-Z0-9_\.]+)", lowered)
-    table_text = table_match.group(1) if table_match else "the selected tables"
 
-    aggregation = []
-    if "sum(" in lowered:
-        aggregation.append("SUM")
-    if "count(" in lowered:
-        aggregation.append("COUNT")
-    if "avg(" in lowered:
-        aggregation.append("AVG")
-    if "min(" in lowered:
-        aggregation.append("MIN")
-    if "max(" in lowered:
-        aggregation.append("MAX")
+    # --- metric (what is being measured) ---
+    metric = "data"
+    sum_match = re.search(r"\bsum\s*\(([^)]+)\)\s+as\s+(\w+)", lowered)
+    count_match = re.search(r"\bcount\s*\(([^)]*)\)\s+as\s+(\w+)", lowered)
+    avg_match = re.search(r"\bavg\s*\(([^)]+)\)\s+as\s+(\w+)", lowered)
+    if sum_match:
+        metric = sum_match.group(2).replace("_", " ")
+    elif count_match:
+        metric = count_match.group(2).replace("_", " ") + " count"
+    elif avg_match:
+        metric = "average " + avg_match.group(2).replace("_", " ")
 
-    parts = [f"This query reads data from `{table_text}`."]
-    if "where " in lowered:
-        parts.append("It applies filters before returning results.")
-    if aggregation:
-        parts.append(
-            "It calculates aggregated values using "
-            + ", ".join(aggregation)
-            + "."
-        )
-    if "group by" in lowered:
-        parts.append("Results are grouped by one or more dimensions.")
+    # --- dimensions (GROUP BY columns) ---
+    group_match = re.search(r"\bgroup\s+by\s+([\w\s,\.]+?)(?:\bhaving\b|\border\b|\blimit\b|$)", lowered)
+    dimensions: list[str] = []
+    if group_match:
+        raw_cols = group_match.group(1).strip()
+        for col in re.split(r",\s*", raw_cols):
+            col = col.strip()
+            # strip table alias prefix (e.g. "rb.bundesland_name" → "bundesland name")
+            col = re.sub(r"^\w+\.", "", col)
+            col = col.replace("_", " ").strip()
+            if col:
+                dimensions.append(col)
+
+    # --- year filter ---
+    year_match = re.search(r"\bjahr\s*=\s*(\d{4})", lowered)
+    year_filter = year_match.group(1) if year_match else None
+
+    # --- build sentence ---
+    parts: list[str] = []
+
+    verb = "Shows" if not any(f in lowered for f in ("sum(", "count(", "avg(", "min(", "max(")) else "Calculates"
+    if dimensions:
+        parts.append(f"{verb} {metric} broken down by {', '.join(dimensions)}.")
+    else:
+        parts.append(f"{verb} {metric}.")
+
+    if year_filter:
+        parts.append(f"Filtered to year {year_filter}.")
+
     if "order by" in lowered:
-        parts.append("Output is sorted for easier reading.")
+        # extract ORDER BY column(s)
+        order_match = re.search(r"\border\s+by\s+([\w\s,\.]+?)(?:\blimit\b|$)", lowered)
+        if order_match:
+            order_cols = order_match.group(1).strip()
+            order_col = re.split(r",\s*", order_cols)[0]
+            order_col = re.sub(r"\b(asc|desc)\b", "", order_col).strip()
+            order_col = re.sub(r"^\w+\.", "", order_col).replace("_", " ").strip()
+            direction = "descending" if "desc" in order_match.group(1) else "ascending"
+            if order_col:
+                parts.append(f"Sorted by {order_col} ({direction}).")
 
     return " ".join(parts)
 
@@ -750,7 +763,6 @@ def reset_question_flow_state(state: MutableMapping[str, Any]) -> None:
     state["question"] = ""
     state["generated_sql"] = ""
     state["generated_explanation"] = ""
-    state["explanation_status"] = "idle"
     state["last_result_df"] = None
     state["last_result_elapsed"] = None
     state["suggestions"] = []

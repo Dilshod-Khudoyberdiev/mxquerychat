@@ -1,21 +1,4 @@
-﻿"""
-
-Purpose:
-This test module validates the read-only SQL guard behavior implemented in sql_guard.py. The tests
-confirm that allowed SELECT/WITH patterns pass while unsafe statement forms are rejected.
-
-What This File Contains:
-- Parametrized positive and negative cases for basic read-only acceptance.
-- Focused edge-case checks for semicolon misuse and embedded dangerous patterns.
-
-Test Guarantees:
-- Multi-statement and write-intent SQL does not pass validation.
-- Benign text that incidentally contains similar substrings is not falsely blocked.
-
-Why This Matters:
-These tests preserve the foundational safety contract of mxQueryChat: no write or DDL execution paths
-should proceed through the runtime pipeline.
-"""
+﻿"""Tests for validate_read_only_sql — allowed patterns, write intent, and edge cases."""
 
 import pytest
 

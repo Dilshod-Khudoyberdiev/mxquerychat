@@ -1,25 +1,4 @@
-﻿"""
-
-Purpose:
-This script is the thesis-style evaluation harness for mxQueryChat. It reproduces the app pipeline
-outside the UI and exports structured evidence for dataset profiling, domain accuracy, and safety.
-
-What This File Contains:
-- Dataset introspection utilities for row counts and key cardinalities.
-- Domain test execution over fixed question sets with gold SQL comparison.
-- Safety-case generation and validation for read-only and complexity policies.
-- Markdown and JSON report writers for formal evaluation artifacts.
-
-Key Invariants and Safety Guarantees:
-- Execution follows the same validation and policy layers used by the app.
-- Only read-only SQL can pass into runtime execution.
-- Timeout and row-limit controls are applied consistently to measurement runs.
-- Output files capture both summarized metrics and per-case detail.
-
-How Other Modules Use This File:
-This file is executed from the command line to produce thesis_eval_report.json,
-thesis_eval_summary.md, and safety_cases.json that document measurable system behavior.
-"""
+﻿"""CLI evaluation harness: domain accuracy, held-out benchmark, and safety-case reports."""
 
 from __future__ import annotations
 
@@ -42,6 +21,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from sql_guard import validate_read_only_sql
 from src.core import query_logic
+from src.core.query_logic import extract_requested_years
 from src.db.execution_policy import (
     ExecutionPolicy,
     apply_row_limit,
@@ -138,10 +118,6 @@ def parse_demo_questions(path: Path) -> list[str]:
         if match:
             questions.append(match.group(1).strip())
     return questions
-
-
-def extract_requested_years(question: str) -> list[int]:
-    return [int(y) for y in re.findall(r"\b(19\d{2}|20\d{2})\b", question or "")]
 
 
 def get_available_years() -> list[int]:

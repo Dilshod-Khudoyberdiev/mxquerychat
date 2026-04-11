@@ -1,21 +1,4 @@
-﻿"""
-
-Purpose:
-This test module verifies state reset behavior and failure-category normalization helpers in
-src/core/query_logic.py.
-
-What This File Contains:
-- Session-state reset assertions for New Question flow fields.
-- Generation failure-code mapping checks.
-- Execution failure-text mapping checks.
-
-Test Guarantees:
-- UI state reset logic clears only intended keys and preserves unrelated training state.
-- Failure categories remain stable for telemetry aggregation.
-
-Why This Matters:
-Consistent state management and category mapping are essential for reliable UX and meaningful metrics.
-"""
+﻿"""Tests for session-state reset and failure-category normalization in query_logic."""
 
 from src.core.query_logic import (
     classify_execution_failure,
@@ -28,8 +11,6 @@ def test_reset_question_flow_state_resets_expected_keys() -> None:
     state = {
         "question": "Show revenue by month.",
         "generated_sql": "SELECT * FROM t",
-        "generated_explanation": "old explanation",
-        "explanation_status": "ready",
         "last_result_df": {"rows": [1, 2]},
         "last_result_elapsed": 1.23,
         "suggestions": ["q1"],
@@ -43,8 +24,6 @@ def test_reset_question_flow_state_resets_expected_keys() -> None:
 
     assert state["question"] == ""
     assert state["generated_sql"] == ""
-    assert state["generated_explanation"] == ""
-    assert state["explanation_status"] == "idle"
     assert state["last_result_df"] is None
     assert state["last_result_elapsed"] is None
     assert state["suggestions"] == []

@@ -1,22 +1,4 @@
-﻿"""
-
-Purpose:
-This test module validates prompt construction, cache-key stability, and model-call error handling in
-src/llm/sql_explainer.py.
-
-What This File Contains:
-- Prompt-content checks for question and SQL context inclusion.
-- Cache-key determinism checks.
-- Mocked HTTP-call tests for success, timeout, and model-error outcomes.
-
-Test Guarantees:
-- Explanation prompts remain compact and structured.
-- Cache behavior is deterministic for identical inputs.
-- Timeout and connectivity failures are mapped to stable error codes.
-
-Why This Matters:
-Reliable explanation behavior improves transparency while remaining isolated from execution flow.
-"""
+﻿"""Tests for sql_explainer.py: prompt building, cache keys, and model-call error handling."""
 
 from urllib import error
 

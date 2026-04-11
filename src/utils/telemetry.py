@@ -1,23 +1,4 @@
-﻿"""
-
-Purpose:
-This module provides centralized logging and structured metric-event writing for mxQueryChat. It keeps
-operational observability simple, local, and consistent.
-
-What This File Contains:
-- Logger configuration with console and file handlers.
-- Path-resolution helpers for app log and metrics JSONL locations.
-- A metric-event writer that appends normalized JSON payloads with UTC timestamps.
-
-Key Invariants and Safety Guarantees:
-- Logging setup is idempotent to avoid duplicate handlers.
-- Metric events are written as one JSON object per line for easy downstream processing.
-- Failures during metrics write are logged as warnings without crashing the app flow.
-
-How Other Modules Use This File:
-app.py and test utilities import this module to record generation, execution, explanation, and user
-feedback events. tools/summarize_metrics.py later consumes these events for KPI reporting.
-"""
+﻿"""App logger setup and structured metric-event writer (logs/metrics.jsonl)."""
 
 from __future__ import annotations
 

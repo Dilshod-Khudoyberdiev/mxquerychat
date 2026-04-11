@@ -1,21 +1,4 @@
-﻿"""
-
-Purpose:
-This module provides lightweight helpers for DuckDB source metadata and cache-refresh operations used
-by the Streamlit sidebar controls.
-
-What This File Contains:
-- A metadata function that reports engine, path, existence, and size of the active DuckDB file.
-- Cache refresh helpers that clear Streamlit cached data to force fresh schema/data reads.
-
-Key Invariants and Safety Guarantees:
-- Source metadata is read-only and does not mutate the database.
-- Cache invalidation is explicit and predictable through dedicated helper calls.
-
-How Other Modules Use This File:
-app.py imports these helpers for the Data Source panel, including Reload Dataset and Refresh Schema
-buttons that support operational control during demos and troubleshooting.
-"""
+﻿"""DuckDB source metadata and Streamlit cache-refresh helpers for the sidebar."""
 
 from __future__ import annotations
 

@@ -14,3 +14,6 @@ temp.txt
 logs/
 .env
 reports/
+.claude/
+chat_history.json
+outputs/

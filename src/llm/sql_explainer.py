@@ -1,24 +1,4 @@
-﻿"""
-
-Purpose:
-This module implements optional, on-demand SQL explanation generation using local Ollama. It keeps
-explanation behavior isolated from the main SQL execution path.
-
-What This File Contains:
-- Prompt builder for concise business-facing one-sentence SQL explanations.
-- Stable cache-key builder to reuse prior explanations for identical question/SQL pairs.
-- HTTP client logic for Ollama generation with timeout and error-code normalization.
-- Workflow helper that gates explanation generation behind an explicit user trigger.
-
-Key Invariants and Safety Guarantees:
-- Explanation generation is never automatic; it is explicitly user-triggered.
-- Timeout/model failures return status codes without blocking SQL query execution.
-- Responses are cached to reduce repeated model calls for identical inputs.
-
-How Other Modules Use This File:
-app.py calls maybe_generate_explanation during the SQL review stage. Telemetry captures success and
-failure outcomes so explanation quality and reliability can be monitored independently.
-"""
+﻿"""On-demand SQL explanation via local Ollama, with session cache and timeout handling."""
 
 from __future__ import annotations
 

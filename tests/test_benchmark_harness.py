@@ -1,20 +1,4 @@
-﻿"""
-
-Purpose:
-This test module validates parsing and summary math helpers in tools/run_benchmark.py.
-
-What This File Contains:
-- Markdown parser tests for supported EN and Q question line formats.
-- Summary-builder tests for counts, rates, latency keys, and PRD KPI fields.
-
-Test Guarantees:
-- Benchmark question ingestion remains robust to expected markdown formatting.
-- Aggregate metric calculations remain stable and interpretable.
-
-Why This Matters:
-Benchmark outputs are often used in presentations and thesis artifacts; parser and summary stability
-is therefore critical.
-"""
+﻿"""Tests for parsing and summary math helpers in tools/run_benchmark.py."""
 
 import shutil
 import uuid

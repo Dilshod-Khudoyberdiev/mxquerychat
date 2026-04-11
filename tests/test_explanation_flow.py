@@ -1,22 +1,4 @@
-﻿"""
-
-Purpose:
-This test module validates the end-to-end explanation interaction contract: trigger-gated execution,
-cache-hit behavior, non-blocking failure handling, and telemetry payload integrity.
-
-What This File Contains:
-- Tests proving no model call happens unless explanation is explicitly triggered.
-- Tests proving cached explanations bypass model calls.
-- Tests proving explanation failures do not block SQL execution flow.
-- Tests for explanation telemetry fields and failure category capture.
-
-Test Guarantees:
-- Explanation remains optional and side-channel to core SQL execution.
-- Cache and telemetry behavior stays consistent across refactors.
-
-Why This Matters:
-This module ensures explainability features add value without introducing operational risk.
-"""
+﻿"""Tests for maybe_generate_explanation: trigger gating, cache hits, and failure handling."""
 
 import json
 

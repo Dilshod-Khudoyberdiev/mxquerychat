@@ -1,24 +1,4 @@
-﻿"""
-
-Purpose:
-This file provides the first and most direct SQL safety gate for the MVP. The validator enforces
-read-only behavior by allowing only single SELECT/WITH statements and rejecting write or DDL patterns.
-
-What This File Contains:
-- A list of blocked keywords associated with data modification, schema changes, or unsafe execution paths.
-- One public validator function that returns a boolean decision and a human-readable reason.
-- Lightweight statement-shape checks (single statement, semicolon placement, and allowed first token).
-
-Key Invariants and Safety Guarantees:
-- Empty SQL is always rejected.
-- Multi-statement SQL is rejected as an injection-resistant baseline.
-- Non-SELECT/WITH entry points are rejected immediately.
-- Known dangerous SQL verbs are blocked even if embedded in larger text.
-
-How Other Modules Use This File:
-Both the Streamlit app and evaluation scripts call validate_read_only_sql before execution. This file
-acts as a mandatory read-only guardrail that protects the DuckDB database from accidental writes.
-"""
+﻿"""Read-only SQL guard: rejects anything that is not a plain SELECT or WITH statement."""
 
 import re
 
