@@ -5,6 +5,8 @@ import re
 import time
 import hashlib
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from datetime import datetime
 from pathlib import Path
@@ -44,7 +46,7 @@ from vannaagent import (
 DUCKDB_PATH = "mxquerychat.duckdb"
 ICON_PATH = Path("docs/images/icon.png")
 LOGO_PATH = Path("docs/images/logo.png")
-MODEL_TIMEOUT_SECONDS = 65
+MODEL_TIMEOUT_SECONDS = 120
 EXECUTION_POLICY = ExecutionPolicy()
 HISTORY_FILE = "chat_history.json"
 HISTORY_MAX_ENTRIES = 25
@@ -799,6 +801,11 @@ if view == "New Question":
                                 "Could not generate SQL right now due to model timeout. "
                                 "Tip: first call can be slow (model cold start). Try once more."
                             )
+                        elif sql_error == "not_trained":
+                            st.error(
+                                "Vector store is not trained yet. "
+                                "Go to Training Data → click Train Model, then retry."
+                            )
                         elif sql_error == "model_error":
                             st.error(
                                 "Could not generate SQL due to a model connection error. "
@@ -1117,11 +1124,13 @@ elif view == "Training Data":
             with st.spinner("Training model..."):
                 vn = get_vanna()
                 train_from_examples(vn, training_df)
+            # Clear cached Vanna instance so next query picks up the freshly trained store.
+            get_vanna_cached.clear()
             record_metric_event(
                 "training_triggered",
                 row_count=len(training_df),
             )
-            st.success("Training complete.")
+            st.success("Training complete. The model is ready to use.")
 
 
 elif view == "Chat History":

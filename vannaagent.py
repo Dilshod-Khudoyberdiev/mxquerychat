@@ -3,6 +3,8 @@
 from pathlib import Path
 import os
 import re
+from dotenv import load_dotenv
+load_dotenv()
 from datetime import datetime, timezone
 import pandas as pd
 
@@ -107,11 +109,13 @@ def get_vanna() -> MXQueryVanna:
             "model": os.getenv("OLLAMA_MODEL", "mistral"),
             "path": CHROMA_PATH,
             # Lower latency defaults for local CPU/GPU
-            "ollama_timeout": float(os.getenv("OLLAMA_TIMEOUT_SECONDS", "60")),
+            "ollama_timeout": float(os.getenv("OLLAMA_TIMEOUT_SECONDS", "120")),
             "keep_alive": os.getenv("OLLAMA_KEEP_ALIVE", "30m"),
+            # Limit few-shot examples sent to LLM — reduces prompt token count significantly
+            "n_results": int(os.getenv("OLLAMA_N_RESULTS", "3")),
             "options": {
                 "num_ctx": int(os.getenv("OLLAMA_NUM_CTX", "2048")),
-                "num_predict": int(os.getenv("OLLAMA_NUM_PREDICT", "96")),
+                "num_predict": int(os.getenv("OLLAMA_NUM_PREDICT", "200")),
                 "temperature": float(os.getenv("OLLAMA_TEMPERATURE", "0")),
             },
         }

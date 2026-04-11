@@ -123,6 +123,84 @@ def build_year_filter(question: str, alias: str = "tv") -> str:
     return f"WHERE {alias}.jahr = {requested_year}"
 
 
+_MONTH_NAMES = {
+    "january": 1, "february": 2, "march": 3, "april": 4,
+    "may": 5, "june": 6, "july": 7, "august": 8,
+    "september": 9, "october": 10, "november": 11, "december": 12,
+    "januar": 1, "februar": 2, "märz": 3, "maerz": 3,
+    "juni": 6, "juli": 7, "oktober": 10, "dezember": 12,
+}
+
+_QUARTER_MAP = {
+    "q1": (1, 3), "q2": (4, 6), "q3": (7, 9), "q4": (10, 12),
+    "quarter 1": (1, 3), "quarter 2": (4, 6), "quarter 3": (7, 9), "quarter 4": (10, 12),
+    "1st quarter": (1, 3), "2nd quarter": (4, 6), "3rd quarter": (7, 9), "4th quarter": (10, 12),
+}
+
+# German state name aliases → canonical DB values
+_STATE_ALIASES: dict[str, str] = {
+    "bavaria": "Bayern", "bayern": "Bayern",
+    "berlin": "Berlin",
+    "hamburg": "Hamburg",
+    "bremen": "Bremen",
+    "saxony": "Sachsen", "sachsen": "Sachsen",
+    "thuringia": "Thüringen", "thüringen": "Thüringen", "thuringen": "Thüringen",
+    "hesse": "Hessen", "hessen": "Hessen",
+    "nrw": "Nordrhein-Westfalen", "north rhine-westphalia": "Nordrhein-Westfalen",
+    "nordrhein-westfalen": "Nordrhein-Westfalen",
+    "brandenburg": "Brandenburg",
+    "saarland": "Saarland",
+    "rhineland-palatinate": "Rheinland-Pfalz", "rheinland-pfalz": "Rheinland-Pfalz",
+    "lower saxony": "Niedersachsen", "niedersachsen": "Niedersachsen",
+    "mecklenburg": "Mecklenburg-Vorpommern",
+    "schleswig-holstein": "Schleswig-Holstein",
+    "saxony-anhalt": "Sachsen-Anhalt", "sachsen-anhalt": "Sachsen-Anhalt",
+    "baden-württemberg": "Baden-Württemberg", "baden-wuerttemberg": "Baden-Württemberg",
+    "bad württemberg": "Baden-Württemberg",
+}
+
+
+def extract_state_names(question: str) -> list[str]:
+    """Extract up to 2 canonical state names from the question."""
+    q = (question or "").lower()
+    found = []
+    for alias, canonical in _STATE_ALIASES.items():
+        if alias in q and canonical not in found:
+            found.append(canonical)
+        if len(found) == 2:
+            break
+    return found
+
+
+def extract_requested_month(question: str) -> Optional[int]:
+    q = (question or "").lower()
+    for name, num in _MONTH_NAMES.items():
+        if name in q:
+            return num
+    m = re.search(r"\bmonth\s+(\d{1,2})\b", q)
+    if m:
+        val = int(m.group(1))
+        if 1 <= val <= 12:
+            return val
+    return None
+
+
+def extract_requested_quarter(question: str) -> Optional[tuple[int, int]]:
+    q = (question or "").lower()
+    for label, months in _QUARTER_MAP.items():
+        if label in q:
+            return months
+    return None
+
+
+def extract_top_n(question: str, default: int = 10) -> int:
+    m = re.search(r"\btop\s+(\d+)\b|\bbottom\s+(\d+)\b|\b(\d+)\s+postal\b|\b(\d+)\s+state\b|\b(\d+)\s+ticket\b|\b(\d+)\s+tariff\b|\b(\d+)\s+cit", (question or "").lower())
+    if m:
+        val = next(v for v in m.groups() if v is not None)
+        return int(val)
+    return default
+
+
 def build_template_sql(question: str) -> tuple[str, str]:
     """
     Deterministic planner for common analytics questions.
@@ -133,7 +211,7 @@ def build_template_sql(question: str) -> tuple[str, str]:
     wants_state = contains_any(q, ["state", "federal state", "bundesland", "states"])
     wants_month = contains_any(q, ["month", "monat", "monthly"])
     wants_ticket_type = contains_any(
-        q, ["ticket type", "ticket types", "ticketart", "ticketarten", "ticket product"]
+        q, ["ticket type", "ticket types", "ticketart", "ticketarten", "ticket product", "ticket name"]
     )
     wants_tariff = contains_any(
         q,
@@ -150,6 +228,17 @@ def build_template_sql(question: str) -> tuple[str, str]:
         ],
     )
     wants_total = contains_any(q, ["total", "gesamt", "overall"])
+    wants_quantity = contains_any(q, ["quantity", "anzahl", "sold", "tickets sold", "ticket sales", "how many tickets"])
+    wants_city = contains_any(q, ["city", "cities", "ort", "städte"])
+    wants_postal = contains_any(q, ["postal", "plz", "postal code", "postleitzahl"])
+    wants_plan = contains_any(q, ["plan", "planned", "actual", "deviation", "above plan", "below plan", "vs plan"])
+    wants_quarter = extract_requested_quarter(question) is not None
+    wants_top = contains_any(q, ["top", "highest", "most", "best", "largest", "bottom", "lowest", "least", "worst"])
+
+    specific_month = extract_requested_month(question)
+    specific_year = extract_requested_year(question)
+    quarter_months = extract_requested_quarter(question)
+    top_n = extract_top_n(q)
 
     # Revenue by tariff association + state + month
     if wants_revenue and wants_tariff and wants_state and wants_month:
@@ -327,6 +416,258 @@ FROM ticket_verkaeufe tv
 {build_year_filter(question, alias="tv")}
 """.strip()
         return (sql, "Tables used: ticket_verkaeufe")
+
+    # Revenue by ticket type + state
+    if wants_revenue and wants_ticket_type and wants_state:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tp.ticket_name,
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+{year_filter}
+GROUP BY tp.ticket_name, rb.bundesland_name
+ORDER BY tp.ticket_name, umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → ticket_produkte, postleitzahlen → regionen_bundesland")
+
+    # Revenue by ticket type + month
+    if wants_revenue and wants_ticket_type and wants_month:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    tp.ticket_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
+{year_filter}
+GROUP BY tv.jahr, tv.monat, tp.ticket_name
+ORDER BY tv.jahr, tv.monat, umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → ticket_produkte")
+
+    # Quantity (tickets sold) by state
+    if wants_quantity and wants_state:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    rb.bundesland_name,
+    SUM(tv.anzahl) AS anzahl
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+{year_filter}
+GROUP BY rb.bundesland_name
+ORDER BY anzahl DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    # Quantity by ticket type
+    if wants_quantity and wants_ticket_type:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tp.ticket_name,
+    SUM(tv.anzahl) AS anzahl
+FROM ticket_verkaeufe tv
+JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
+{year_filter}
+GROUP BY tp.ticket_name
+ORDER BY anzahl DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → ticket_produkte")
+
+    # Quantity by month
+    if wants_quantity and wants_month:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    SUM(tv.anzahl) AS anzahl
+FROM ticket_verkaeufe tv
+{year_filter}
+GROUP BY tv.jahr, tv.monat
+ORDER BY tv.jahr, tv.monat
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # Total quantity
+    if wants_quantity:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT SUM(tv.anzahl) AS anzahl
+FROM ticket_verkaeufe tv
+{year_filter}
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # Revenue by city
+    if wants_revenue and wants_city:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        limit = f"LIMIT {top_n}" if wants_top else ""
+        sql = f"""
+SELECT
+    p.ort,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+{year_filter}
+GROUP BY p.ort
+ORDER BY umsatz_eur DESC
+{limit}
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen")
+
+    # Revenue by postal code (top N)
+    if wants_revenue and wants_postal:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        limit = f"LIMIT {top_n}" if wants_top else "LIMIT 10"
+        sql = f"""
+SELECT
+    tv.plz,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+{year_filter}
+GROUP BY tv.plz
+ORDER BY umsatz_eur DESC
+{limit}
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # Revenue for specific month + year
+    if wants_revenue and specific_month and specific_year:
+        sql = f"""
+SELECT
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+WHERE tv.jahr = {specific_year} AND tv.monat = {specific_month}
+GROUP BY rb.bundesland_name
+ORDER BY umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    # Revenue by quarter
+    if wants_revenue and wants_quarter and quarter_months:
+        m_from, m_to = quarter_months
+        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+WHERE tv.monat BETWEEN {m_from} AND {m_to}
+{year_filter}
+GROUP BY tv.jahr, tv.monat
+ORDER BY tv.jahr, tv.monat
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # Plan vs actual comparison
+    if wants_plan and wants_month:
+        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    SUM(tv.umsatz_eur) AS actual_eur,
+    SUM(p.umsatz_eur) AS plan_eur,
+    SUM(tv.umsatz_eur) - SUM(p.umsatz_eur) AS deviation_eur
+FROM ticket_verkaeufe tv
+JOIN plan_umsatz p
+    ON tv.tarifverbund_id = p.tarifverbund_id
+    AND tv.monat = p.monat
+    AND tv.jahr = p.jahr
+WHERE 1=1 {year_filter}
+GROUP BY tv.jahr, tv.monat
+ORDER BY tv.jahr, tv.monat
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe, plan_umsatz")
+
+    if wants_plan and wants_tariff:
+        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    t.name AS tarifverbund_name,
+    SUM(tv.umsatz_eur) AS actual_eur,
+    SUM(p.umsatz_eur) AS plan_eur,
+    SUM(tv.umsatz_eur) - SUM(p.umsatz_eur) AS deviation_eur
+FROM ticket_verkaeufe tv
+JOIN plan_umsatz p
+    ON tv.tarifverbund_id = p.tarifverbund_id
+    AND tv.monat = p.monat
+    AND tv.jahr = p.jahr
+JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id
+WHERE 1=1 {year_filter}
+GROUP BY t.name
+ORDER BY deviation_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe, plan_umsatz → tarifverbuende")
+
+    # Year-over-year comparison
+    if wants_revenue and contains_any(q, ["compare", "vs", "versus", "growth", "grew", "year-over-year", "yoy", "2024", "2025"]) and wants_month:
+        sql = """
+SELECT
+    tv.monat,
+    SUM(CASE WHEN tv.jahr = 2024 THEN tv.umsatz_eur ELSE 0 END) AS umsatz_2024,
+    SUM(CASE WHEN tv.jahr = 2025 THEN tv.umsatz_eur ELSE 0 END) AS umsatz_2025,
+    SUM(CASE WHEN tv.jahr = 2025 THEN tv.umsatz_eur ELSE 0 END)
+        - SUM(CASE WHEN tv.jahr = 2024 THEN tv.umsatz_eur ELSE 0 END) AS difference_eur
+FROM ticket_verkaeufe tv
+WHERE tv.jahr IN (2024, 2025)
+GROUP BY tv.monat
+ORDER BY tv.monat
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # State comparison (e.g. Bavaria vs Berlin)
+    state_names = extract_state_names(question)
+    if wants_revenue and len(state_names) == 2:
+        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
+        s1, s2 = state_names[0], state_names[1]
+        sql = f"""
+SELECT
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+WHERE rb.bundesland_name IN ('{s1}', '{s2}') {year_filter}
+GROUP BY rb.bundesland_name
+ORDER BY umsatz_eur DESC
+""".strip()
+        return (sql, f"Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    # Single state filter (e.g. revenue in Bavaria by month)
+    if wants_revenue and len(state_names) == 1:
+        state = state_names[0]
+        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
+        group_by = "tv.monat" if wants_month else "rb.bundesland_name"
+        order_by = "tv.monat" if wants_month else "umsatz_eur DESC"
+        select_extra = "tv.monat," if wants_month else ""
+        sql = f"""
+SELECT
+    {select_extra}
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+WHERE rb.bundesland_name = '{state}' {year_filter}
+GROUP BY {group_by}, rb.bundesland_name
+ORDER BY {order_by}
+""".strip()
+        return (sql, f"Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
 
     return "", ""
 
@@ -546,6 +887,9 @@ def generate_sql_with_retry(
             if "timeout" in call_error_text.lower():
                 notes.append(f"{attempt_name}: model timeout ({call_error_text}).")
                 return "", "timeout", call_error_text
+            if "hnsw" in call_error_text.lower() or "nothing found on disk" in call_error_text.lower() or "segment reader" in call_error_text.lower():
+                notes.append(f"{attempt_name}: vector store not trained yet.")
+                return "", "not_trained", call_error_text
             notes.append(f"{attempt_name}: model error ({call_error_text}).")
             return "", "model_error", call_error_text
 
@@ -577,8 +921,8 @@ def generate_sql_with_retry(
         return sql_1, notes, ""
     if status_1 == "timeout":
         return "", notes, "timeout"
-    if status_1 == "model_error":
-        return "", notes, "model_error"
+    if status_1 in {"model_error", "not_trained"}:
+        return "", notes, status_1
 
     retry_prompt = build_retry_prompt(
         question_text,
