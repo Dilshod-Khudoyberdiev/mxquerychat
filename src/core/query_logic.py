@@ -205,6 +205,7 @@ def build_template_sql(question: str) -> tuple[str, str]:
     """
     Deterministic planner for common analytics questions.
     Returns (sql, note). Empty sql means no template matched.
+    More specific checks always come before less specific ones.
     """
     q = (question or "").lower()
     wants_revenue = contains_any(q, ["revenue", "umsatz", "sales"])
@@ -234,346 +235,21 @@ def build_template_sql(question: str) -> tuple[str, str]:
     wants_plan = contains_any(q, ["plan", "planned", "actual", "deviation", "above plan", "below plan", "vs plan"])
     wants_quarter = extract_requested_quarter(question) is not None
     wants_top = contains_any(q, ["top", "highest", "most", "best", "largest", "bottom", "lowest", "least", "worst"])
+    wants_share = contains_any(q, ["share", "percentage", "percent", "portion", "anteil", "%"])
+    wants_cumulative = contains_any(q, ["cumulative", "running total", "kumuliert", "laufend", "cumsum"])
+    wants_growth = contains_any(q, ["growth", "change", "month over month", "mom", "wachstum", "veränderung"])
+    wants_avg_price = contains_any(q, ["average price", "avg price", "price per ticket", "ticket price",
+                                       "durchschnittspreis", "average revenue per ticket", "revenue per ticket"])
+    wants_yoy = contains_any(q, ["year-over-year", "yoy", "previous year", "last year", "vorjahr"])
 
     specific_month = extract_requested_month(question)
     specific_year = extract_requested_year(question)
+    all_years = extract_requested_years(question)
     quarter_months = extract_requested_quarter(question)
     top_n = extract_top_n(q)
+    state_names = extract_state_names(question)
 
-    # Revenue by tariff association + state + month
-    if wants_revenue and wants_tariff and wants_state and wants_month:
-        sql = f"""
-SELECT
-    tv.jahr,
-    tv.monat,
-    t.name AS tarifverbund_name,
-    rb.bundesland_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN tarifverbuende t
-    ON tv.tarifverbund_id = t.tarifverbund_id
-JOIN postleitzahlen p
-    ON CAST(tv.plz AS VARCHAR) = p.plz
-JOIN regionen_bundesland rb
-    ON p.bundesland_code2 = rb.bundesland_code2
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, tv.monat, t.name, rb.bundesland_name
-ORDER BY tv.jahr, tv.monat, t.name, rb.bundesland_name
-""".strip()
-        return (
-            sql,
-            "Tables used: ticket_verkaeufe → tarifverbuende, postleitzahlen → regionen_bundesland",
-        )
-
-    # Revenue by tariff association + state
-    if wants_revenue and wants_tariff and wants_state:
-        sql = f"""
-SELECT
-    tv.jahr,
-    t.name AS tarifverbund_name,
-    rb.bundesland_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN tarifverbuende t
-    ON tv.tarifverbund_id = t.tarifverbund_id
-JOIN postleitzahlen p
-    ON CAST(tv.plz AS VARCHAR) = p.plz
-JOIN regionen_bundesland rb
-    ON p.bundesland_code2 = rb.bundesland_code2
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, t.name, rb.bundesland_name
-ORDER BY tv.jahr, t.name, umsatz_eur DESC
-""".strip()
-        return (
-            sql,
-            "Tables used: ticket_verkaeufe → tarifverbuende, postleitzahlen → regionen_bundesland",
-        )
-
-    # Revenue by tariff association + month
-    if wants_revenue and wants_tariff and wants_month:
-        sql = f"""
-SELECT
-    tv.jahr,
-    tv.monat,
-    t.name AS tarifverbund_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN tarifverbuende t
-    ON tv.tarifverbund_id = t.tarifverbund_id
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, tv.monat, t.name
-ORDER BY tv.jahr, tv.monat, umsatz_eur DESC
-""".strip()
-        return (
-            sql,
-            "Tables used: ticket_verkaeufe → tarifverbuende",
-        )
-
-    # Revenue by tariff association
-    if wants_revenue and wants_tariff:
-        sql = f"""
-SELECT
-    tv.jahr,
-    t.name AS tarifverbund_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN tarifverbuende t
-    ON tv.tarifverbund_id = t.tarifverbund_id
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, t.name
-ORDER BY tv.jahr, umsatz_eur DESC
-""".strip()
-        return (
-            sql,
-            "Tables used: ticket_verkaeufe → tarifverbuende",
-        )
-
-    # Revenue by state + month
-    if wants_revenue and wants_state and wants_month:
-        sql = f"""
-SELECT
-    tv.jahr,
-    tv.monat,
-    rb.bundesland_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN postleitzahlen p
-    ON CAST(tv.plz AS VARCHAR) = p.plz
-JOIN regionen_bundesland rb
-    ON p.bundesland_code2 = rb.bundesland_code2
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, tv.monat, rb.bundesland_name
-ORDER BY tv.jahr, tv.monat, rb.bundesland_name
-""".strip()
-        return (
-            sql,
-            "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland",
-        )
-
-    # Revenue by state
-    if wants_revenue and wants_state:
-        sql = f"""
-SELECT
-    tv.jahr,
-    rb.bundesland_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN postleitzahlen p
-    ON CAST(tv.plz AS VARCHAR) = p.plz
-JOIN regionen_bundesland rb
-    ON p.bundesland_code2 = rb.bundesland_code2
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, rb.bundesland_name
-ORDER BY tv.jahr, umsatz_eur DESC
-""".strip()
-        return (
-            sql,
-            "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland",
-        )
-
-    # Revenue by month
-    if wants_revenue and wants_month:
-        sql = f"""
-SELECT
-    tv.jahr,
-    tv.monat,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, tv.monat
-ORDER BY tv.jahr, tv.monat
-""".strip()
-        return (
-            sql,
-            "Tables used: ticket_verkaeufe",
-        )
-
-    # Revenue by ticket type
-    if wants_revenue and wants_ticket_type:
-        sql = f"""
-SELECT
-    tv.jahr,
-    tp.ticket_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN ticket_produkte tp
-    ON tv.ticket_code = tp.ticket_code
-{build_year_filter(question, alias="tv")}
-GROUP BY tv.jahr, tp.ticket_name
-ORDER BY tv.jahr, umsatz_eur DESC
-""".strip()
-        return (
-            sql,
-            "Tables used: ticket_verkaeufe → ticket_produkte",
-        )
-
-    # Total revenue
-    if wants_revenue and wants_total:
-        sql = f"""
-SELECT
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-{build_year_filter(question, alias="tv")}
-""".strip()
-        return (sql, "Tables used: ticket_verkaeufe")
-
-    # Revenue by ticket type + state
-    if wants_revenue and wants_ticket_type and wants_state:
-        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
-        sql = f"""
-SELECT
-    tp.ticket_name,
-    rb.bundesland_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
-JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
-JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
-{year_filter}
-GROUP BY tp.ticket_name, rb.bundesland_name
-ORDER BY tp.ticket_name, umsatz_eur DESC
-""".strip()
-        return (sql, "Tables used: ticket_verkaeufe → ticket_produkte, postleitzahlen → regionen_bundesland")
-
-    # Revenue by ticket type + month
-    if wants_revenue and wants_ticket_type and wants_month:
-        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
-        sql = f"""
-SELECT
-    tv.jahr,
-    tv.monat,
-    tp.ticket_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
-{year_filter}
-GROUP BY tv.jahr, tv.monat, tp.ticket_name
-ORDER BY tv.jahr, tv.monat, umsatz_eur DESC
-""".strip()
-        return (sql, "Tables used: ticket_verkaeufe → ticket_produkte")
-
-    # Quantity (tickets sold) by state
-    if wants_quantity and wants_state:
-        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
-        sql = f"""
-SELECT
-    rb.bundesland_name,
-    SUM(tv.anzahl) AS anzahl
-FROM ticket_verkaeufe tv
-JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
-JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
-{year_filter}
-GROUP BY rb.bundesland_name
-ORDER BY anzahl DESC
-""".strip()
-        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
-
-    # Quantity by ticket type
-    if wants_quantity and wants_ticket_type:
-        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
-        sql = f"""
-SELECT
-    tp.ticket_name,
-    SUM(tv.anzahl) AS anzahl
-FROM ticket_verkaeufe tv
-JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
-{year_filter}
-GROUP BY tp.ticket_name
-ORDER BY anzahl DESC
-""".strip()
-        return (sql, "Tables used: ticket_verkaeufe → ticket_produkte")
-
-    # Quantity by month
-    if wants_quantity and wants_month:
-        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
-        sql = f"""
-SELECT
-    tv.jahr,
-    tv.monat,
-    SUM(tv.anzahl) AS anzahl
-FROM ticket_verkaeufe tv
-{year_filter}
-GROUP BY tv.jahr, tv.monat
-ORDER BY tv.jahr, tv.monat
-""".strip()
-        return (sql, "Tables used: ticket_verkaeufe")
-
-    # Total quantity
-    if wants_quantity:
-        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
-        sql = f"""
-SELECT SUM(tv.anzahl) AS anzahl
-FROM ticket_verkaeufe tv
-{year_filter}
-""".strip()
-        return (sql, "Tables used: ticket_verkaeufe")
-
-    # Revenue by city
-    if wants_revenue and wants_city:
-        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
-        limit = f"LIMIT {top_n}" if wants_top else ""
-        sql = f"""
-SELECT
-    p.ort,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
-{year_filter}
-GROUP BY p.ort
-ORDER BY umsatz_eur DESC
-{limit}
-""".strip()
-        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen")
-
-    # Revenue by postal code (top N)
-    if wants_revenue and wants_postal:
-        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
-        limit = f"LIMIT {top_n}" if wants_top else "LIMIT 10"
-        sql = f"""
-SELECT
-    tv.plz,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-{year_filter}
-GROUP BY tv.plz
-ORDER BY umsatz_eur DESC
-{limit}
-""".strip()
-        return (sql, "Tables used: ticket_verkaeufe")
-
-    # Revenue for specific month + year
-    if wants_revenue and specific_month and specific_year:
-        sql = f"""
-SELECT
-    rb.bundesland_name,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
-JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
-WHERE tv.jahr = {specific_year} AND tv.monat = {specific_month}
-GROUP BY rb.bundesland_name
-ORDER BY umsatz_eur DESC
-""".strip()
-        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
-
-    # Revenue by quarter
-    if wants_revenue and wants_quarter and quarter_months:
-        m_from, m_to = quarter_months
-        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
-        sql = f"""
-SELECT
-    tv.jahr,
-    tv.monat,
-    SUM(tv.umsatz_eur) AS umsatz_eur
-FROM ticket_verkaeufe tv
-WHERE tv.monat BETWEEN {m_from} AND {m_to}
-{year_filter}
-GROUP BY tv.jahr, tv.monat
-ORDER BY tv.jahr, tv.monat
-""".strip()
-        return (sql, "Tables used: ticket_verkaeufe")
-
-    # Plan vs actual comparison
+    # ── Plan vs actual ──────────────────────────────────────────────────────────
     if wants_plan and wants_month:
         year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
         sql = f"""
@@ -614,8 +290,119 @@ ORDER BY deviation_eur DESC
 """.strip()
         return (sql, "Tables used: ticket_verkaeufe, plan_umsatz → tarifverbuende")
 
-    # Year-over-year comparison
-    if wants_revenue and contains_any(q, ["compare", "vs", "versus", "growth", "grew", "year-over-year", "yoy", "2024", "2025"]) and wants_month:
+    # ── Average revenue per ticket (ticket price) ───────────────────────────────
+    if wants_avg_price:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        if wants_ticket_type:
+            sql = f"""
+SELECT
+    tp.ticket_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur,
+    SUM(tv.anzahl) AS anzahl,
+    ROUND(SUM(tv.umsatz_eur) / NULLIF(SUM(tv.anzahl), 0), 2) AS avg_price_eur
+FROM ticket_verkaeufe tv
+JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
+{year_filter}
+GROUP BY tp.ticket_name
+ORDER BY avg_price_eur DESC
+""".strip()
+            return (sql, "Tables used: ticket_verkaeufe → ticket_produkte")
+        elif wants_state:
+            sql = f"""
+SELECT
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur,
+    SUM(tv.anzahl) AS anzahl,
+    ROUND(SUM(tv.umsatz_eur) / NULLIF(SUM(tv.anzahl), 0), 2) AS avg_price_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+{year_filter}
+GROUP BY rb.bundesland_name
+ORDER BY avg_price_eur DESC
+""".strip()
+            return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+        else:
+            sql = f"""
+SELECT
+    SUM(tv.umsatz_eur) AS umsatz_eur,
+    SUM(tv.anzahl) AS anzahl,
+    ROUND(SUM(tv.umsatz_eur) / NULLIF(SUM(tv.anzahl), 0), 2) AS avg_price_eur
+FROM ticket_verkaeufe tv
+{year_filter}
+""".strip()
+            return (sql, "Tables used: ticket_verkaeufe")
+
+    # ── Cumulative revenue by month ─────────────────────────────────────────────
+    if wants_revenue and wants_cumulative:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    SUM(tv.umsatz_eur) AS umsatz_eur,
+    SUM(SUM(tv.umsatz_eur)) OVER (PARTITION BY tv.jahr ORDER BY tv.monat) AS cumulative_eur
+FROM ticket_verkaeufe tv
+{year_filter}
+GROUP BY tv.jahr, tv.monat
+ORDER BY tv.jahr, tv.monat
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # ── Month-over-month revenue growth ─────────────────────────────────────────
+    if wants_revenue and wants_growth and wants_month:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+WITH monthly AS (
+    SELECT
+        tv.jahr,
+        tv.monat,
+        SUM(tv.umsatz_eur) AS umsatz_eur
+    FROM ticket_verkaeufe tv
+    {year_filter}
+    GROUP BY tv.jahr, tv.monat
+)
+SELECT
+    jahr,
+    monat,
+    umsatz_eur,
+    LAG(umsatz_eur) OVER (ORDER BY jahr, monat) AS prev_month_eur,
+    ROUND(
+        (umsatz_eur - LAG(umsatz_eur) OVER (ORDER BY jahr, monat))
+        * 100.0 / NULLIF(LAG(umsatz_eur) OVER (ORDER BY jahr, monat), 0),
+        2
+    ) AS mom_growth_pct
+FROM monthly
+ORDER BY jahr, monat
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # ── Year-over-year comparison (dynamic years) ───────────────────────────────
+    if wants_yoy:
+        if len(all_years) >= 2:
+            y1, y2 = sorted(all_years)[:2]
+        else:
+            y1, y2 = 2023, 2024
+        sql = f"""
+SELECT
+    tv.monat,
+    SUM(CASE WHEN tv.jahr = {y1} THEN tv.umsatz_eur ELSE 0 END) AS umsatz_{y1},
+    SUM(CASE WHEN tv.jahr = {y2} THEN tv.umsatz_eur ELSE 0 END) AS umsatz_{y2},
+    ROUND(
+        (SUM(CASE WHEN tv.jahr = {y2} THEN tv.umsatz_eur ELSE 0 END)
+         - SUM(CASE WHEN tv.jahr = {y1} THEN tv.umsatz_eur ELSE 0 END))
+        * 100.0 / NULLIF(SUM(CASE WHEN tv.jahr = {y1} THEN tv.umsatz_eur ELSE 0 END), 0),
+        2
+    ) AS growth_pct
+FROM ticket_verkaeufe tv
+WHERE tv.jahr IN ({y1}, {y2})
+GROUP BY tv.monat
+ORDER BY tv.monat
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # Fallback YoY (no specific years mentioned, or "compare ... vs" + month)
+    if wants_revenue and contains_any(q, ["compare", "vs", "versus", "grew", "year-over-year", "yoy"]) and wants_month:
         sql = """
 SELECT
     tv.monat,
@@ -630,11 +417,183 @@ ORDER BY tv.monat
 """.strip()
         return (sql, "Tables used: ticket_verkaeufe")
 
-    # State comparison (e.g. Bavaria vs Berlin)
-    state_names = extract_state_names(question)
-    if wants_revenue and len(state_names) == 2:
+    # ── Revenue share by state (%) ──────────────────────────────────────────────
+    if wants_revenue and wants_share and (wants_state or state_names):
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+WITH total AS (
+    SELECT SUM(umsatz_eur) AS total_eur FROM ticket_verkaeufe {year_filter}
+)
+SELECT
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur,
+    ROUND(SUM(tv.umsatz_eur) * 100.0 / total.total_eur, 2) AS anteil_pct
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+CROSS JOIN total
+{year_filter}
+GROUP BY rb.bundesland_name, total.total_eur
+ORDER BY umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    # ── TARIFF group (most specific → least specific) ───────────────────────────
+
+    # Tariff + ticket type
+    if wants_revenue and wants_tariff and wants_ticket_type:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    t.name AS tarifverbund_name,
+    tp.ticket_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id
+JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
+{year_filter}
+GROUP BY t.name, tp.ticket_name
+ORDER BY t.name, umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → tarifverbuende, ticket_produkte")
+
+    # Tariff + state + month
+    if wants_revenue and wants_tariff and wants_state and wants_month:
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    t.name AS tarifverbund_name,
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN tarifverbuende t
+    ON tv.tarifverbund_id = t.tarifverbund_id
+JOIN postleitzahlen p
+    ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb
+    ON p.bundesland_code2 = rb.bundesland_code2
+{build_year_filter(question, alias="tv")}
+GROUP BY tv.jahr, tv.monat, t.name, rb.bundesland_name
+ORDER BY tv.jahr, tv.monat, t.name, rb.bundesland_name
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → tarifverbuende, postleitzahlen → regionen_bundesland")
+
+    # Tariff + specific state
+    if wants_tariff and len(state_names) == 1:
+        state = state_names[0]
         year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    t.name AS tarifverbund_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+WHERE rb.bundesland_name = '{state}' {year_filter}
+GROUP BY t.name
+ORDER BY umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → tarifverbuende, postleitzahlen → regionen_bundesland")
+
+    # Tariff + state (generic)
+    if wants_revenue and wants_tariff and wants_state:
+        sql = f"""
+SELECT
+    tv.jahr,
+    t.name AS tarifverbund_name,
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN tarifverbuende t
+    ON tv.tarifverbund_id = t.tarifverbund_id
+JOIN postleitzahlen p
+    ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb
+    ON p.bundesland_code2 = rb.bundesland_code2
+{build_year_filter(question, alias="tv")}
+GROUP BY tv.jahr, t.name, rb.bundesland_name
+ORDER BY tv.jahr, t.name, umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → tarifverbuende, postleitzahlen → regionen_bundesland")
+
+    # Tariff + month
+    if wants_revenue and wants_tariff and wants_month:
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    t.name AS tarifverbund_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN tarifverbuende t
+    ON tv.tarifverbund_id = t.tarifverbund_id
+{build_year_filter(question, alias="tv")}
+GROUP BY tv.jahr, tv.monat, t.name
+ORDER BY tv.jahr, tv.monat, umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → tarifverbuende")
+
+    # Tariff only
+    if wants_revenue and wants_tariff:
+        sql = f"""
+SELECT
+    tv.jahr,
+    t.name AS tarifverbund_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN tarifverbuende t
+    ON tv.tarifverbund_id = t.tarifverbund_id
+{build_year_filter(question, alias="tv")}
+GROUP BY tv.jahr, t.name
+ORDER BY tv.jahr, umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → tarifverbuende")
+
+    # ── STATE group (most specific → least specific) ────────────────────────────
+
+    # Revenue by state + quarter
+    if wants_revenue and wants_quarter and quarter_months and wants_state:
+        m_from, m_to = quarter_months
+        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tv.jahr,
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+WHERE tv.monat BETWEEN {m_from} AND {m_to} {year_filter}
+GROUP BY tv.jahr, rb.bundesland_name
+ORDER BY tv.jahr, umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    # 2 specific states + monthly breakdown
+    if len(state_names) == 2 and wants_month:
         s1, s2 = state_names[0], state_names[1]
+        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+WHERE rb.bundesland_name IN ('{s1}', '{s2}') {year_filter}
+GROUP BY tv.jahr, tv.monat, rb.bundesland_name
+ORDER BY tv.jahr, tv.monat, rb.bundesland_name
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    # 2 specific states (annual total)
+    if len(state_names) == 2:
+        s1, s2 = state_names[0], state_names[1]
+        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
         sql = f"""
 SELECT
     rb.bundesland_name,
@@ -646,28 +605,347 @@ WHERE rb.bundesland_name IN ('{s1}', '{s2}') {year_filter}
 GROUP BY rb.bundesland_name
 ORDER BY umsatz_eur DESC
 """.strip()
-        return (sql, f"Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
 
-    # Single state filter (e.g. revenue in Bavaria by month)
-    if wants_revenue and len(state_names) == 1:
+    # 1 specific state + monthly breakdown
+    if len(state_names) == 1 and wants_month:
         state = state_names[0]
         year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
-        group_by = "tv.monat" if wants_month else "rb.bundesland_name"
-        order_by = "tv.monat" if wants_month else "umsatz_eur DESC"
-        select_extra = "tv.monat," if wants_month else ""
         sql = f"""
 SELECT
-    {select_extra}
+    tv.jahr,
+    tv.monat,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+WHERE rb.bundesland_name = '{state}' {year_filter}
+GROUP BY tv.jahr, tv.monat
+ORDER BY tv.jahr, tv.monat
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    # 1 specific state (annual total)
+    if len(state_names) == 1:
+        state = state_names[0]
+        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
     rb.bundesland_name,
     SUM(tv.umsatz_eur) AS umsatz_eur
 FROM ticket_verkaeufe tv
 JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
 JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
 WHERE rb.bundesland_name = '{state}' {year_filter}
-GROUP BY {group_by}, rb.bundesland_name
-ORDER BY {order_by}
+GROUP BY rb.bundesland_name
+ORDER BY umsatz_eur DESC
 """.strip()
-        return (sql, f"Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    # All states + month (generic)
+    if wants_revenue and wants_state and wants_month:
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p
+    ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb
+    ON p.bundesland_code2 = rb.bundesland_code2
+{build_year_filter(question, alias="tv")}
+GROUP BY tv.jahr, tv.monat, rb.bundesland_name
+ORDER BY tv.jahr, tv.monat, rb.bundesland_name
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    # All states (generic)
+    if wants_revenue and wants_state:
+        sql = f"""
+SELECT
+    tv.jahr,
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p
+    ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb
+    ON p.bundesland_code2 = rb.bundesland_code2
+{build_year_filter(question, alias="tv")}
+GROUP BY tv.jahr, rb.bundesland_name
+ORDER BY tv.jahr, umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    # ── Revenue by month ────────────────────────────────────────────────────────
+    if wants_revenue and wants_month:
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+{build_year_filter(question, alias="tv")}
+GROUP BY tv.jahr, tv.monat
+ORDER BY tv.jahr, tv.monat
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # ── TICKET TYPE group ───────────────────────────────────────────────────────
+
+    # Ticket type in a specific state
+    if wants_ticket_type and len(state_names) == 1:
+        state = state_names[0]
+        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
+        limit = f"LIMIT {top_n}" if wants_top else ""
+        sql = f"""
+SELECT
+    tp.ticket_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+WHERE rb.bundesland_name = '{state}' {year_filter}
+GROUP BY tp.ticket_name
+ORDER BY umsatz_eur DESC
+{limit}
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → ticket_produkte, postleitzahlen → regionen_bundesland")
+
+    # Ticket type + state (generic)
+    if wants_revenue and wants_ticket_type and wants_state:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tp.ticket_name,
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+{year_filter}
+GROUP BY tp.ticket_name, rb.bundesland_name
+ORDER BY tp.ticket_name, umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → ticket_produkte, postleitzahlen → regionen_bundesland")
+
+    # Ticket type + month
+    if wants_revenue and wants_ticket_type and wants_month:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    tp.ticket_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
+{year_filter}
+GROUP BY tv.jahr, tv.monat, tp.ticket_name
+ORDER BY tv.jahr, tv.monat, umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → ticket_produkte")
+
+    # Ticket type only
+    if wants_revenue and wants_ticket_type:
+        sql = f"""
+SELECT
+    tv.jahr,
+    tp.ticket_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN ticket_produkte tp
+    ON tv.ticket_code = tp.ticket_code
+{build_year_filter(question, alias="tv")}
+GROUP BY tv.jahr, tp.ticket_name
+ORDER BY tv.jahr, umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → ticket_produkte")
+
+    # ── Total revenue ───────────────────────────────────────────────────────────
+    if wants_revenue and wants_total:
+        sql = f"""
+SELECT
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+{build_year_filter(question, alias="tv")}
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # ── QUANTITY group ──────────────────────────────────────────────────────────
+
+    if wants_quantity and wants_state:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    rb.bundesland_name,
+    SUM(tv.anzahl) AS anzahl
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+{year_filter}
+GROUP BY rb.bundesland_name
+ORDER BY anzahl DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    if wants_quantity and wants_ticket_type:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tp.ticket_name,
+    SUM(tv.anzahl) AS anzahl
+FROM ticket_verkaeufe tv
+JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
+{year_filter}
+GROUP BY tp.ticket_name
+ORDER BY anzahl DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → ticket_produkte")
+
+    if wants_quantity and wants_tariff:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    t.name AS tarifverbund_name,
+    SUM(tv.anzahl) AS anzahl
+FROM ticket_verkaeufe tv
+JOIN tarifverbuende t ON tv.tarifverbund_id = t.tarifverbund_id
+{year_filter}
+GROUP BY t.name
+ORDER BY anzahl DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → tarifverbuende")
+
+    if wants_quantity and wants_month:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    SUM(tv.anzahl) AS anzahl
+FROM ticket_verkaeufe tv
+{year_filter}
+GROUP BY tv.jahr, tv.monat
+ORDER BY tv.jahr, tv.monat
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    if wants_quantity:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT SUM(tv.anzahl) AS anzahl
+FROM ticket_verkaeufe tv
+{year_filter}
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # ── CITY group ──────────────────────────────────────────────────────────────
+
+    # Top cities in a specific state
+    if wants_city and len(state_names) == 1:
+        state = state_names[0]
+        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
+        limit = f"LIMIT {top_n}" if wants_top else "LIMIT 10"
+        val_col = "SUM(tv.anzahl) AS anzahl" if wants_quantity else "SUM(tv.umsatz_eur) AS umsatz_eur"
+        order_col = "anzahl" if wants_quantity else "umsatz_eur"
+        sql = f"""
+SELECT
+    p.ort,
+    {val_col}
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+WHERE rb.bundesland_name = '{state}' {year_filter}
+GROUP BY p.ort
+ORDER BY {order_col} DESC
+{limit}
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    # All cities (generic)
+    if wants_revenue and wants_city:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        limit = f"LIMIT {top_n}" if wants_top else ""
+        sql = f"""
+SELECT
+    p.ort,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+{year_filter}
+GROUP BY p.ort
+ORDER BY umsatz_eur DESC
+{limit}
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen")
+
+    # ── POSTAL CODE ─────────────────────────────────────────────────────────────
+    if wants_revenue and wants_postal:
+        year_filter = f"WHERE tv.jahr = {specific_year}" if specific_year else ""
+        limit = f"LIMIT {top_n}" if wants_top else "LIMIT 10"
+        sql = f"""
+SELECT
+    tv.plz,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+{year_filter}
+GROUP BY tv.plz
+ORDER BY umsatz_eur DESC
+{limit}
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # ── SPECIFIC PERIOD ─────────────────────────────────────────────────────────
+
+    # Revenue in specific month + year → by state
+    if wants_revenue and specific_month and specific_year:
+        sql = f"""
+SELECT
+    rb.bundesland_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN postleitzahlen p ON CAST(tv.plz AS VARCHAR) = p.plz
+JOIN regionen_bundesland rb ON p.bundesland_code2 = rb.bundesland_code2
+WHERE tv.jahr = {specific_year} AND tv.monat = {specific_month}
+GROUP BY rb.bundesland_name
+ORDER BY umsatz_eur DESC
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe → postleitzahlen → regionen_bundesland")
+
+    # Revenue in specific month across all years
+    if wants_revenue and specific_month and not specific_year:
+        sql = f"""
+SELECT
+    tv.jahr,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+WHERE tv.monat = {specific_month}
+GROUP BY tv.jahr
+ORDER BY tv.jahr
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
+
+    # Revenue by quarter → by state
+    if wants_revenue and wants_quarter and quarter_months:
+        m_from, m_to = quarter_months
+        year_filter = f"AND tv.jahr = {specific_year}" if specific_year else ""
+        sql = f"""
+SELECT
+    tv.jahr,
+    tv.monat,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+WHERE tv.monat BETWEEN {m_from} AND {m_to}
+{year_filter}
+GROUP BY tv.jahr, tv.monat
+ORDER BY tv.jahr, tv.monat
+""".strip()
+        return (sql, "Tables used: ticket_verkaeufe")
 
     return "", ""
 

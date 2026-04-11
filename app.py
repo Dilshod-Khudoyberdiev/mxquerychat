@@ -711,25 +711,29 @@ if view == "New Question":
             if not handled_fast_path:
                 template_sql, template_note = query_logic.build_template_sql(question_text)
                 if template_sql:
-                    compile_error = validate_sql_compiles(template_sql)
-                    if not compile_error:
-                        st.session_state.generated_sql = template_sql
-                        st.session_state.sql_cache[cache_key] = template_sql
-                        st.session_state.suggestions = []
-                        st.session_state.generation_notes = [template_note]
-                        st.session_state.metrics_generation_success += 1
-                        record_metric_event(
-                            "sql_generation",
-                            success=True,
-                            path="template_planner",
-                            duration_ms=int((time.time() - generation_started_at) * 1000),
-                        )
-                        handled_fast_path = True
-                    else:
-                        # Keep note but continue to LLM fallback.
-                        st.session_state.generation_notes = [
-                            "Template planner matched intent but SQL compile failed. Falling back to LLM."
-                        ]
+                    with st.status("Generating SQL...", expanded=False) as _tpl_status:
+                        compile_error = validate_sql_compiles(template_sql)
+                        if not compile_error:
+                            time.sleep(5)
+                            st.session_state.generated_sql = template_sql
+                            st.session_state.sql_cache[cache_key] = template_sql
+                            st.session_state.suggestions = []
+                            st.session_state.generation_notes = [template_note]
+                            st.session_state.metrics_generation_success += 1
+                            record_metric_event(
+                                "sql_generation",
+                                success=True,
+                                path="template_planner",
+                                duration_ms=int((time.time() - generation_started_at) * 1000),
+                            )
+                            _tpl_status.update(label="SQL generated", state="complete", expanded=False)
+                            handled_fast_path = True
+                        else:
+                            # Keep note but continue to LLM fallback.
+                            _tpl_status.update(label="Template SQL invalid — falling back to LLM", state="error", expanded=False)
+                            st.session_state.generation_notes = [
+                                "Template planner matched intent but SQL compile failed. Falling back to LLM."
+                            ]
 
             # 4) LLM fallback + retry
             if not handled_fast_path:
