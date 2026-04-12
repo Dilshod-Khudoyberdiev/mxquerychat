@@ -604,7 +604,6 @@ if view == "New Question":
                     st.session_state.question = suggestion
                     st.session_state.generated_sql = ""
                     st.session_state.generated_explanation = ""
-                    st.session_state.explanation_status = "idle"
                     st.session_state.generation_notes = []
                     st.session_state.suggestions = []
                     st.rerun()
@@ -612,7 +611,6 @@ if view == "New Question":
     if st.button("Send", type="primary"):
         generation_started_at = time.time()
         st.session_state.generated_explanation = ""
-        st.session_state.explanation_status = "idle"
         st.session_state.metrics_questions_total += 1
         question_for_metrics = (st.session_state.question or "").strip()
         record_metric_event(

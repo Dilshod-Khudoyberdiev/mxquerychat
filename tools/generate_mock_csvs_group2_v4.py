@@ -1,24 +1,4 @@
-﻿"""
-
-Purpose:
-This script generates Group 2 fact tables containing core business metrics such as ticket sales,
-other-offer revenue, and planned revenue.
-
-What This File Contains:
-- Loaders for Group 1 reference CSVs.
-- Synthetic record generation for ticket_verkaeufe with period, product, location, and revenue fields.
-- Synthetic record generation for sonstige_angebote and plan_umsatz tables.
-- CSV output helpers for stable encoding and reproducible batch generation.
-
-Key Invariants and Safety Guarantees:
-- Random seed is fixed for reproducible data shape across runs.
-- Fact-table schemas are aligned with expected ingest and query logic.
-- Dataset values are synthetic and used for controlled demos and testing.
-
-How Other Modules Use This File:
-Generated CSVs feed SQL ingestion scripts and become the analytics backbone for Streamlit demos,
-benchmarking, and evaluation tools.
-"""
+"""Generates Group 2 fact tables (ticket_verkaeufe, sonstige_angebote, plan_umsatz) using Group 1 reference CSVs."""
 
 import random
 from pathlib import Path

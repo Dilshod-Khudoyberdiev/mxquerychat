@@ -1,23 +1,4 @@
-﻿"""
-
-Purpose:
-This script generates Group 3 allocation/distribution tables that model how revenue-like values are
-split across federal states under different business dimensions.
-
-What This File Contains:
-- Random share generation helpers that produce approximately normalized distribution weights.
-- Table builders for ticket, offer, and plan allocation by state.
-- Header/detail distribution-rule tables (verteilung_kopf and verteilung_positionen).
-
-Key Invariants and Safety Guarantees:
-- Inputs depend on Group 1 and Group 2 schema conventions.
-- Distribution structures preserve consistent key columns for downstream joins.
-- Output remains synthetic and reproducible with fixed random seed.
-
-How Other Modules Use This File:
-These allocation tables enrich analytical question coverage, especially for joins and weighted
-interpretations showcased in demo questions and thesis evaluation narratives.
-"""
+"""Generates Group 3 allocation/distribution tables (state revenue splits, verteilung_kopf, verteilung_positionen) for the synthetic dataset."""
 
 import random
 from pathlib import Path

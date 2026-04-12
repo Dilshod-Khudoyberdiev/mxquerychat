@@ -1,23 +1,4 @@
-﻿"""
-
-Purpose:
-This script rebuilds the local DuckDB file from SQL ingestion scripts, creating a fresh deterministic
-database state for demos, development, and evaluation.
-
-What This File Contains:
-- CLI behavior for optional --no-delete mode.
-- Ordered execution of ingest SQL files located under sql/.
-- Status output listing rebuilt database and loaded table groups.
-
-Key Invariants and Safety Guarantees:
-- SQL ingestion order is deterministic via sorted file paths.
-- Existing database deletion is explicit unless --no-delete is requested.
-- Failure conditions are surfaced early when inputs are missing.
-
-How Other Modules Use This File:
-This file is run directly from the terminal when a clean dataset rebuild is required before app usage,
-benchmarking, or thesis evaluation.
-"""
+"""CLI tool: rebuilds mxquerychat.duckdb from scratch by executing all SQL ingest scripts under sql/ in sorted order."""
 
 import sys
 from pathlib import Path

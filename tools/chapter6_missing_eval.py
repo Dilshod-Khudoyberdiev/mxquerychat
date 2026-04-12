@@ -1,25 +1,4 @@
-"""
-Purpose:
-This script measures the remaining Chapter 6 evaluation items for the mxQueryChat thesis and writes
-machine-readable plus Markdown artifacts into outputs/chapter6_missing_eval.
-
-What This File Contains:
-- Environment inspection for OS, Python, package, CPU, memory, and local model runtime details.
-- A controlled before/after training experiment that uses isolated temporary CSV/vector-store copies.
-- A semantic-error search over harder in-domain paraphrases with generated-vs-corrected SQL capture.
-- Local benchmark-availability detection and telemetry-backed usability measurability checks.
-- Combined report writers for per-task outputs and a thesis-ready summary.
-
-Key Invariants and Safety Guarantees:
-- The DuckDB database is accessed in read-only mode through the same execution policy used by the app.
-- Temporary training experiments run against copied CSV/vector-store paths and never overwrite project data.
-- Missing or non-detectable values are reported explicitly instead of guessed.
-- Every task writes a result artifact even when the task is only partially measurable or fails.
-
-How Other Modules Use This File:
-This file is a standalone measurement utility. It reuses tools/evaluation_runner.py, vannaagent.py,
-and telemetry summarization helpers to generate the missing Chapter 6 evidence.
-"""
+"""CLI utility: measures remaining Chapter 6 evaluation items and writes machine-readable + Markdown artifacts to outputs/chapter6_missing_eval."""
 
 from __future__ import annotations
 

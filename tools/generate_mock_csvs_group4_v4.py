@@ -1,23 +1,4 @@
-﻿"""
-
-Purpose:
-This script generates Group 4 synthetic user and permission tables used to demonstrate optional
-access-control analytics and multi-domain query examples.
-
-What This File Contains:
-- Synthetic user account generation.
-- Permission table generation across federal-state scope, tariff scope, and ZaSt scopes.
-- CSV output helpers for consistent encoding and integration with ingest tooling.
-
-Key Invariants and Safety Guarantees:
-- Data is synthetic and excludes real customer identity data.
-- Referential keys align with Group 1 reference entities.
-- Randomized permissions broaden realistic query scenarios for demos and tests.
-
-How Other Modules Use This File:
-This script complements the transportation-revenue domain by adding a permissions domain that can be
-queried safely in read-only mode for teaching and thesis demonstration purposes.
-"""
+"""Generates Group 4 synthetic user and permission tables for multi-domain query demos."""
 
 import random
 from pathlib import Path

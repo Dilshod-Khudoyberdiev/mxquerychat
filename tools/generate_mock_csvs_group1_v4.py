@@ -1,24 +1,4 @@
-﻿"""
-
-Purpose:
-This script generates Group 1 reference tables for the synthetic mxQueryChat dataset. These lookup
-entities form the relational backbone used by downstream fact and allocation tables.
-
-What This File Contains:
-- Deterministic random seed setup for repeatable mock generation.
-- Builders for federal states, postal-code mapping, ticket products, tariff associations,
-  and reporting-office reference datasets.
-- A CSV writer helper configured for Excel-friendly UTF-8 BOM output.
-
-Key Invariants and Safety Guarantees:
-- Generated records are synthetic and intended for demo/learning usage.
-- Output folder and naming scheme are stable for downstream ingest scripts.
-- Data generation focuses on realistic structure, not production-grade realism.
-
-How Other Modules Use This File:
-Group 2, Group 3, and Group 4 generators depend on these reference CSVs. Rebuilding the full mock
-pipeline starts with this script.
-"""
+"""Generates Group 1 reference tables (states, postal codes, ticket products, tariff associations, reporting offices) for the synthetic dataset."""
 
 import random
 from pathlib import Path

@@ -1,25 +1,4 @@
-﻿"""
-
-Purpose:
-This script runs repeatable benchmark experiments over local question sets and reports quality plus
-latency metrics for the NL-to-SQL pipeline.
-
-What This File Contains:
-- Markdown and CSV benchmark-question loaders.
-- Per-question execution pipeline with guardrails, template/LLM generation, validation, and execution.
-- Optional gold-SQL comparison helpers for Exact Match and Execution Accuracy.
-- Report writers that emit JSON and CSV benchmark artifacts.
-
-Key Invariants and Safety Guarantees:
-- Queries are validated through read-only and complexity checks before execution.
-- DuckDB execution remains read-only and row-limited.
-- Outcome taxonomy remains stable across runs for comparable benchmarking.
-- Gold-result comparisons are only computed when benchmark rows provide gold SQL.
-
-How Other Modules Use This File:
-This script is run manually from the command line. Its outputs support progress tracking, thesis tables,
-and local held-out benchmark evaluation without requiring Spider/BIRD adapters.
-"""
+﻿"""CLI benchmark runner: executes a question set through the full NL-to-SQL pipeline and emits JSON/CSV quality and latency reports."""
 
 from __future__ import annotations
 
