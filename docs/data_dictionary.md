@@ -1,4 +1,4 @@
-# mxQueryChat – Data Dictionary
+# mxQueryChat - Data Dictionary
 
 This document describes the **synthetic (mock) dataset** used in **mxQueryChat**.
 
@@ -41,10 +41,10 @@ A clean list of all German **Bundesländer** (federal states).
 - Show a list of states for UI dropdowns
 
 ### Important columns
-- `bundesland_id` – internal numeric id
-- `bundesland_name` – readable name (e.g., “Bayern”)
-- `bundesland_code2` – **2-digit key** used for joins (e.g., “09”)
-- `iso_code` – ISO code (e.g., “DE-BY”)
+- `bundesland_id` - internal numeric id
+- `bundesland_name` - readable name (e.g., “Bayern”)
+- `bundesland_code2` - **2-digit key** used for joins (e.g., “09”)
+- `iso_code` - ISO code (e.g., “DE-BY”)
 
 ### How to join it
 Most commonly you reach Bundesland through PLZ:
@@ -78,9 +78,9 @@ So this table is the bridge that lets you answer questions like:
 - “Revenue by state” (via PLZ join)
 
 ### Important columns
-- `plz` – 5-digit postal code (join key)
-- `ort` – city name
-- `bundesland_code2` – join key to `regionen_bundesland`
+- `plz` - 5-digit postal code (join key)
+- `ort` - city name
+- `bundesland_code2` - join key to `regionen_bundesland`
 
 ### How to join it
 - `ticket_verkaeufe.plz` → `postleitzahlen.plz`
@@ -104,9 +104,9 @@ This is the “dictionary” for ticket codes.
 - Filter by a ticket product (e.g., Deutschlandticket)
 
 ### Important columns
-- `ticket_code` – join key used in sales
-- `ticket_name` – readable product name
-- `preis_eur` – official price (synthetic but realistic)
+- `ticket_code` - join key used in sales
+- `ticket_name` - readable product name
+- `preis_eur` - official price (synthetic but realistic)
 
 ### How to join it
 - `ticket_verkaeufe.ticket_code` → `ticket_produkte.ticket_code`
@@ -129,10 +129,10 @@ Sales and planning are grouped by these organizations.
 - Filtering: only active associations
 
 ### Important columns
-- `tarifverbund_id` – join key
-- `name` – readable name
-- `kuerzel` – abbreviation (good for display)
-- `status` – “aktiv” / “inaktiv”
+- `tarifverbund_id` - join key
+- `name` - readable name
+- `kuerzel` - abbreviation (good for display)
+- `status` - “aktiv” / “inaktiv”
 
 ### How to join it
 - `ticket_verkaeufe.tarifverbund_id` → `tarifverbuende.tarifverbund_id`
@@ -156,9 +156,9 @@ This table describes those offices.
 - Check which offices belong to a synthetic organization
 
 ### Important columns
-- `meldestelle_code` – join key used in sales
-- `meldestelle_name` – readable name
-- `organisation_id` – synthetic organization grouping
+- `meldestelle_code` - join key used in sales
+- `meldestelle_name` - readable name
+- `organisation_id` - synthetic organization grouping
 
 ### How to join it
 - `ticket_verkaeufe.meldestelle_code` → `meldestellen.meldestelle_code`
@@ -188,13 +188,13 @@ The **core analytics table**: each row represents ticket sales for a month/regio
 - Joining to ticket products and tariff associations
 
 ### Important columns
-- `monat`, `jahr` – reporting period
-- `ticket_code` – ticket type
-- `anzahl` – number of tickets
-- `preis_eur` – unit price
-- `umsatz_eur` – total revenue
-- `plz` – used to derive city/state
-- `tarifverbund_id`, `meldestelle_code` – organization dimensions
+- `monat`, `jahr` - reporting period
+- `ticket_code` - ticket type
+- `anzahl` - number of tickets
+- `preis_eur` - unit price
+- `umsatz_eur` - total revenue
+- `plz` - used to derive city/state
+- `tarifverbund_id`, `meldestelle_code` - organization dimensions
 
 ### How to join it (most common paths)
 - Ticket name & catalog price:
@@ -232,7 +232,7 @@ Used for comparisons: “Deutschlandticket vs other products”.
 ### Important columns
 - `monat`, `jahr`
 - `tarifverbund_id`
-- `angebot_gruppe` – category identifier
+- `angebot_gruppe` - category identifier
 - `umsatz_eur`
 
 ### How to join it
@@ -256,7 +256,7 @@ Targets / planned revenue (“Planwerte”) per month and tariff association.
 ### Important columns
 - `monat`, `jahr`
 - `tarifverbund_id`
-- `umsatz_eur` – planned revenue
+- `umsatz_eur` - planned revenue
 
 ### How to join it
 Compare planned vs actual using shared keys:
@@ -347,8 +347,8 @@ Synthetic user accounts (names are plausible but not real people).
 - Count how many users have certain rights
 
 ### Important columns
-- `nutzer_id` – join key
-- `benutzername`, `email` – synthetic identifiers
+- `nutzer_id` - join key
+- `benutzername`, `email` - synthetic identifiers
 
 ---
 
@@ -361,10 +361,10 @@ These tables store boolean flags like:
 - etc.
 
 ### Tables
-- `nutzer_bundesland_rechte` – rights per Bundesland
-- `nutzer_tarifverbund_rechte` – rights per tariff association
-- `nutzer_zast_rechte` – rights per ZaSt entity (synthetic)
-- `nutzer_zentral_zast_rechte` – rights per central entity (synthetic)
+- `nutzer_bundesland_rechte` - rights per Bundesland
+- `nutzer_tarifverbund_rechte` - rights per tariff association
+- `nutzer_zast_rechte` - rights per ZaSt entity (synthetic)
+- `nutzer_zentral_zast_rechte` - rights per central entity (synthetic)
 
 ### Example questions
 - DE: „Welche Nutzer dürfen herunterladen?“

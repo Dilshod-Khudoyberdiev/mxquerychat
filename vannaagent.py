@@ -111,7 +111,7 @@ def get_vanna() -> MXQueryVanna:
             # Lower latency defaults for local CPU/GPU
             "ollama_timeout": float(os.getenv("OLLAMA_TIMEOUT_SECONDS", "120")),
             "keep_alive": os.getenv("OLLAMA_KEEP_ALIVE", "30m"),
-            # Limit few-shot examples sent to LLM — reduces prompt token count significantly
+            # Limit few-shot examples sent to LLM - reduces prompt token count significantly
             "n_results": int(os.getenv("OLLAMA_N_RESULTS", "3")),
             "options": {
                 "num_ctx": int(os.getenv("OLLAMA_NUM_CTX", "2048")),

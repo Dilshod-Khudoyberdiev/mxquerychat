@@ -90,7 +90,7 @@ There is no commit history yet, so no established message convention exists. Use
 
 Do not commit secrets or local configuration. If you add runtime configuration, prefer environment variables and document required keys in a `README` or `.env.example`.
 
-## 2. Agent Operating Rules (Codex) — Autonomy After Initial Approval
+## 2. Agent Operating Rules (Codex) - Autonomy After Initial Approval
 
 These rules apply specifically to the **mxQueryChat** project and repository.
 

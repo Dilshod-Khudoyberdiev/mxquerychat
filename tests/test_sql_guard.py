@@ -1,4 +1,4 @@
-﻿"""Tests for validate_read_only_sql — allowed patterns, write intent, and edge cases."""
+﻿"""Tests for validate_read_only_sql - allowed patterns, write intent, and edge cases."""
 
 import pytest
 

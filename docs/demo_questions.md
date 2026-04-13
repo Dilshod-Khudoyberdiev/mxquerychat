@@ -1,11 +1,11 @@
-# mxQueryChat – 90 Demo Questions (DE + EN)
+# mxQueryChat - 90 Demo Questions (DE + EN)
 
 > Dataset: synthetic mock data (DuckDB)
 > Tables referenced implicitly: ticket_verkaeufe, postleitzahlen, regionen_bundesland, ticket_produkte, tarifverbuende, meldestellen, plan_umsatz, distribution tables
 
 ---
 
-## A) Basics (simple and understandable) – 1–15
+## A) Basics (simple and understandable) - 1-15
 
 1. DE: Wie hoch ist der gesamte Umsatz im Jahr 2025?
    EN: What is the total revenue in 2025?
@@ -54,7 +54,7 @@
 
 ---
 
-## B) “Join” questions (core of your PRD) – 16–35
+## B) “Join” questions (core of your PRD) - 16-35
 
 16. DE: Zeige Umsatz nach Bundesland (über PLZ).
     EN: Show revenue by federal state (via postal code).
@@ -118,7 +118,7 @@
 
 ---
 
-## C) Time-based analysis (trends, seasonality) – 36–55
+## C) Time-based analysis (trends, seasonality) - 36-55
 
 36. DE: Zeige Umsatzentwicklung pro Monat von 2024 bis 2025.
     EN: Show revenue trend per month from 2024 to 2025.
@@ -182,7 +182,7 @@
 
 ---
 
-## D) “Top / Bottom / Rankings” – 56–70
+## D) “Top / Bottom / Rankings” - 56-70
 
 56. DE: Top 10 Tarifverbünde nach Umsatz.
     EN: Top 10 tariff associations by revenue.
@@ -231,7 +231,7 @@
 
 ---
 
-## E) Plan vs Actual (KPI style) – 71–80
+## E) Plan vs Actual (KPI style) - 71-80
 
 71. DE: Vergleiche Ist-Umsatz (ticket_verkaeufe) mit Plan-Umsatz (plan_umsatz) pro Monat.
     EN: Compare actual revenue (ticket_verkaeufe) with planned revenue (plan_umsatz) per month.
