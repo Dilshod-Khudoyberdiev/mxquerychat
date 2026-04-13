@@ -19,18 +19,20 @@ def _read_int_env(name: str, default: int) -> int:
 
 
 def build_explanation_prompt(question: str, sql: str) -> str:
-    """Build a concise prompt for local LLM SQL explanation."""
+    """Build a prompt for local LLM SQL explanation."""
     question_text = (question or "").strip()
     sql_text = " ".join((sql or "").strip().split())
-    if len(sql_text) > 700:
-        sql_text = sql_text[:700].rstrip() + " ..."
+    if len(sql_text) > 900:
+        sql_text = sql_text[:900].rstrip() + " ..."
     return (
-        "Explain SQL intent for a business user.\n"
-        "Return exactly one sentence, max 25 words.\n"
-        "Mention metric, main filter, and grouping when present.\n"
-        "No markdown.\n\n"
-        f"Question:\n{question_text}\n\n"
-        f"SQL:\n{sql_text}\n"
+        "You are a data analyst explaining a SQL query to a business stakeholder.\n"
+        "Write 2-3 short sentences in plain English. Be specific — name the actual metrics, filters, and groupings from the SQL. "
+        "Do not use technical jargon like JOIN or WHERE. "
+        "Start with what business question it answers, then describe what data it uses and how results are shaped.\n"
+        "No bullet points. No markdown headers. Keep it under 100 words.\n\n"
+        f"Question: {question_text}\n\n"
+        f"SQL:\n{sql_text}\n\n"
+        "Explanation:"
     )
 
 
@@ -71,7 +73,7 @@ def generate_sql_explanation(
         "keep_alive": os.getenv("OLLAMA_KEEP_ALIVE", "30m"),
         "options": {
             "temperature": 0,
-            "num_predict": _read_int_env("EXPLANATION_NUM_PREDICT", 32),
+            "num_predict": _read_int_env("EXPLANATION_NUM_PREDICT", 200),
         },
     }
     data = json.dumps(body).encode("utf-8")

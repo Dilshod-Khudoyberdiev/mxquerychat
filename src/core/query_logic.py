@@ -1262,15 +1262,15 @@ def get_local_guardrail_message(question: str) -> str:
     if len(q.split()) < 2:
         return "Please write a fuller data question."
 
-    # Write intent — always block regardless of scope
+    # Write intent - always block regardless of scope
     if any(re.search(pattern, q) for pattern in WRITE_PATTERNS):
         return "Read-only mode: write operations are not allowed."
 
-    # OUT_OF_SCOPE — unambiguous non-database request
+    # OUT_OF_SCOPE - unambiguous non-database request
     if any(re.search(pattern, q) for pattern in _OUT_OF_SCOPE_PATTERNS):
         return _OUT_OF_SCOPE_MSG
 
-    # UNCLEAR — short/vague with no scope signal
+    # UNCLEAR - short/vague with no scope signal
     vague_only_phrases = [
         "show me the data",
         "give me the report",
@@ -1289,72 +1289,100 @@ def get_local_guardrail_message(question: str) -> str:
             "Please specify the table, metric, filters, or time period you are interested in."
         )
 
-    # IN_SCOPE — allow through
+    # IN_SCOPE - allow through
     return ""
 
 
 def explain_sql_brief(sql: str) -> str:
-    """Return a specific plain-language summary of what this SQL query does."""
+    """Return a natural-language explanation of what this SQL query does."""
     cleaned = (sql or "").strip()
     if not cleaned:
         return "No SQL to explain yet."
 
     lowered = cleaned.lower()
 
-    # --- metric (what is being measured) ---
-    metric = "data"
-    sum_match = re.search(r"\bsum\s*\(([^)]+)\)\s+as\s+(\w+)", lowered)
-    count_match = re.search(r"\bcount\s*\(([^)]*)\)\s+as\s+(\w+)", lowered)
-    avg_match = re.search(r"\bavg\s*\(([^)]+)\)\s+as\s+(\w+)", lowered)
-    if sum_match:
-        metric = sum_match.group(2).replace("_", " ")
-    elif count_match:
-        metric = count_match.group(2).replace("_", " ") + " count"
-    elif avg_match:
-        metric = "average " + avg_match.group(2).replace("_", " ")
+    # --- aggregations ---
+    agg_parts: list[str] = []
+    for m in re.finditer(r"\b(sum|count|avg|min|max)\s*\(([^)]*)\)\s+as\s+(\w+)", lowered):
+        fn, _col, alias = m.group(1), m.group(2), m.group(3)
+        label = alias.replace("_", " ")
+        fn_map = {"sum": "total", "count": "count of", "avg": "average", "min": "minimum", "max": "maximum"}
+        agg_parts.append(f"**{fn_map.get(fn, fn)} {label}**")
 
-    # --- dimensions (GROUP BY columns) ---
+    # --- tables ---
+    table_matches = re.findall(r"\bfrom\s+(\w+)|\bjoin\s+(\w+)", lowered)
+    tables = [t for pair in table_matches for t in pair if t]
+
+    # --- GROUP BY dimensions ---
     group_match = re.search(r"\bgroup\s+by\s+([\w\s,\.]+?)(?:\bhaving\b|\border\b|\blimit\b|$)", lowered)
     dimensions: list[str] = []
     if group_match:
-        raw_cols = group_match.group(1).strip()
-        for col in re.split(r",\s*", raw_cols):
-            col = col.strip()
-            # strip table alias prefix (e.g. "rb.bundesland_name" → "bundesland name")
-            col = re.sub(r"^\w+\.", "", col)
-            col = col.replace("_", " ").strip()
+        for col in re.split(r",\s*", group_match.group(1).strip()):
+            col = re.sub(r"^\w+\.", "", col.strip()).replace("_", " ").strip()
             if col:
                 dimensions.append(col)
 
-    # --- year filter ---
+    # --- WHERE filters ---
+    filter_notes: list[str] = []
     year_match = re.search(r"\bjahr\s*=\s*(\d{4})", lowered)
-    year_filter = year_match.group(1) if year_match else None
+    if year_match:
+        filter_notes.append(f"year {year_match.group(1)}")
+    year_range = re.search(r"\bjahr\s+between\s+(\d{4})\s+and\s+(\d{4})", lowered)
+    if year_range:
+        filter_notes.append(f"years {year_range.group(1)}–{year_range.group(2)}")
+    month_match = re.search(r"\bmonat\s*=\s*(\d{1,2})", lowered)
+    if month_match:
+        filter_notes.append(f"month {month_match.group(1)}")
+    top_match = re.search(r"\blimit\s+(\d+)", lowered)
 
-    # --- build sentence ---
-    parts: list[str] = []
+    # --- ORDER BY ---
+    order_match = re.search(r"\border\s+by\s+([\w\s,\.]+?)(?:\blimit\b|$)", lowered)
+    order_desc = None
+    if order_match:
+        order_col = re.split(r",\s*", order_match.group(1).strip())[0]
+        direction = "descending" if "desc" in order_col else "ascending"
+        order_col = re.sub(r"\b(asc|desc)\b", "", order_col).strip()
+        order_col = re.sub(r"^\w+\.", "", order_col).replace("_", " ").strip()
+        if order_col:
+            order_desc = f"{order_col} ({direction})"
 
-    verb = "Shows" if not any(f in lowered for f in ("sum(", "count(", "avg(", "min(", "max(")) else "Calculates"
-    if dimensions:
-        parts.append(f"{verb} {metric} broken down by {', '.join(dimensions)}.")
+    # --- CTEs ---
+    cte_names = re.findall(r"\bwith\s+(\w+)\s+as\s*\(", lowered)
+
+    # --- build explanation ---
+    lines: list[str] = []
+
+    # What does it return?
+    if agg_parts:
+        what = "Computes " + ", ".join(agg_parts)
     else:
-        parts.append(f"{verb} {metric}.")
+        what = "Retrieves records"
+    if dimensions:
+        what += f" grouped by **{', '.join(dimensions)}**"
+    lines.append(what + ".")
 
-    if year_filter:
-        parts.append(f"Filtered to year {year_filter}.")
+    # Source tables
+    if tables:
+        unique_tables = list(dict.fromkeys(tables))
+        lines.append(f"Reads from: {', '.join(f'`{t}`' for t in unique_tables)}.")
 
-    if "order by" in lowered:
-        # extract ORDER BY column(s)
-        order_match = re.search(r"\border\s+by\s+([\w\s,\.]+?)(?:\blimit\b|$)", lowered)
-        if order_match:
-            order_cols = order_match.group(1).strip()
-            order_col = re.split(r",\s*", order_cols)[0]
-            order_col = re.sub(r"\b(asc|desc)\b", "", order_col).strip()
-            order_col = re.sub(r"^\w+\.", "", order_col).replace("_", " ").strip()
-            direction = "descending" if "desc" in order_match.group(1) else "ascending"
-            if order_col:
-                parts.append(f"Sorted by {order_col} ({direction}).")
+    # CTEs
+    if cte_names:
+        lines.append(f"Uses {len(cte_names)} intermediate step(s) (CTEs): {', '.join(cte_names)}.")
 
-    return " ".join(parts)
+    # Filters
+    if filter_notes:
+        lines.append(f"Filtered to {' and '.join(filter_notes)}.")
+
+    # Sorting and limit
+    if order_desc and top_match:
+        lines.append(f"Returns the top {top_match.group(1)} results sorted by {order_desc}.")
+    elif order_desc:
+        lines.append(f"Sorted by {order_desc}.")
+    elif top_match:
+        lines.append(f"Limited to {top_match.group(1)} rows.")
+
+    return "\n\n".join(lines)
 
 
 def classify_generation_failure(error_code: str) -> str:

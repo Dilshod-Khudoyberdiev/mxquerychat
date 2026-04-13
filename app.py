@@ -32,6 +32,7 @@ from src.db.execution_policy import (
     validate_sql_complexity,
 )
 from src.utils.telemetry import configure_app_logging, record_metric_event
+from src.llm.sql_explainer import build_explanation_prompt, build_explanation_cache_key, generate_sql_explanation
 from sql_guard import validate_read_only_sql
 from vannaagent import (
     get_vanna,
@@ -54,7 +55,7 @@ configure_app_logging()
 
 EXAMPLE_QUESTIONS = [
     "Which 5 federal states generated the most ticket revenue in 2025?",
-    "Compare monthly ticket revenue between 2024 and 2025 — which months grew?",
+    "Compare monthly ticket revenue between 2024 and 2025 - which months grew?",
     "Show top 5 ticket types by revenue in 2025 with exact euro amounts.",
     "For each tariff association, show total revenue by federal state for 2025.",
 ]
@@ -140,7 +141,7 @@ def build_suggested_questions(question: str) -> list[str]:
         ]
     elif any(k in q_lower for k in ("month", "monat", "trend", "quarter", "growth", "change", "compar")):
         candidates = [
-            f"Show monthly ticket revenue for {yr} — which month peaked?",
+            f"Show monthly ticket revenue for {yr} - which month peaked?",
             f"Compare revenue per month between {prev} and {yr}.",
             f"Show revenue per quarter for {yr} across all ticket types.",
             f"Which federal state had the highest revenue growth from {prev} to {yr}?",
@@ -169,7 +170,7 @@ def build_suggested_questions(question: str) -> list[str]:
     else:
         candidates = [
             f"Which 5 federal states generated the most ticket revenue in {yr}?",
-            f"Show monthly ticket revenue for {yr} — identify the peak month.",
+            f"Show monthly ticket revenue for {yr} - identify the peak month.",
             f"Which ticket types earned the most in {yr}? Show top 5 with amounts.",
             f"For each tariff association, show total revenue by federal state for {yr}.",
         ]
@@ -209,7 +210,7 @@ def validate_sql_compiles(sql: str) -> str:
         return "No SQL generated."
     con = duckdb.connect(DUCKDB_PATH, read_only=True)
     try:
-        # EXPLAIN parses and plans without executing — safe for compile-time validation.
+        # EXPLAIN parses and plans without executing - safe for compile-time validation.
         con.execute(f"EXPLAIN {sql}")
         return ""
     except Exception as exc:
@@ -368,6 +369,7 @@ def init_state():
         "feedback_last_question_hash": "no_question",
 
         "generated_explanation": "",
+        "explanation_cache": {},
 
         # Working copy of the training CSV for the editor; None until the page is opened.
         "training_working_df": None,
@@ -611,6 +613,7 @@ if view == "New Question":
     if st.button("Send", type="primary"):
         generation_started_at = time.time()
         st.session_state.generated_explanation = ""
+        st.session_state.explain_expander_open = False
         st.session_state.metrics_questions_total += 1
         question_for_metrics = (st.session_state.question or "").strip()
         record_metric_event(
@@ -728,7 +731,7 @@ if view == "New Question":
                             handled_fast_path = True
                         else:
                             # Keep note but continue to LLM fallback.
-                            _tpl_status.update(label="Template SQL invalid — falling back to LLM", state="error", expanded=False)
+                            _tpl_status.update(label="Template SQL invalid - falling back to LLM", state="error", expanded=False)
                             st.session_state.generation_notes = [
                                 "Template planner matched intent but SQL compile failed. Falling back to LLM."
                             ]
@@ -855,28 +858,38 @@ if view == "New Question":
             value=st.session_state.generated_sql,
             height=170,
         )
-        if st.button("Save to Training Examples", key="save_sql_to_training"):
-            q = st.session_state.question.strip()
-            s = st.session_state.generated_sql.strip()
-            # Upsert by normalised question — re-saving after an edit updates the row, not duplicates.
-            upsert_training_example(q, s)
-            # Refresh session cache so the corrected SQL is used on the next re-ask.
-            st.session_state.sql_cache[q.lower()] = s
-            record_metric_event(
-                "training_examples_saved",
-                row_count=1,
-                dropped_missing_question_or_sql=0,
-                duplicate_question_sql_rows=0,
-            )
-            st.success("Saved to training examples. Future queries will use this SQL.")
-
-        with st.expander("Explain this SQL", expanded=False):
+        with st.expander("Explain this SQL", expanded=st.session_state.get("explain_expander_open", False)):
             if st.button("Explain", key="explain_sql"):
-                st.session_state.generated_explanation = query_logic.explain_sql_brief(
-                    st.session_state.generated_sql
+                _cache_key = build_explanation_cache_key(
+                    st.session_state.get("question", ""),
+                    st.session_state.generated_sql,
                 )
+                cached = st.session_state.explanation_cache.get(_cache_key)
+                if cached:
+                    st.session_state.generated_explanation = cached
+                else:
+                    with st.spinner("Generating explanation..."):
+                        _prompt = build_explanation_prompt(
+                            st.session_state.get("question", ""),
+                            st.session_state.generated_sql,
+                        )
+                        _text, _err = generate_sql_explanation(
+                            model=os.getenv("OLLAMA_MODEL", "mistral"),
+                            prompt=_prompt,
+                            ollama_url=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
+                            timeout_seconds=30,
+                        )
+                    if _err:
+                        st.session_state.generated_explanation = query_logic.explain_sql_brief(
+                            st.session_state.generated_sql
+                        )
+                    else:
+                        st.session_state.explanation_cache[_cache_key] = _text
+                        st.session_state.generated_explanation = _text
+                st.session_state.explain_expander_open = True
+                st.rerun()
             if st.session_state.get("generated_explanation"):
-                st.info(st.session_state.generated_explanation)
+                st.markdown(st.session_state.generated_explanation)
 
     if st.session_state.generated_sql:
         st.markdown("### Step 3: Safety check")
@@ -994,7 +1007,7 @@ if view == "New Question":
         try_show_bar_chart(result_df)
 
         question_hash = build_question_hash(st.session_state.question)
-        if st.button("SQL was correct — save as example", key="feedback_helpful", width="stretch"):
+        if st.button("Save as Training Example", key="feedback_helpful", width="stretch"):
             st.session_state.feedback_last_rating = "up"
             st.session_state.feedback_last_question_hash = question_hash
             record_metric_event(
@@ -1145,7 +1158,7 @@ elif view == "Chat History":
         selected = next((e for e in history if e["id"] == selected_id), None)
 
         if selected is None:
-            # List view — newest first (already ordered)
+            # List view - newest first (already ordered)
             for entry in history:
                 ts = (entry.get("timestamp") or "")[:16].replace("T", " ")
                 q = entry.get("question") or ""
