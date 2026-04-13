@@ -584,9 +584,9 @@ if view == "New Question":
         '<div class="mx-prompt-card"><strong>Question</strong><br/>Type your question in plain language.</div>',
         unsafe_allow_html=True,
     )
-    st.session_state.question = st.text_area(
+    st.text_area(
         "Question",
-        value=st.session_state.question,
+        key="question",
         placeholder="Example: Show revenue by state for 2025.",
         label_visibility="visible",
         height=72,
