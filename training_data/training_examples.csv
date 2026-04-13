@@ -101,3 +101,27 @@ JOIN regionen_bundesland rb
 WHERE tv.jahr = 2024
 GROUP BY tv.monat, rb.bundesland_name
 ORDER BY umsatz_eur DESC",,2026-04-11T12:13:22+00:00,2026-04-11T12:14:05+00:00
+Which tariff associations had the highest revenue growth from 2024 to 2025?,"SELECT
+    tv.jahr,
+    t.name AS tarifverbund_name,
+    SUM(tv.umsatz_eur) AS umsatz_eur
+FROM ticket_verkaeufe tv
+JOIN tarifverbuende t
+    ON tv.tarifverbund_id = t.tarifverbund_id
+WHERE tv.jahr = 2024 OR tv.jahr = 2025
+GROUP BY tv.jahr, t.name
+ORDER BY tv.jahr, umsatz_eur DESC",,2026-04-13T14:25:22+00:00,2026-04-13T14:25:22+00:00
+Which ticket types appear in all months of 2025?,"WITH ticket_types AS (
+    SELECT DISTINCT tp.ticket_name
+    FROM ticket_verkaeufe tv
+    JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
+    WHERE tv.jahr = 2025
+)
+SELECT tt.ticket_name
+FROM ticket_types tt
+WHERE tt.ticket_name IN (
+    SELECT tp.ticket_name
+    FROM ticket_verkaeufe tv
+    JOIN ticket_produkte tp ON tv.ticket_code = tp.ticket_code
+    WHERE tv.jahr = 2025
+)",,2026-04-13T14:40:02+00:00,2026-04-13T14:40:02+00:00
