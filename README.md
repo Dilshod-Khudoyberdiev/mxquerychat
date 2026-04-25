@@ -269,5 +269,4 @@ Output goes to `reports/metrics_summary.json`.
 
 - Works with one database only (`mxquerychat.duckdb`)
 - Supports German public transport data out of the box; other data requires setup
-- AI-generated SQL can sometimes be wrong — always review before trusting results
-- Not designed for production use; this is a learning/demo project
+- AI-generated SQL can sometimes be wrong - always review before trusting results
