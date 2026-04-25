@@ -1,0 +1,53 @@
+mxQueryChat Evaluation - Environment Information
+==================================================
+
+Operating System:   Windows-11-10.0.26200-SP0
+CPU Model:          Intel(R) Core(TM) Ultra 5 125U
+CPU Threads:        14
+RAM:                15.52 GiB
+
+Python Version:     3.13.3
+Streamlit Version:  1.53.0
+DuckDB Version:     1.4.3
+Vanna Version:      2.0.1
+ChromaDB Version:   1.4.1
+Ollama Version:     ollama version is 0.17.7
+Model Name:         mistral:latest
+
+Database File:      mxquerychat.duckdb
+Number of Tables:   18
+
+Table Row Counts:
+  angebot_verteilung_bundesland                8221 rows
+  meldestellen                                   80 rows
+  nutzer                                         80 rows
+  nutzer_bundesland_rechte                      211 rows
+  nutzer_tarifverbund_rechte                    156 rows
+  nutzer_zast_rechte                             89 rows
+  nutzer_zentral_zast_rechte                     45 rows
+  plan_umsatz                                   480 rows
+  plan_verteilung_bundesland                   2667 rows
+  postleitzahlen                                400 rows
+  regionen_bundesland                            16 rows
+  sonstige_angebote                            5000 rows
+  tarifverbuende                                 20 rows
+  ticket_produkte                                 5 rows
+  ticket_verkaeufe                            15000 rows
+  ticket_verteilung_bundesland                11015 rows
+  verteilung_kopf                               120 rows
+  verteilung_positionen                         675 rows
+
+Key Counts:
+  Fact table (ticket_verkaeufe):         15000 rows
+  Distinct ticket products:                  5
+  Distinct tariff networks:                 20
+  Distinct postal codes:                   396
+  Distinct federal states:                  16
+
+Notes:
+  - All evaluation runs used read_only=True DuckDB connections.
+  - Domain test used exact-match lookup path (no Ollama calls needed).
+  - Benchmark held-out test used template-only path (no LLM).
+  - Training before/after test used full Vanna + Ollama pipeline.
+  - Semantic test used template-only path (no LLM).
+  - Safety test used direct SQL validation (no LLM).
